@@ -1,6 +1,6 @@
 <?php
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
-require 'lib/nps.php';
+require 'lib/ps.php';
 DataStoreConnect();
 Initialize();
 ?>

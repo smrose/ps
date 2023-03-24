@@ -21,7 +21,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
-require "lib/nps.php";
+require "lib/ps.php";
 
 DataStoreConnect();
 Initialize();
@@ -39,8 +39,12 @@ $page = "<!doctype html>
 
 <body>
 
+<header>
 <h1>$title</h1>
+</header>
 
+<div id=\"poutine\">
+<img src=\"images/pattern-sphere-band.png\" id=\"gravy\">
 ";
 
 // Form data.
@@ -172,6 +176,7 @@ form below.</p>
 <?php
 }
 ?>
+</div>
 <?=FOOT?>
 </body>
 </html>
