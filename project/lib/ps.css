@@ -1,0 +1,472 @@
+body {
+    font-family: sans-serif;
+    border: 0;
+    margin: 0;
+    margin-bottom: 40px;
+}
+header {
+    background-color: black;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 5px;
+    margin: 0;
+    border: 0;
+}
+#gravy {
+    width: 100%;
+    padding: 10px;
+}
+#poutine {
+    margin: 0 auto;
+    width: 95%;
+}
+h1 {
+    font-size: 36px;
+    padding: 8px;
+}
+dl {
+    margin-left: 1em;
+}
+dt {
+    font-weight: bold;
+}
+dd {
+    margin-bottom: 10px;
+}
+input[type=select] {
+    background-color: #ffe;
+}
+input[type=submit] {
+    font-weight: bold;
+    background-color: #330;
+    color: #ffe;
+    padding: 6px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+}
+input[type=submit]:disabled {
+    background-color: #663;
+    color: #cc9;
+    cursor: auto;
+}
+.aform {
+    margin-left: 2em;
+    border: 1px solid black;
+    padding: 1em;
+    background-color: #ffe;
+}
+.afield {
+    text-align: right;
+    font-weight: bold;
+    vertical-align: top;
+}
+.avalue {
+    font-weight: bold;
+}
+.asubmit {
+    text-align: center;
+    font-weight: bold;
+}
+#foot {
+    background-color: white;
+    border-top: 2px solid #333;
+    margin-top: 1em;
+    text-align: right;
+    font-style: oblique;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #999;
+}
+#foot a {
+    text-decoration: none;
+    color: #666;
+}
+.alert {
+    font-weight: bold;
+}
+.error {
+    color: #600;
+    font-weight: bold;
+}
+#actions {
+    position: fixed;
+    top: 0;
+    right: 0;
+    font-weight: bold;
+}
+#actions > div {
+    background-color: #ccc;
+    border: 2px solid #333;
+    margin: .5em;
+}
+#actions ul {
+    list-style: none;
+    padding: .5em;
+    margin: 0;
+}
+#actions a {
+    text-decoration: none;
+}
+#actions a:visited, #actions a:link {
+    color: #333;
+}
+.banner {
+    color: #ccc;
+    background-color: #333;
+}
+.gg {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-left: 1em;
+}
+.gg div {
+    padding: .2em;
+}
+.gf {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-left: 2em;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    padding: .4em;
+    background-color: #ffd;
+    border: 1px solid #322;
+}
+.uf7 {
+    display: grid;
+    grid-template-columns: repeat(7, auto);
+    margin-left: 2em;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    background-color: #ffd;
+    border: 1px solid #322;
+}
+.uf6 {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    margin-left: 2em;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    background-color: #ffd;
+    border: 1px solid #322;
+}
+.uf7 div {
+    padding: .4em;
+    border: 1px dotted #666;
+}
+.uf6 div {
+    padding: .4em;
+    border: 1px dotted #666;
+}
+.fieldlabel {
+    font-weight: bold;
+    text-align: right;
+}
+.gf div {
+    padding: .2em;
+}
+.gs {
+    text-align: center;
+    grid-column: span 2;
+}
+.gb {
+    font-weight: bold;
+    text-align: center;
+}
+input[type=button] {
+    font-size: .75em;
+    padding: 0px;
+    background: #fcc;
+}
+.users {
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin-left: 2em;
+}
+.users th {
+    background-color: #ffd;
+}
+.users td, .users th {
+    padding: .5em;
+    border: 1px solid #666;
+}
+.separator {
+    border-bottom: 2px dashed #666;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+#foot {
+    border-top: 2px solid #333;
+    margin-top: 1em;
+    text-align: right;
+    font-style: oblique;
+    font-weight: bold;
+    text-shadow: 1px 1px #999;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+#foot a {
+    text-decoration: none;
+    color: #666;
+}
+.define {
+    font-style: oblique;
+}
+.category {
+    text-align: center;
+    font-weight: bold;
+    font-size: 22px;
+    background-color: #fcc;
+    color: darkred;
+}
+#choice {
+}
+li.spacer {
+    list-style: none;
+    margin: 1em;
+}
+.instructions {
+  /*display: none;*/
+}
+.plang {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(4, 25%);
+    width: 100%;
+    margin: .1em;
+}
+.pltitle {
+    font-size: 16pt;
+    font-weight: bold;
+    grid-column: span 4;
+    font-style: oblique;
+    padding: .2em;
+    background-color: #ffc;
+    color: #300;
+}
+.pattern {
+    width: 100%;
+    padding: .5em;
+    opacity: .8;
+    transition-property: opacity;
+    transition-duration: .2s;
+}
+.pattern:hover {
+    opacity: 1;
+}
+.in {
+    background-color: #efe;
+}
+.out {
+    background-color: #fee;
+}
+.neutral {
+    background-color: #ddd;
+}
+.ptitle {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: .25em;
+}
+.radios {
+    margin-left: 2em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.synopsis {
+    margin-bottom: .25em;
+}
+.username {
+    font-style: oblique;
+    font-weight: bold;
+}
+.inactive {
+    background-color: #ddd;
+}
+.active {
+}
+.abstainer {
+    background-color: #fcc;
+}
+.voter {
+    background-color: #cfc;
+}
+.covid {
+    font-weight: bold;
+    text-align: center;
+}
+.flu {
+    display: grid;
+    grid-template-columns: repeat(8, auto);
+    margin-left: 2em;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    background-color: #ffd;
+    border: 1px solid #322;
+}
+.flu div {
+    padding: .4em;
+    border: 1px dotted #666;
+}
+.polio {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    margin-left: 30px;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    border: 1px solid #322;
+}
+.omicron {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    margin-left: 30px;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    border: 1px solid #322;
+}
+.polio div {
+    padding: .4em;
+    border-bottom: 1px dotted #666;
+    border-left: 1px dotted #666;
+    border-right: 1px dotted #666;
+}
+.omicron div {
+    padding: .4em;
+    border-bottom: 1px dotted #666;
+    border-left: 1px dotted #666;
+    border-right: 1px dotted #666;
+}
+.setoff {
+    border-top: 2px solid black;
+}
+.ebola {
+    text-decoration: underline;
+    text-align: center;
+    cursor: pointer;
+}
+.ringworm {
+    text-align: center;
+}
+.epstein {
+    width: 125px;
+    height: 10px;
+    background-color: #ddd;
+    border: 1px solid black;
+}
+.influenza {
+    display: none;
+    grid-column: span 5;
+    max-width: 1000px;
+}
+.measles {
+    display: grid;
+    grid-template-columns: auto auto;
+    width: max-content;
+    border: 1px solid black;
+    margin-left: 30px;
+    font-size: 9pt;
+}
+.measles div {
+    border: 1px dotted #666;
+    padding: .25em;
+}
+.smallpox {
+    background-color: #ffc;
+    font-weight: bold;
+    text-align: center;
+    grid-column: span 2;
+}
+.f {
+    text-align: right;
+}
+.mumps {
+    grid-column: span 8;
+    display: none;
+    max-width: 80vw;
+}
+.commenter {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.comm {
+    transition-property: background-color;
+    transition-duration: .2s;
+}
+.comm:hover {
+    background-color: #ffe;
+}
+#manager, #super, #authactions {
+    opacity: .7;
+    transition-property: opacity;
+    transition-duration: .2s;
+}
+#manager:hover, #super:hover, #authactions:hover {
+    opacity: 1;
+}
+.masq {
+    background-color: #eee;
+    margin-left: 2em;
+    width: max-content;
+    padding: .1em;
+}
+.two {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    width: max-content;
+}
+.three {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    width: max-content;
+}
+.lit {
+    background-color: #ffd;
+    font-weight: bold;
+}
+.mid {
+    background-color: #ffd;
+}
+.dim {
+    background-color: #ddd;
+}
+.icenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.mem {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    margin-left: 2em;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    width: max-content;
+    background-color: #ffd;
+    border: 2px solid #664;
+}
+.mem div {
+    border: 1px solid #664;
+    padding: .2em;
+}
+.memc {
+    text-align: center;
+}
+.mems {
+    text-align: center;
+    grid-column: span 4;
+}
+.memh {
+    font-weight: bold;
+    text-align: center;
+    background-color: #fcc;
+}
