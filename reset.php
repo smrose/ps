@@ -117,7 +117,7 @@ elseif($email) {
 <h1><?=$title?></h1>
 </header>
 
-<div id=poutine">
+<div id="poutine">
 <img src="images/pattern-sphere-band.png" id="gravy">
 
 <?php
