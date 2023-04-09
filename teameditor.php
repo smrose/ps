@@ -395,10 +395,9 @@ if($rv) {
   /* Build a popup menu of teams, if any. */
   
   $teams = GetTeams();
-  if(isset($teams)) {
-    $options = "<li class=\"spacer\"></li>
- <li><b>Edit a team</b>
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+
+  if(count($teams)) {
+    $form = "<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
 <select name=\"id\">
 <option value=\"-1\" selected>Choose team</option>
 ";
@@ -407,23 +406,24 @@ if($rv) {
         continue; // a team not managed by this user
       if($team['id'])
         $name = $team['name'];
-      $options .= "<option value=\"${team['id']}\">$name</option>\n";
+      $form .= "<option value=\"${team['id']}\">$name</option>\n";
     }
-    $options .= "</select>
+    $form .= "</select>
 <input type=\"submit\" name=\"submit\" value=\"Edit this team\">
 <input type=\"submit\" name=\"submit\" value=\"Edit team membership\">
 <input type=\"hidden\" name=\"action\" value=\"edit\">
   </form>
- </li>
 ";
-  }
+  } else
+    $form = '<br>(No teams defined yet.)';
 ?>
 <h3>Actions:</h3>
 <ul>
 <?php
   if($user['role'] == 'super')
     print " <li><a href=\"?action=create\">Create a team</a></li>\n";
-  print "$options
+  
+  print "<li><b>Edit a team</b> $form</li>
  <li><a href=\"./\">Return</a></li>
 </ul>
 ";

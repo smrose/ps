@@ -729,6 +729,7 @@ function GetProjects() {
 
   $sth = $pdo->prepare('SELECT id, title, tag, active FROM project ORDER BY id');
   $sth->execute();
+  $projs = [];
   while($proj = $sth->fetch(PDO::FETCH_ASSOC)) {
     $projs[$proj['id']] = $proj;
   }
@@ -843,6 +844,7 @@ function GetOrganizations() {
 
   $sth = $pdo->prepare('SELECT * FROM organization ORDER BY id');
   $sth->execute();
+  $orgs = [];
   while($org = $sth->fetch(PDO::FETCH_ASSOC)) {
     $orgs[$org['id']] = $org;
   }
@@ -951,6 +953,7 @@ function GetTeam($id) {
 function GetTeams() {
   global $pdo;
 
+  $teams = [];
   $sth = $pdo->prepare('SELECT * FROM team ORDER BY id');
   $sth->execute();
   while($team = $sth->fetch(PDO::FETCH_ASSOC)) {
@@ -2002,14 +2005,22 @@ function DeleteProjManager($id) {
 /* IsProjectManager()
  *
  *  True if this user is a manager of this project.
+ *
+ *  We get the user.id and project.id either from the argument list or
+ *  from global $user and $project.
  */
 
-function IsProjectManager() {
+function IsProjectManager($userid = null, $projid = null) {
   global $user, $project;
 
+  if(is_null($userid))
+    $userid = $user['id'];
+  if(is_null($projid))
+    $projid = $project['id'];
+
   $pms = GetProjManagers([
-   'userid' => $user['id'],
-   'projid' => $project['id']
+   'userid' => $userid,
+   'projid' => $projid
   ]);
   
   return(count($pms) ? true : false);

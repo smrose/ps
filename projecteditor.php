@@ -17,8 +17,8 @@
 #  AbsorbEdit     edit an existing project from form input
 #  ProjTeams      select which teams work this project
 #  AbsorbTeams    absorb team selection
-#  ProjManagers
-#  AbsorbManagers 
+#  ProjManagers   present a form for setting project managers
+#  AbsorbManagers absorb project managers
 #
 # NOTES
 #
@@ -324,6 +324,11 @@ function ProjTeams($prid) {
   # present a list of teams as a set of checkboxes
   
   $teams = GetTeams();
+  if(!count($teams)) {
+    print "<p class=\"alert\">No teams are defined yet. 
+<a href=\"{$_SERVER['SCRIPT_NAME']}\">Return</a>.</p>\n";
+    return(0);
+  }
   $projteams = GetProjTeams($prid);
   
   print "<p class=\"alert\">
@@ -529,7 +534,7 @@ if(isset($_REQUEST['action'])) {
     
     $prid = $_REQUEST['prid'];
     if($prid < 0)
-      Error('Select a project to edit');
+      Error("Select a project to edit before submitting.");
     if(isset($_REQUEST['submit'])) {
       if($_REQUEST['submit'] == 'Edit this project')
         $rv = prform($prid);
@@ -550,17 +555,32 @@ if(isset($_REQUEST['action'])) {
 }
 if($rv) {
   $projects = GetProjects();
-  $options = "<select name=\"prid\">
+  if(count($projects)) {
+    $options = "<select name=\"prid\">
 <option value=\"-1\" selected>Choose project</option>
 ";
-  foreach($projects as $project) {
-    if($project['id']) {
-      $tag = $project['tag'];
-      $disabled = $project['active'] ? '' : ' disabled';
-      $options .= "<option value=\"${project['id']}\"$disabled>$tag</option>\n";
+    foreach($projects as $project) {
+
+      if($project['id']) {
+        $enabled = IsProjectManager($project['id'], $user['id'])
+	  || $user['role'] == 'super';
+        $tag = $project['tag'] . ($project['active'] ? '' : '*');
+        $disabled = $enabled ? '' : ' disabled';
+        $options .= "<option value=\"${project['id']}\"$disabled>$tag</option>\n";
+      }
     }
-  }
-  $options .= "</select>\n";
+    $options .= "</select>\n";
+    $form = "<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+  <input type=\"hidden\" name=\"action\" value=\"predit\">
+   $options
+  <input type=\"submit\" name=\"submit\" value=\"Edit this project\">
+  <input type=\"submit\" name=\"submit\" value=\"Edit project teams\">
+  <input type=\"submit\" name=\"submit\" value=\"Project managers\">
+  </form>
+";
+  } else
+    $form = '<p class="alert" style="left-margin: 1em">No projects exist.</p>
+';
 ?>
 <h3>Actions:</h3>
 
@@ -568,17 +588,12 @@ if($rv) {
  <li><a href="?action=prcreate">Create a project</a></li>
  <li class="spacer"></li>
  <li><b>Edit a project</b><br>
- Use this form to select a project. Press <tt>Edit this project</tt> to make
- changes to the project metadata, such as instructions shown to users. Press
- the <tt>Edit project teams</tt> to select which user teams participate in
- the project.
-  <form method="POST" action="<?=$_SERVER['SCRIPT_NAME']?>">
-  <input type="hidden" name="action" value="predit">
-  <?=$options?>
-  <input type="submit" name="submit" value="Edit this project">
-  <input type="submit" name="submit" value="Edit project teams">
-  <input type="submit" name="submit" value="Project managers">
-  </form>
+ Use this form to select and act on a project. Inactive projects are shown
+ with an asterisk. Press <tt>Edit this project</tt> to make changes to the
+ project metadata, such as instructions shown to users or whether it's active.
+ Press  the <tt>Edit project teams</tt> to select which user teams participate
+ in the project.
+ <?=$form?>
  </li>
  <li><a href="./">Return</a></li>
 </ul>

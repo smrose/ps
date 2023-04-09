@@ -145,8 +145,8 @@ function plform($pl = null) {
       'baseurl' => ''
     ];
     $plid = '';
-    $options = ' <option value="inwork" selected="selected">
- <option value="published">
+    $options = ' <option value="inwork" selected="selected"> in work
+ <option value="published"> published
 ';
   }
   print "<h2>$title</h2>

@@ -168,8 +168,8 @@ if(isset($_POST['realm'])) {
 
 ?>
 
-<p>This page has separate forms for editing the auth configuration and the
-template project.</p>
+<p>This page has distinct forms for editing the auth configuration, the
+template project, and application configuration.</p>
 
 <ul>
  <li><a href="#auth">auth system configuration</a>

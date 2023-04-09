@@ -14,6 +14,14 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+function isactive($p) {
+  return($p['id'] && $p['active']);
+} /* end isactive() */
+
+function aintactive($p) {
+  return($p['id'] && !$p['active']);
+} /* end aintactive() */
+
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require 'project/lib/ps.php';
 
@@ -123,30 +131,42 @@ $actions = join('', $action);
 <?=$super?>
 </div>
 
-<ul>
 <?php
 
 # Present a menu of active projects to all comers.
 
-foreach($projects as $project) {
-  if($project['id'] && $project['active']) {
-    print "<li><a href=\"${project['tag']}/\">${project['title']}</a></li>\n";
+if(count($projects))
+  $aprojects = array_filter($projects, 'isactive');
+else
+  $aprojects = [];
+
+if(count($aprojects)) {
+  print "<ul>\n";
+  foreach($aprojects as $aproject) {
+    print "<li><a href=\"${aproject['tag']}/\">${aproject['title']}</a></li>\n";
   }
+  print "</ul>\n";
+} else {
+  print "<p class=\"alert\" style=\"margin-left: 1em\">No active projects.</p>\n";
 }
-print "</ul>\n";
 
 # Present a menu of inactive projects to admins.
 
 if(isset($user) && $user['role'] == 'super') {
-  print '<h3>Inactive Projects</h3>
-<ul>
-';
-  foreach($projects as $project) {
-    if($project['id'] && !$project['active']) {
-      print "<li><a href=\"${project['tag']}/\">${project['title']}</a></li>\n";
-    }
-  }
-  print "</ul>\n";
+  if(count($projects)) {
+    $iprojects = array_filter($projects, 'aintactive');
+    if(DEBUG) error_log('Found ' . count($iprojects) . ' inactive projects');
+  } else
+    $iprojects = [];
+
+  print "<h3>Inactive Projects</h3>\n";
+  if(count($iprojects)) {
+    print "<ul>\n";
+    foreach($iprojects as $iproject)
+      print " <li><a href=\"${iproject['tag']}/\">${iproject['title']}</a></li>\n";
+    print "</ul>\n";
+  } else
+    print "<p class=\"alert\" style=\"margin-left: 1em\">No inactive projects.</p>\n";  
 }
 ?>
 </ul>

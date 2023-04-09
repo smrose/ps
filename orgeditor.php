@@ -339,29 +339,34 @@ if($rv) {
   /* Build a popup menu of organizations, if any. */
   
   $orgs = GetOrganizations();
-  $options = "<select name=\"orgid\">
+  if(count($orgs)) {
+    $options = "<select name=\"orgid\">
 <option value=\"-1\" selected>Choose organization</option>
 ";
-  foreach($orgs as $org) {
-    if($org['id'])
-      $name = $org['name'];
-    else
-      $name = 'organization template';
-    $options .= "<option value=\"${org['id']}\">$name</option>\n";
-  }
-  $options .= "</select>\n";
+    foreach($orgs as $org) {
+      if($org['id'])
+        $name = $org['name'];
+      else
+        $name = 'organization template';
+      $options .= "<option value=\"${org['id']}\">$name</option>\n";
+    }
+    $options .= "</select>\n";
+    $form = "<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+  <input type=\"hidden\" name=\"action\" value=\"orgedit\">
+$options
+  <input type=\"submit\" name=\"submit\" value=\"Edit this organization\">
+  <input type=\"submit\" name=\"submit\" value=\"Organization managers\">
+  </form>
+";
+  } else
+    $form = "<p class=\"alert\" style=\"margin-left: 1em\">No organizations exist.</p>\n";
 ?>
 <h3>Actions:</h3>
 <ul>
  <li><a href="?action=orgcreate">Create an organization</a></li>
  <li class="spacer"></li>
  <li><b>Edit an organization</b>
-  <form method="POST" action="<?=$_SERVER['SCRIPT_NAME']?>">
-  <input type="hidden" name="action" value="orgedit">
-  <?=$options?>
-  <input type="submit" name="submit" value="Edit this organization">
-  <input type="submit" name="submit" value="Organization managers">
-  </form>
+ <?=$form?>
  </li>
  <li><a href="./">Return</a></li>
 </ul>
