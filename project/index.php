@@ -267,9 +267,9 @@ function assess() {
   if($participant) {
     $welcome = '<p class="alert">Welcome' .
      (isset($assessment) ? ' back' : '') .
-     " <span class=\"username\" title=\"${user['email']}\">${user['fullname']}</span></p>
+     " <span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span></p>
 <blockquote>
- ${project['assessment_text']}
+ {$project['assessment_text']}
 </blockquote>
 ";
   } else {
@@ -282,7 +282,7 @@ function assess() {
 $welcome
 ";
   if($participant) {
-    print "<form id=\"assess\" method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+    print "<form id=\"assess\" method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
 ";
   }
 
@@ -293,7 +293,7 @@ $welcome
   
   foreach($planguages as $planguage) {
     print "<div class=\"plang\">
- <div class=\"pltitle\">${planguage['title']}</div>\n";
+ <div class=\"pltitle\">{$planguage['title']}</div>\n";
 
     // Loop on patterns in this language.
     
@@ -332,12 +332,12 @@ $welcome
 	}
 	print "
   <div class=\"pattern $radio\">
-   <div class=\"ptitle\">${pattern['title']}</div>
-   <div class=\"synopsis\">${pattern['synopsis']}</div>
+   <div class=\"ptitle\">{$pattern['title']}</div>
+   <div class=\"synopsis\">{$pattern['synopsis']}</div>
    <div class=\"radios\">
     $radios
    </div>
-   <div><textarea class=\"comm\" maxlength=\"1024\" title=\"Enter commentary\" placeholder=\"optional commentary\" name=\"c${pattern['id']}\" rows=\"1\" cols=\"30\">$commentary</textarea></div>
+   <div><textarea class=\"comm\" maxlength=\"1024\" title=\"Enter commentary\" placeholder=\"optional commentary\" name=\"c{$pattern['id']}\" rows=\"1\" cols=\"30\">$commentary</textarea></div>
   </div>
   ";
 //        print "</div>\n";
@@ -346,8 +346,8 @@ $welcome
         // visitor
 
 	print "<div class=\"pattern neutral\">
- <div class=\"ptitle\">${pattern['title']}</div>
- <div class=\"synopsis\">${pattern['synopsis']}</div>
+ <div class=\"ptitle\">{$pattern['title']}</div>
+ <div class=\"synopsis\">{$pattern['synopsis']}</div>
 </div>
 ";
       }
@@ -363,12 +363,12 @@ $welcome
     $contact = (isset($assessment) && $assessment['contact'] == 'y')
       ? ' checked' : '';
   
-    print "${project['abovecomment_text']}
+    print "{$project['abovecomment_text']}
 <blockquote>
 <textarea class=\"comm\" rows=\"4\" cols=\"80\" name=\"acomment\">$acomment</textarea>
 </blockquote>
 <p class=\"alert\">May we contact you about your assessment? <input type=\"checkbox\" name=\"contact\"$contact></p>
- ${project['parting_text']}
+ {$project['parting_text']}
 <div align=\"center\">
  <input type=\"submit\" name=\"submit\" value=\"Save assessment\">
  <input type=\"submit\" name=\"submit\" value=\"Cancel\">
@@ -432,7 +432,7 @@ function consideration() {
     ]
   ];
     
-  print "<h2>${project['title']} Patterns - In Work</h2>
+  print "<h2>{$project['title']} Patterns - In Work</h2>
 ";
 
   $results = Stats();
@@ -455,7 +455,7 @@ function consideration() {
     $p = $p[0];
     $destination = $p['plid'] == $project['destination'];
 
-    print "<h3 style=\"background-color: #eee; width: max-content\" title=\"${pattern['pltitle']}\">${pattern['ptitle']}</h3>
+    print "<h3 style=\"background-color: #eee; width: max-content\" title=\"{$pattern['pltitle']}\">{$pattern['ptitle']}</h3>
 ";
 
     foreach($paragraphs as $paragraph) {
@@ -466,8 +466,8 @@ function consideration() {
       if($paragraph['destination'] && !$destination)
         continue;
       if(strlen($p[$paragraph['column']])) {
-        print "<h4>${paragraph['label']}</h4>
-<blockquote style=\"white-space: pre-line\">${p[$paragraph['column']]}</blockquote>
+        print "<h4>{$paragraph['label']}</h4>
+<blockquote style=\"white-space: pre-line\">{$p[$paragraph['column']]}</blockquote>
 ";
       }
     }
@@ -503,7 +503,7 @@ function inwork($id) {
 
   closedir($dh);
 
-  print "<h2>${ap['title']}</h2>
+  print "<h2>{$ap['title']}</h2>
 
 <div class=\"gg\">
 ";
@@ -511,12 +511,12 @@ function inwork($id) {
   if(array_key_exists('intro', $images))
     // display intro image
     print "<div style=\"grid-column: span 2\">
-<img src=\"${images['intro']}\" class=\"icenter\" title=\"introductory image\">
+<img src=\"{$images['intro']}\" class=\"icenter\" title=\"introductory image\">
 </div>
 ";
 
   print "<div class=\"fieldlabel\">Language:</div>
-<div style=\"font-style: oblique\">${ap['pltitle']}</div>
+<div style=\"font-style: oblique\">{$ap['pltitle']}</div>
 ";
 
   // display pattern metadata
@@ -538,7 +538,7 @@ function inwork($id) {
   if(array_key_exists('closing', $images))
     // display closing image
     print "<div style=\"grid-column: span 2\">
-    <img src=\"${images['closing']}\" class=\"icenter\" title=\"closing image\">
+    <img src=\"{$images['closing']}\" class=\"icenter\" title=\"closing image\">
  </div>
  ";
 
@@ -553,7 +553,7 @@ function inwork($id) {
   foreach($passessments as $passessment) {
     if(strlen($passessment['commentary'])) {
       print "<div style=\"background-color: #ddd; margin: .5em\">
-  ${passessment['commentary']}
+  {$passessment['commentary']}
 </div>
 ";
       $ccount++;
@@ -598,7 +598,7 @@ print "<!doctype html>
 <html lang=\"en\">
 
 <head>
- <title>${project['title']}</title>
+ <title>{$project['title']}</title>
  <link rel=\"stylesheet\" href=\"lib/ps.css\">
  <script src=\"lib/ps.js\"></script>
  $expire
@@ -607,7 +607,7 @@ print "<!doctype html>
 <body>
 
 <header>
-<h1>${project['title']}</h1>
+<h1>{$project['title']}</h1>
 </header>
 
 <div id=\"poutine\">
@@ -628,7 +628,7 @@ if($isLogged) {
 
     $masq = $_REQUEST['masq'];
     $user = $auth->getUser($masq);
-    if(DEBUG) error_log("masquerading as ${user['fullname']}");
+    if(DEBUG) error_log("masquerading as {$user['fullname']}");
   }
 
   $action = array(' <li><a href="../log.php">Log out</a></li>',
@@ -662,7 +662,7 @@ if($isLogged) {
   
   $action = [
              '<li><a href="../register.php">Register</a></li>',
-             '<li><a href="' . ROOTDIR . "/log.php/${project['tag']}\">Log in</a></li>",
+             '<li><a href="../log.php">Log in</a></li>',
              '<li><a href="../reset.php">Reset password</a></li>'
 	    ];
   $super = $manager = '';
@@ -735,7 +735,7 @@ if(!$SuppressMain) {
   if($participant) 
     print '<p>Welcome ' .
       ($edit ? 'back ' : '') .
-      "<span class=\"username\" title=\"${user['email']}\">${user['fullname']}</span>. " .
+      "<span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>. " .
        ($edit ? 'Edit your' : 'Submit an') .
       " assessment by clicking <a href=\"?$querystring\">here</a>.</p>
 ";
@@ -751,7 +751,7 @@ if(!$SuppressMain) {
         if(!$count)
 	  print "<ul>\n";
 	$count++;
-        print "<li><a href=\"?inwork=${projpattern['apid']}\">${projpattern['title']}</a></li>\n";
+        print "<li><a href=\"?inwork={$projpattern['apid']}\">{$projpattern['title']}</a></li>\n";
       }
     }
     if($count)
@@ -761,7 +761,7 @@ if(!$SuppressMain) {
   }
   if(! $participant)
     if(isset($user))
-      print "<p>Welcome <span class=\"username\" title=\"${user['email']}\">${user['fullname']}</span>.
+      print "<p>Welcome <span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>.
 ";
     else
       print "<p>Welcome, visitor.\n";
@@ -789,7 +789,7 @@ if(!$SuppressMain) {
       $style = ($user['role'] == 'super') ? 'font-weight: bold' : '';
       print "<option style=\"$style\" value=\"$uid\"" . 
 	  (($masq == $uid) ? ' selected' : '') .
-	  ">${user['fullname']} ($uid)</option>\n";
+	  ">{$user['fullname']} ($uid)</option>\n";
     }
     print '</select>
   <input type="submit" name="submit" value="Masquerade">

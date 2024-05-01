@@ -152,16 +152,17 @@ if(isset($_POST['realm'])) {
     
     $update = [];
     foreach($_POST as $k => $v) {
-      if($k == 'action')
+      if($k == 'submit' || $k == 'realm')
         continue;
       elseif($k == 'prid')
         $update['id'] = $_POST['prid'];
       else
         $update[$k] = $v;
     }
-    if(UpdateProject($update))
+    if(UpdateProject($update)) {
+      $id = isset($update['id']) ? $update['id'] : 0;
       print "<p class=\"alert\">Updated project <tt>${update['title']} (ID ${update['id']})</tt>.</p>\n";
-    else
+    } else
       print "<p class=\"alert\">No updates to project <tt>${update['title']}</tt>.</p>\n";
   }
 } # end case of submitted form

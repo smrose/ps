@@ -57,7 +57,7 @@ Initialize();
 $user = $auth->getCurrentUser(true);
 
 if(!$user) {
-  error_log("${_SERVER['SCRIPT_NAME']}: user not defined; redirecting");
+  error_log("{$_SERVER['SCRIPT_NAME']}: user not defined; redirecting");
   header('Location: ./');
   exit;
 }
@@ -154,7 +154,7 @@ function pmanage() {
     count($pbypid) . " patterns are assignable. " .
     count($apbyid) . " patterns are assigned.</p>
 
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
 <input type=\"hidden\" name=\"action\" value=\"passign\">
 <div class=\"fieldlabel\"><label for=\"pid\"><b>Select patterns:</b></label></div>
 <div>
@@ -175,11 +175,11 @@ function pmanage() {
         $selected = ' selected';
 	$ap = $apbyid[$pattern['id']];
 	if($ap['pacount'])
-          $extra = " (${ap['pacount']} assessments)";	
+          $extra = " ({$ap['pacount']} assessments)";	
       } else
         $selected = '';
 
-      print "  <option value=\"${pattern['id']}\"$selected>${pattern['title']}$extra</option>\n";
+      print "  <option value=\"{$pattern['id']}\"$selected>{$pattern['title']}$extra</option>\n";
     }
   }
   print ' </select>
@@ -236,12 +236,12 @@ language for this project.</p>
 
 <p class=\"alert\">Use this form to set the status of patterns.</p>
 
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
 <input type=\"hidden\" name=\"action\" value=\"pstatus\">
 ");
     foreach($aps as $ap) {
-      print "<div>${ap['title']}</div>
-<div><select name=\"${ap['apid']}\">
+      print "<div>{$ap['title']}</div>
+<div><select name=\"{$ap['apid']}\">
 ";
       foreach($statuses as $k => $v) {
         $selected = ($ap['status'] == $k) ? ' selected' : '';
@@ -322,12 +322,12 @@ function passign() {
 ";
     foreach($defers as $defer) {
       $ap = $aps[$defer];
-      print "<li>${ap['title']}</li>\n";
+      print "<li>{$ap['title']}</li>\n";
     }
     print "</ul>
 
 <p class=\"alert\">Deleting these patterns will delete those assessments. Delete anyway?</p>
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
 <input type=\"hidden\" name=\"action\" value=\"delete\">
 ";
     foreach($defers as $defer)
@@ -424,7 +424,7 @@ function deletes() {
     ]);
     $p = GetPattern(['p.id' => $pid]);
     $p = $p[0];
-    print "<li>${p['title']} / ${p['pltitle']}</li>\n";
+    print "<li>{$p['title']} / {$p['pltitle']}</li>\n";
   }
   print "</ul>\n";
   

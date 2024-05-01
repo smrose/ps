@@ -61,7 +61,7 @@ function AbsorbManage() {
 } /* end AbsorbManage() */
 
 
-require "lib/nps.php";
+require "lib/ps.php";
 
 DataStoreConnect();
 Initialize();
@@ -78,12 +78,12 @@ if(DEBUG && isset($_POST)) error_log(var_export($_POST, true));
 /* Redirect if unauthenticated or unauthorized. */
 
 $user = $auth->getCurrentUser(true);
-if($user['role'] != 'super' || !IsProjectManager())
+if($user['role'] != 'super' && !IsProjectManager())
   header('Location: ./');
 
 /* This user is authorized. */
 
-$title = "${project['title']}: Membership Management";
+$title = "{$project['title']}: Membership Management";
 ?>
 <!doctype html>
 <html lang="en">
@@ -96,7 +96,12 @@ $title = "${project['title']}: Membership Management";
 
 <body>
 
+<header>
 <h1><?=$title?></h1>
+</header>
+
+<div id="poutine">
+<img src="../images/pattern-sphere-band.png" id="gravy">
 
 <?php
 
@@ -122,9 +127,9 @@ to remove. Press the Submit button to absorb your changes.<p>
 
 foreach($teams as $id => $team) {
   $checked = array_key_exists($id, $projteams) ? ' checked' : '';
-  print "<div style=\"text-align: center\">${team['name']}</div>
+  print "<div style=\"text-align: center\">{$team['name']}</div>
 <div class=\"\" style=\"text-align: center\">
- <input type=\"checkbox\" name=\"${team['id']}\" value=\"1\"$checked>
+ <input type=\"checkbox\" name=\"{$team['id']}\" value=\"1\"$checked>
 </div>
 ";
 
@@ -139,6 +144,7 @@ print '<div style="grid-column: span 2; text-align: center">
 ?>
 
 <p><a href="./">Return</a>.</p>
+</div>
 <?=FOOT?>
 </body>
 </html>

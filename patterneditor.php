@@ -20,11 +20,9 @@
 #
 # $Id: patterneditor.php,v 1.20 2023/03/22 20:43:25 rose Exp $
 
-if(false) {
-  header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-  header("Cache-Control: post-check=0, pre-check=0", false);
-  header("Pragma: no-cache");
-}
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 if(isset($_POST) && isset($_POST['cancel'])) {
   header('Location: ./');

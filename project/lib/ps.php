@@ -63,8 +63,8 @@
 #  UpdateProjPattern update an projpattern record
 #  IsProjManager     true if the current user is a project manager
 #  IsParticipant     true if the current user is on a participating team
-#  GetAppConfig
-#  UpdateAppConfig
+#  GetAppConfig      read application configuration
+#  UpdateAppConfig   update application configuration
 #
 # NOTES
 #
@@ -153,7 +153,7 @@ function GetPLanguage($which = null) {
     if(!$rv)
       Error('System error: could not fetch pattern languages');
     $planguage = $sth->fetch(PDO::FETCH_ASSOC);
-    $query = "SELECT max(prank) FROM pattern p WHERE plid = ${planguage['id']}";
+    $query = "SELECT max(prank) FROM pattern p WHERE plid = {$planguage['id']}";
     try {
       $sth = $pdo->prepare($query);
     } catch(PDOException $e) {
@@ -746,8 +746,9 @@ function GetProjects() {
 function UpdateProject($update) {
   global $pdo;
 
-  $projid = $update['id'];
-  $project = GetProject($projid);
+  if(!isset($update['id']))
+    $update['id'] = 0;
+  $project = GetProject($update['id']);
   if(!isset($project))
     Error('Cannot update anonymous project');
   
@@ -1292,7 +1293,7 @@ function ProjectMembers($projid) {
   $users = [];
   while($user = $sth->fetch(PDO::FETCH_ASSOC)) {
     if(array_key_exists($user['userid'], $users))
-      $users[$user['userid']]['team'] .= ",${user['team']}";
+      $users[$user['userid']]['team'] .= ",{$user['team']}";
     else
       $users[$user['userid']] = $user;
   }
@@ -1430,7 +1431,7 @@ function GetProjUser($projid, $userid) {
 function Error($msg) {
   print "<p class=\"error\">$msg</p>
 
-<p><a href=\"${_SERVER['SCRIPT_NAME']}\">Continue</a>.</p>
+<p><a href=\"{$_SERVER['SCRIPT_NAME']}\">Continue</a>.</p>
 ";
   exit();
   

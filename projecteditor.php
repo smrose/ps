@@ -329,9 +329,13 @@ function ProjTeams($prid) {
 <a href=\"{$_SERVER['SCRIPT_NAME']}\">Return</a>.</p>\n";
     return(0);
   }
+  $pr = GetProject($prid);
   $projteams = GetProjTeams($prid);
+  $title = "Editing <span style=\"font-style: oblique\">${pr['title']}</span> Teams";
   
-  print "<p class=\"alert\">
+  print "<h2>$title</h2>
+
+<p class=\"alert\">
 Select which teams shall participate in this project by checking the
 boxes next to the team names. Teams alreaady participating (if any)
 are shown with boxes already checked; uncheck those boxes to remove
@@ -366,6 +370,7 @@ those teams from participation.
  
 function AbsorbTeams($prid) {
   $teams = GetTeams();
+  $pr = GetProject($prid);
   $projteams = GetProjTeams($prid);
   $changes = 0;  
   
@@ -375,7 +380,7 @@ function AbsorbTeams($prid) {
     if(preg_match('/^\d+$/', $k) && !array_key_exists($k, $projteams)) {
       InsertProjTeam($prid, $k);
       $name = $teams[$k]['name'];      
-      print "<p class=\"alert\">Added team <i>$name</i>.</p>\n";
+      print "<p class=\"alert\">Added team <i>$name</i> to <i>{$pr['title']}</i>.</p>\n";
       $changes++;
     }
 
@@ -385,7 +390,7 @@ function AbsorbTeams($prid) {
     if(!array_key_exists($k, $_POST)) {
       DeleteProjTeam(['id' => $v['id']]);
       $name = $v['name'];
-      print "<p class=\"alert\">Removed team <i>$name</i>.</p>\n";
+      print "<p class=\"alert\">Removed team <i>$name</i> from <i>{$pr['title']}.</p>\n";
       $changes++;
     }
   if(!$changes)
