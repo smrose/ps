@@ -61,7 +61,7 @@ if(isset($_POST['submit']) || isset($key)) {
     $key = trim($_POST['key']);
   $rval = $auth->activate($key);
   if(isset($rval['error'])) {
-    print "$page\n<p>${rval['message']}</p>\n";
+    print "$page\n<p>{$rval['message']}</p>\n";
     
     if($rval['error'] == 'Activation key is invalid.') {
       print "<p>The activation key you entered is not valid. Click <a href=\"activate.php\">here</a> to try again.</p>\n";

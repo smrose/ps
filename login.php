@@ -23,7 +23,7 @@ require "lib/ps.php";
 DataStoreConnect();
 Initialize();
 
-$title = "${project['title']}: Login Result";
+$title = "{$project['title']}: Login Result";
 
 $page = "<!doctype html>
 <html lang=\"en\">
@@ -62,14 +62,14 @@ if($auth->isEmailTaken($email)) {
 
   if($rval['error']) {
   
-    error_log("error code ${rval['error']}");
-    error_log("error message '${rval['message']}'");
+    error_log("error code {$rval['error']}");
+    error_log("error message '{$rval['message']}'");
     
     if($rval['message'] == 'Account has not yet been activated.') {
       $url = "register.php?resend=1&email=$email";
-      print "$page <p>Error: ${rval['message']} Shall I <a href=\"$url\">resend the activation email</a>?</p>\n";
+      print "$page <p>Error: {$rval['message']} Shall I <a href=\"$url\">resend the activation email</a>?</p>\n";
     } else {
-      print "$page <p>Error: ${rval['message']}. <a href=\"log.php\">Click here</a> to retry.</p>\n";
+      print "$page <p>Error: {$rval['message']}. <a href=\"log.php\">Click here</a> to retry.</p>\n";
     }
   } else {
   

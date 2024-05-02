@@ -122,8 +122,8 @@ function plform($pl = null) {
     
     $action = 'pledit';
     $slabel = 'Absorb edits';
-    $title = "Editing Pattern Language <span style=\"font-style: oblique\">${pl['title']}</span>";
-    $plid = "<input type=\"hidden\" name=\"plid\" value=\"${pl['id']}\">
+    $title = "Editing Pattern Language <span style=\"font-style: oblique\">{$pl['title']}</span>";
+    $plid = "<input type=\"hidden\" name=\"plid\" value=\"{$pl['id']}\">
 <input type=\"hidden\" name=\"plaction\" value=\"edit\">
 ";
     $options = '';
@@ -149,13 +149,13 @@ function plform($pl = null) {
   }
   print "<h2>$title</h2>
 
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
 $plid
 <input type=\"hidden\" name=\"action\" value=\"$action\">
 <div class=\"fieldlabel\">Language title:</div>
-<div><input type=\"textfield\" size=\"40\" name=\"title\" value=\"${pl['title']}\"></div>
+<div><input type=\"textfield\" size=\"40\" name=\"title\" value=\"{$pl['title']}\"></div>
 <div class=\"fieldlabel\">Base URL:</div>
-<div><input type=\"textfield\" size=\"40\" name=\"baseurl\" value=\"${pl['baseurl']}\"></div>
+<div><input type=\"textfield\" size=\"40\" name=\"baseurl\" value=\"{$pl['baseurl']}\"></div>
 <div class=\"fieldlabel\">Status:</div>
 <div><select name=\"status\">
 $options
@@ -194,8 +194,8 @@ function pform($p = null) {
     
     $action = 'pedit4';
     $slabel = 'Absorb edits';
-    $title = "Editing Pattern <span style=\"font-style: oblique\">${p['title']}</span>";
-    $fpid = "<input type=\"hidden\" name=\"pid\" value=\"${p['id']}\">
+    $title = "Editing Pattern <span style=\"font-style: oblique\">{$p['title']}</span>";
+    $fpid = "<input type=\"hidden\" name=\"pid\" value=\"{$p['id']}\">
 <input type=\"hidden\" name=\"paction\" value=\"edit\">
 ";
     $instructions = '';
@@ -219,7 +219,7 @@ brief description, discussion, context, and seed.</p>
   
   print "<h2>$title</h2>
 $instructions
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\">
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\">
 $fpid
 <input type=\"hidden\" name=\"plid\" value=\"$plid\">
 <input type=\"hidden\" name=\"action\" value=\"$action\">
@@ -233,19 +233,19 @@ $fpid
     if(isset($p) && $field['type'] == 'image') {
       $existing = image($p['id'], $field);
       if(isset($existing))
-        $stitle = " title=\"${existing['name']}, ${existing['size']} bytes\" style=\"text-decoration: underline\"";
+        $stitle = " title=\"{$existing['name']}, {$existing['size']} bytes\" style=\"text-decoration: underline\"";
     }
 
-    print "<div class=\"fieldlabel\"$stitle>${field['label']}:</div>\n";
+    print "<div class=\"fieldlabel\"$stitle>{$field['label']}:</div>\n";
     
     if($field['type'] == 'text') {
       $value = (isset($p)) ? $p[$field['name']] : '';
-      print "<div><input type=\"textfield\" size=\"${field['size']}\" name=\"${field['name']}\" value=\"$value\"></div>\n";
+      print "<div><input type=\"textfield\" size=\"{$field['size']}\" name=\"{$field['name']}\" value=\"$value\"></div>\n";
     } elseif($field['type'] == 'textarea') {
       $value = (isset($p)) ? $p[$field['name']] : '';
-      print "<div><textarea name=\"${field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
+      print "<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
     } elseif($field['type'] == 'image') {
-      print "<div><input type=\"file\" name=\"${field['name']}\"></div>\n";
+      print "<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
     }
   }
   print "<div class=\"gs\">
@@ -296,7 +296,7 @@ function pledit() {
       # delete this language altogether
       
       DeletePLanguage($plid);
-      print "<p class=\"alert\">Deleted pattern language <tt>${planguage['title']}</tt></p>\n";
+      print "<p class=\"alert\">Deleted pattern language <tt>{$planguage['title']}</tt></p>\n";
       return(true);
     } else if(isset($_POST['plaction']) && $_POST['plaction'] == 'edit') {
 
@@ -332,14 +332,14 @@ function pledit() {
     $planguages = GetPLanguage();
     $options = "<option value=\"\"selected>Choose</option>\n";
     foreach($planguages as $planguage) {
-      $options .= "<option value=\"${planguage['id']}\">${planguage['title']}</option>\n";
+      $options .= "<option value=\"{$planguage['id']}\">{$planguage['title']}</option>\n";
     }
     print "<h2>Edit or Delete a Pattern Language</h2>
 
 <p class=\"alert\">Deleting a pattern language also deletes all the patterns
 it contains.</p>
 
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
 <input type=\"hidden\" name=\"action\" value=\"pledit\">
 <div class=\"fieldlabel\">Language:</div>
 <div>
@@ -387,13 +387,13 @@ function pedit() {
       }
       $options = "<option value=\"\"selected>Choose</option>\n";
       foreach($patterns as $pattern) {
-        $options .= "<option value=\"${pattern['id']}\">${pattern['title']}</option>\n";
+        $options .= "<option value=\"{$pattern['id']}\">{$pattern['title']}</option>\n";
       }
-      print "<h2>Edit or Delete a <span style=\"font-style: oblique\">${planguage['title']}</span> Pattern</h2>
+      print "<h2>Edit or Delete a <span style=\"font-style: oblique\">{$planguage['title']}</span> Pattern</h2>
 
 <p class=\"alert\">Select the pattern and action you wish to take.</p>
 
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
 <input type=\"hidden\" name=\"action\" value=\"pedit3\">
 <input type=\"hidden\" name=\"plid\" value=\"$plid\">
 <div class=\"fieldlabel\">Pattern:</div>
@@ -430,7 +430,7 @@ function pedit() {
 
       if($_POST['paction'] == 'delete') {
         DeletePattern($pid);
-	print "<p class=\"alert\">Deleted pattern <tt>${pattern['title']}</tt></p>\n";
+	print "<p class=\"alert\">Deleted pattern <tt>{$pattern['title']}</tt></p>\n";
 	return(true);
       }
       # solicit edits
@@ -464,12 +464,12 @@ function pedit() {
             // file upload attempt
 	    
 	    $file = $_FILES[$name];
-	    if(DEBUG) error_log("$name: upload type: ${file['type']}, size ${file['size']}");
+	    if(DEBUG) error_log("$name: upload type: {$file['type']}, size {$file['size']}");
 	    
 	    // check if we support this file type as an image
 	    
 	    if(! array_key_exists($file['type'], $oktypes))
-	      Error("${field['label']}: file type <tt>${file['type']} not supported");
+	      Error("{$field['label']}: file type <tt>{$file['type']} not supported");
             else
 	      $destination = $field['prefix'] . $pid . '.' .
 	       $oktypes[$file['type']];
@@ -477,7 +477,7 @@ function pedit() {
 	    // check if the file is below the maximum file size
 	    
 	    if($file['size'] > MAXSIZE)
-	      Error("${field['label']}: file size of ${file['size']} exceeds the maximum of " . MAXSIZE);
+	      Error("{$field['label']}: file size of {$file['size']} exceeds the maximum of " . MAXSIZE);
 
 	    // collect name and size of existing matching file in $existing.
 
@@ -485,10 +485,10 @@ function pedit() {
 
 	    if(move_uploaded_file($file['tmp_name'],
 	                          IMAGEDIR . '/' . $destination)) {
-	      print "<p class=\"alert\">${field['label']}: absorbed.</p>\n";
+	      print "<p class=\"alert\">{$field['label']}: absorbed.</p>\n";
 	      $acted = true;
 	    } else
-	      Error("${field['label']}: unable to save uploaded file\n");
+	      Error("{$field['label']}: unable to save uploaded file\n");
 
             // unlink any conflicting file
 
@@ -531,9 +531,9 @@ function plselect($nextAction, $plid = null) {
   foreach($planguages as $planguage) {
     $selected = (isset($plid) && $planguage['id'] == $plid)
       ? ' selected' : '';
-    $options .= "<option value=\"${planguage['id']}\"$selected>${planguage['title']}</option>\n";
+    $options .= "<option value=\"{$planguage['id']}\"$selected>{$planguage['title']}</option>\n";
   }
-  print "<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+  print "<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
 <input type=\"hidden\" name=\"action\" value=\"$nextAction\">
 <div class=\"fieldlabel\">Language:</div>
 <div>
@@ -602,7 +602,7 @@ function pcreate($action) {
       
       foreach($patterns as $pattern) {
         if($pattern['title'] == $title) {
-          Error("Pattern titles must be unique within the language, but '${pattern['title']}' already exists in this language.");
+          Error("Pattern titles must be unique within the language, but '{$pattern['title']}' already exists in this language.");
         }
         if($pattern['prank'] > $maxprank) {
           $maxprank = $pattern['prank'];
@@ -619,7 +619,7 @@ function pcreate($action) {
       'solution' => $solution
     ];
     $id = InsertPattern($value);
-    print "<p class=\"alert\">Created a new <tt>$title</tt> pattern in <tt>${pattern['pltitle']}</tt> with ID <tt>$id</tt>.</p>";
+    print "<p class=\"alert\">Created a new <tt>$title</tt> pattern in <tt>{$pattern['pltitle']}</tt> with ID <tt>$id</tt>.</p>";
     return(true);
     
   }
@@ -671,7 +671,7 @@ function plcreate() {
 } /* end plcreate() */
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
-  header("Location: ${_SERVER['SCRIPT_NAME']}\n");
+  header("Location: {$_SERVER['SCRIPT_NAME']}\n");
 }
 ?>
 <!doctype html>
@@ -728,7 +728,7 @@ if(($_SERVER['REQUEST_METHOD'] == 'POST'
 if($rv) {
   $pcreate = "?action=pcreate";
   if(isset($_POST) && isset($_POST['plid']))
-    $pcreate .= "&plid=${_POST['plid']}";
+    $pcreate .= "&plid={$_POST['plid']}";
 ?>
 <p class="alert">Each pattern exists in the context of a single
 pattern language. Patterns can be assessed in the context of any

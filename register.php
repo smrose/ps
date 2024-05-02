@@ -56,9 +56,9 @@ if(isset($_REQUEST['resend'])) {
   $email = trim($_REQUEST['email']);
   $rval = $auth->resendActivation($email, 1);
   if($rval['error']) {
-    print "$page <p>${rval['message']}</p>\n";
+    print "$page <p>{$rval['message']}</p>\n";
   } else {
-    print "$page <p>${rval['message']} Click <a href=\"activate.php\">here</a> to enter it.</p>\n";
+    print "$page <p>{$rval['message']} Click <a href=\"activate.php\">here</a> to enter it.</p>\n";
   }
   
 } else if(isset($_POST['register'])) {
@@ -109,7 +109,7 @@ if(isset($_REQUEST['resend'])) {
 			    !AUTOACTIVATE);
     if($rval['error']) {
       print "$page
-<p>Error: ${rval['message']}</p>
+<p>Error: {$rval['message']}</p>
 <p><a href=\"register.php\">Click here</a> to try again.</p>\n";
     } else {
 

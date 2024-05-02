@@ -143,7 +143,7 @@ else
 if(count($aprojects)) {
   print "<ul>\n";
   foreach($aprojects as $aproject) {
-    print "<li><a href=\"${aproject['tag']}/\">${aproject['title']}</a></li>\n";
+    print "<li><a href=\"{$aproject['tag']}/\">{$aproject['title']}</a></li>\n";
   }
   print "</ul>\n";
 } else {
@@ -163,7 +163,7 @@ if(isset($user) && $user['role'] == 'super') {
   if(count($iprojects)) {
     print "<ul>\n";
     foreach($iprojects as $iproject)
-      print " <li><a href=\"${iproject['tag']}/\">${iproject['title']}</a></li>\n";
+      print " <li><a href=\"{$iproject['tag']}/\">{$iproject['title']}</a></li>\n";
     print "</ul>\n";
   } else
     print "<p class=\"alert\" style=\"margin-left: 1em\">No inactive projects.</p>\n";  

@@ -83,8 +83,8 @@ function orgform($orgid = null) {
     
     $action = 'orgedit';
     $slabel = 'Absorb edits';
-    $title = "Editing Organization <span style=\"font-style: oblique\">${org['name']}</span>";
-    $orgid = "<input type=\"hidden\" name=\"orgid\" value=\"${org['id']}\">
+    $title = "Editing Organization <span style=\"font-style: oblique\">{$org['name']}</span>";
+    $orgid = "<input type=\"hidden\" name=\"orgid\" value=\"{$org['id']}\">
 <input type=\"hidden\" name=\"action\" value=\"edit\">
 ";
   } else {
@@ -98,7 +98,7 @@ function orgform($orgid = null) {
   }
   print "<h2>$title</h2>
 
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\"enctype=\"multipart/form-data\" >
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\"enctype=\"multipart/form-data\" >
 $orgid
 <input type=\"hidden\" name=\"action\" value=\"$action\">
 ";
@@ -106,17 +106,17 @@ $orgid
   foreach($fields as $field) {
   
     $value = $org[$field['name']];
-    print "<div class=\"fieldlabel\"><label for=\"${field['name']}\">${field['label']}:</label></div>\n";
+    print "<div class=\"fieldlabel\"><label for=\"{$field['name']}\">{$field['label']}:</label></div>\n";
     
     if($field['type'] == 'text') {
-      print "<div><input type=\"text\" name=\"${field['name']}\" size=\"${field['size']}\" maxlength=\"${field['maxlength']}\" value=\"$value\"></div>\n";
+      print "<div><input type=\"text\" name=\"{$field['name']}\" size=\"{$field['size']}\" maxlength=\"{$field['maxlength']}\" value=\"$value\"></div>\n";
     } elseif($field['type'] == 'textarea') {
-      print "<div><textarea name=\"${field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
+      print "<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
     } elseif($field['type'] == 'checkbox') {
       $checked = $value ? ' checked="checked"' : '';
-      print "<div><input type=\"checkbox\" value=\"1\" name=\"${field['name']}\"$checked></div>\n";
+      print "<div><input type=\"checkbox\" value=\"1\" name=\"{$field['name']}\"$checked></div>\n";
     } elseif($field['type'] == 'image') {
-      print "<div><input type=\"file\" name=\"${field['name']}\"></div>\n";
+      print "<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
     } elseif($field['type'] == 'popup_menu') {
       print $field['callback']();
     }
@@ -151,7 +151,7 @@ function AbsorbCreate() {
   }
 
   $id = InsertOrganization($row);
-  print "<p class=\"alert\">Created a new organization <tt>${row['name']}</tt> with ID <tt>$id</tt>.</p>\n";
+  print "<p class=\"alert\">Created a new organization <tt>{$row['name']}</tt> with ID <tt>$id</tt>.</p>\n";
   return true;
   
 } /* end AbsorbCreate() */
@@ -176,9 +176,9 @@ function AbsorbEdit() {
   $update['id'] = $_POST['orgid'];    
  
   if(UpdateOrganization($update))
-    print "<p class=\"alrt\">Updated organization <tt>${update['name']} (ID ${update['id']})</tt>.</p>\n";
+    print "<p class=\"alrt\">Updated organization <tt>{$update['name']} (ID {$update['id']})</tt>.</p>\n";
   else
-    print "<p class=\"alert\">No updates to organization <tt>${update['name']}</tt>.</p>\n";
+    print "<p class=\"alert\">No updates to organization <tt>{$update['name']}</tt>.</p>\n";
   return true;
   
 } /* end AbsorbEdit() */
@@ -200,9 +200,9 @@ function OrgManagers($id) {
   foreach($orgmanagers as $orgmanager)
     $oms[$orgmanager['userid']] = 1;
 
-  print "<h2>Managers for Organization <tt>${organization['name']}</tt></h2>
+  print "<h2>Managers for Organization <tt>{$organization['name']}</tt></h2>
 
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\" enctype=\"multipart/form-data\" class=\"mem\">
+<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" enctype=\"multipart/form-data\" class=\"mem\">
 <input type=\"hidden\" name=\"action\" value=\"orgedit\">
 <input type=\"hidden\" name=\"orgid\" value=\"$id\">
 <div class=\"memh\">Name</div>
@@ -213,10 +213,10 @@ function OrgManagers($id) {
 
   foreach($users as $user) {
     $checked = (array_key_exists($user['uid'], $oms)) ? ' checked' : '';
-    print "<div>${user['fullname']}</div>
-<div>${user['username']}</div>
-<div>${user['email']}</div>
-<div class=\"memc\"><input type=\"checkbox\" name=\"${user['uid']}\" value=\"1\" $checked></div>
+    print "<div>{$user['fullname']}</div>
+<div>{$user['username']}</div>
+<div>{$user['email']}</div>
+<div class=\"memc\"><input type=\"checkbox\" name=\"{$user['uid']}\" value=\"1\" $checked></div>
 ";
   }
 
@@ -278,7 +278,7 @@ function AbsorbManagers($id) {
 
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
-  header("Location: ${_SERVER['SCRIPT_NAME']}\n");
+  header("Location: {$_SERVER['SCRIPT_NAME']}\n");
 }
 ?>
 <!doctype html>
@@ -348,10 +348,10 @@ if($rv) {
         $name = $org['name'];
       else
         $name = 'organization template';
-      $options .= "<option value=\"${org['id']}\">$name</option>\n";
+      $options .= "<option value=\"{$org['id']}\">$name</option>\n";
     }
     $options .= "</select>\n";
-    $form = "<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+    $form = "<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
   <input type=\"hidden\" name=\"action\" value=\"orgedit\">
 $options
   <input type=\"submit\" name=\"submit\" value=\"Edit this organization\">

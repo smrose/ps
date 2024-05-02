@@ -113,8 +113,8 @@ Initialize();
 <?php
   foreach($teams as $team) {
     print "
-<div>${team['id']}</div>
-<div>${team['name']}</div>
+<div>{$team['id']}</div>
+<div>{$team['name']}</div>
 ";
   }
 ?>
@@ -131,10 +131,10 @@ Initialize();
 <?php
   foreach($projects as $project) {
     print "
- <div>${project['tag']}</div>
- <div>${project['title']}</div>
- <div>(${project['id']})</div>
- <div>${project['active']}</div>
+ <div>{$project['tag']}</div>
+ <div>{$project['title']}</div>
+ <div>({$project['id']})</div>
+ <div>{$project['active']}</div>
  ";
   }
 ?>
@@ -149,9 +149,9 @@ Initialize();
 
 <?php
   foreach($organizations as $organization) {
-    print "<div>${organization['id']}</div>
-<div>${organization['name']}</div>
-<div>${organization['mission']}</div>
+    print "<div>{$organization['id']}</div>
+<div>{$organization['name']}</div>
+<div>{$organization['mission']}</div>
 ";
   }
 ?>
@@ -167,9 +167,9 @@ Initialize();
 <?php
   foreach($projmanagers as $projmanager) {
     print "
-<div>${projmanager['tag']}</div>
-<div>${projmanager['email']}</div>
-<div>${projmanager['fullname']}</div>
+<div>{$projmanager['tag']}</div>
+<div>{$projmanager['email']}</div>
+<div>{$projmanager['fullname']}</div>
 ";
   }
 ?>
@@ -185,9 +185,9 @@ Initialize();
 <?php
   foreach($orgmanagers as $orgmanager) {
     print "
-<div>${orgmanager['name']}</div>
-<div>${orgmanager['email']}</div>
-<div>${orgmanager['fullname']}</div>
+<div>{$orgmanager['name']}</div>
+<div>{$orgmanager['email']}</div>
+<div>{$orgmanager['fullname']}</div>
 ";
   }
 ?>
@@ -205,12 +205,12 @@ Initialize();
 
 <?php
   foreach($users as $user) {
-    print "<div>${user['uid']}</div>
-<div>${user['fullname']}</div>
-<div>${user['email']}</div>
-<div>${user['username']}</div>
-<div>${user['role']}</div>
-<div>${user['isactive']}</div>
+    print "<div>{$user['uid']}</div>
+<div>{$user['fullname']}</div>
+<div>{$user['email']}</div>
+<div>{$user['username']}</div>
+<div>{$user['role']}</div>
+<div>{$user['isactive']}</div>
 ";
   }
 ?>
@@ -226,9 +226,9 @@ Initialize();
 <?php
 
 foreach($patterns as $pattern) {
-  print "<div>${pattern['id']}</div>
-<div>${pattern['title']}</div>
-<div>${pattern['pltitle']}</div>
+  print "<div>{$pattern['id']}</div>
+<div>{$pattern['title']}</div>
+<div>{$pattern['pltitle']}</div>
 ";
 }
 

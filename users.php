@@ -77,7 +77,7 @@ function Manage($uid) {
       else
         $mbrchecked = ' checked';
     }    
-    $p .= "<div style=\"font-weight: bold\">${team['name']}</div>
+    $p .= "<div style=\"font-weight: bold\">{$team['name']}</div>
 <div><input type=\"checkbox\" name=\"$tid\" value=\"1\"$mbrchecked>member</div>
 <div><input type=\"checkbox\" name=\"m$tid\" value=\"1\"$mgrchecked>manager</div>
 ";
@@ -101,10 +101,10 @@ leave the user as they were.</p>
 
   print "<form action=\"users.php\" method=\"POST\" class=\"gf\">
 <div class=\"fieldlabel\">UID:</div>
-<div><input type=\"hidden\" name=\"uid\" value=\"${user['uid']}\">${user['uid']}</div>
-<div class=\"fieldlabel\">Email:</div> <div><input type=\"text\" name=\"email\" value=\"${user['email']}\"></div>
-<div class=\"fieldlabel\">Fullname:</div> <div><input type=\"text\" name=\"fullname\" value=\"${user['fullname']}\"></div>
-<div class=\"fieldlabel\">Username:</div> <div><input type=\"text\" name=\"username\" value=\"${user['username']}\"></div>
+<div><input type=\"hidden\" name=\"uid\" value=\"{$user['uid']}\">{$user['uid']}</div>
+<div class=\"fieldlabel\">Email:</div> <div><input type=\"text\" name=\"email\" value=\"{$user['email']}\"></div>
+<div class=\"fieldlabel\">Fullname:</div> <div><input type=\"text\" name=\"fullname\" value=\"{$user['fullname']}\"></div>
+<div class=\"fieldlabel\">Username:</div> <div><input type=\"text\" name=\"username\" value=\"{$user['username']}\"></div>
 <div class=\"fieldlabel\">Active:</div> <div>$isactive</div>
 <div class=\"fieldlabel\">$role:</div> <div>$roles</div>
 $p
@@ -148,7 +148,7 @@ function AbsorbManage($uid) {
 
     $rval = $auth->deleteUserForced($uid);
     if($rval['error'])
-      error_log("Deleting user $uid failed: ${rval['message']}");
+      error_log("Deleting user $uid failed: {$rval['message']}");
     else
       print "<p>Deleted user $uid</p>\n";
       
@@ -167,7 +167,7 @@ function AbsorbManage($uid) {
 
     if(count($update)) {
       $rval = $auth->updateUser($uid, $update);
-      print "<p>${rval['message']}</p>\n";
+      print "<p>{$rval['message']}</p>\n";
     } else {
       print "<p class=\"alert\">No changes to user record.</p>\n";
     }
@@ -283,10 +283,10 @@ function AbsorbCreate() {
                           '',
                           $autoactivate);
   if($rval['error']) {
-    print "<p>Error: ${rval['message']}</p>\n";
+    print "<p>Error: {$rval['message']}</p>\n";
     exit();
   }
-  print "<p class=\"error\">${rval['message']}</p>
+  print "<p class=\"error\">{$rval['message']}</p>
 ";
 } /* end AbsorbCreate() */
 
@@ -381,11 +381,11 @@ xit;
   foreach($users as $user) {
     $user['username'] = strtolower($user['username']);
     if(IsUsernameTaken($user['username'])) {
-      print "<p class=\"alert\">We already have a user with the username <tt>${user['username']}</tt> and we cannot have two; rejecting.</p>\n";
+      print "<p class=\"alert\">We already have a user with the username <tt>{$user['username']}</tt> and we cannot have two; rejecting.</p>\n";
       continue;
     }
     if(! IsUsernameValid($user['username'])) {
-      print "<p class=\"alert\"><tt>${user['username']}</tt> isn't a valid username. Pick another.</p>\n";
+      print "<p class=\"alert\"><tt>{$user['username']}</tt> isn't a valid username. Pick another.</p>\n";
       continue;
     }
     $rval = $auth->register($user['email'],
@@ -396,7 +396,7 @@ xit;
 	      '',
 	      $user['active'] ? false : true);
     if($rval['error']) {
-      print "<p class=\"alert\">Error: <span style=\"font-style: oblique\">${rval['message']}</span> for username <tt>${user['username']}</tt>.</p>\n";
+      print "<p class=\"alert\">Error: <span style=\"font-style: oblique\">{$rval['message']}</span> for username <tt>{$user['username']}</tt>.</p>\n";
     } else
       $count++;
     }
@@ -587,15 +587,15 @@ if(isset($uid)) {
       : $class;
       
     print "<div class=\"$superclass\" style=\"text-align: center\">
- <a href=\"?uid=${user['uid']}\">${user['uid']}</a>
+ <a href=\"?uid={$user['uid']}\">{$user['uid']}</a>
 </div>
-<div class=\"$class\">${user['email']}</div>
-<div class=\"$class\">${user['fullname']}</div>
-<div class=\"$class\">${user['username']}</div>
+<div class=\"$class\">{$user['email']}</div>
+<div class=\"$class\">{$user['fullname']}</div>
+<div class=\"$class\">{$user['username']}</div>
 <div class=\"$class\" style=\"text-align: center\">" . ($user['isactive'] ? 'yes' : 'no') . "</div>
 ";
     if($project['id']) {
-      print "<div class=\"$class\">${user['role']}</div>
+      print "<div class=\"$class\">{$user['role']}</div>
      <div class=\"$class\" style=\"text-align: center\">$votes</div>
 ";
 

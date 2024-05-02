@@ -210,8 +210,8 @@ function prform($prid = null) {
     
     $action = 'predit';
     $slabel = 'Absorb edits';
-    $title = "Editing Project <span style=\"font-style: oblique\">${pr['title']}</span>";
-    $prid = "<input type=\"hidden\" name=\"prid\" value=\"${pr['id']}\">
+    $title = "Editing Project <span style=\"font-style: oblique\">{$pr['title']}</span>";
+    $prid = "<input type=\"hidden\" name=\"prid\" value=\"{$pr['id']}\">
 <input type=\"hidden\" name=\"action\" value=\"edit\">
 ";
   } else {
@@ -229,7 +229,7 @@ function prform($prid = null) {
 under <tt>" . ROOTDIR . "</tt>. That needs to be created manually as a
 symbolic link before the project will be implemented.</p>
 
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\"enctype=\"multipart/form-data\" >
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\"enctype=\"multipart/form-data\" >
 $prid
 <input type=\"hidden\" name=\"action\" value=\"$action\">
 ";
@@ -237,17 +237,17 @@ $prid
   foreach($fields as $field) {
   
     $value = $pr[$field['name']];
-    print "<div class=\"fieldlabel\"><label for=\"${field['name']}\">${field['label']}:</label></div>\n";
+    print "<div class=\"fieldlabel\"><label for=\"{$field['name']}\">{$field['label']}:</label></div>\n";
     
     if($field['type'] == 'text') {
-      print "<div><input type=\"text\" name=\"${field['name']}\" size=\"${field['size']}\" maxlength=\"${field['maxlength']}\" value=\"$value\"></div>\n";
+      print "<div><input type=\"text\" name=\"{$field['name']}\" size=\"{$field['size']}\" maxlength=\"{$field['maxlength']}\" value=\"$value\"></div>\n";
     } elseif($field['type'] == 'textarea') {
-      print "<div><textarea name=\"${field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
+      print "<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
     } elseif($field['type'] == 'checkbox') {
       $checked = $value ? ' checked="checked"' : '';
-      print "<div><input type=\"checkbox\" value=\"1\" name=\"${field['name']}\"$checked></div>\n";
+      print "<div><input type=\"checkbox\" value=\"1\" name=\"{$field['name']}\"$checked></div>\n";
     } elseif($field['type'] == 'image') {
-      print "<div><input type=\"file\" name=\"${field['name']}\"></div>\n";
+      print "<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
     } elseif($field['type'] == 'popup_menu') {
       print $field['callback']();
     }
@@ -282,7 +282,7 @@ function AbsorbCreate() {
   }
 
   $id = InsertProject($row);
-  print "<p class=\"alert\">Created a new project <tt>${row['title']}</tt> with ID <tt>$id</tt>.</p>\n";
+  print "<p class=\"alert\">Created a new project <tt>{$row['title']}</tt> with ID <tt>$id</tt>.</p>\n";
   return true;
   
 } /* end AbsorbCreate() */
@@ -306,9 +306,9 @@ function AbsorbEdit($prid) {
   }
  
   if(UpdateProject($update))
-    print "<p class=\"alert\">Updated project <tt>${update['title']} (ID ${update['id']})</tt>.</p>\n";
+    print "<p class=\"alert\">Updated project <tt>{$update['title']} (ID {$update['id']})</tt>.</p>\n";
   else
-    print "<p class=\"alert\">No updates to project <tt>${update['title']}</tt>.</p>\n";
+    print "<p class=\"alert\">No updates to project <tt>{$update['title']}</tt>.</p>\n";
   return true;
   
 } /* end AbsorbEdit() */
@@ -331,7 +331,7 @@ function ProjTeams($prid) {
   }
   $pr = GetProject($prid);
   $projteams = GetProjTeams($prid);
-  $title = "Editing <span style=\"font-style: oblique\">${pr['title']}</span> Teams";
+  $title = "Editing <span style=\"font-style: oblique\">{$pr['title']}</span> Teams";
   
   print "<h2>$title</h2>
 
@@ -342,7 +342,7 @@ are shown with boxes already checked; uncheck those boxes to remove
 those teams from participation.
 </p>
 
-<form action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\" method=\"POST\">
+<form action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\" method=\"POST\">
 <input type=\"hidden\" name=\"prid\" value=\"$prid\">
 <input type=\"hidden\" name=\"action\" value=\"predit\">
 ";
@@ -350,7 +350,7 @@ those teams from participation.
   foreach($teams as $id => $team) {
     $ismember = array_key_exists($id, $projteams);
     $checked = $ismember ? ' checked="checked"' : '';
-    print "<div style=\"text-align: right; font-weight: bold\">${team['name']}</div>
+    print "<div style=\"text-align: right; font-weight: bold\">{$team['name']}</div>
 <div><input type=\"checkbox\" name=\"$id\"$checked></div>
 ";
   }
@@ -416,9 +416,9 @@ function ProjManagers($id) {
   foreach($projmanagers as $projmanager)
     $pms[$projmanager['userid']] = 1;
 
-  print "<h2>Managers for Project <tt>${project['name']}</tt></h2>
+  print "<h2>Managers for Project <tt>{$project['name']}</tt></h2>
 
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\" enctype=\"multipart/form-data\" class=\"mem\">
+<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" enctype=\"multipart/form-data\" class=\"mem\">
 <input type=\"hidden\" name=\"action\" value=\"predit\">
 <input type=\"hidden\" name=\"prid\" value=\"$id\">
 <div class=\"memh\">Name</div>
@@ -429,10 +429,10 @@ function ProjManagers($id) {
 
   foreach($users as $user) {
     $checked = (array_key_exists($user['uid'], $pms)) ? ' checked' : '';
-    print "<div>${user['fullname']}</div>
-<div>${user['username']}</div>
-<div>${user['email']}</div>
-<div class=\"memc\"><input type=\"checkbox\" name=\"${user['uid']}\" value=\"1\" $checked></div>
+    print "<div>{$user['fullname']}</div>
+<div>{$user['username']}</div>
+<div>{$user['email']}</div>
+<div class=\"memc\"><input type=\"checkbox\" name=\"{$user['uid']}\" value=\"1\" $checked></div>
 ";
   }
 
@@ -494,7 +494,7 @@ function AbsorbManagers($id) {
 
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
-  header("Location: ${_SERVER['SCRIPT_NAME']}\n");
+  header("Location: {$_SERVER['SCRIPT_NAME']}\n");
 }
 ?>
 <!doctype html>
@@ -571,11 +571,11 @@ if($rv) {
 	  || $user['role'] == 'super';
         $tag = $project['tag'] . ($project['active'] ? '' : '*');
         $disabled = $enabled ? '' : ' disabled';
-        $options .= "<option value=\"${project['id']}\"$disabled>$tag</option>\n";
+        $options .= "<option value=\"{$project['id']}\"$disabled>$tag</option>\n";
       }
     }
     $options .= "</select>\n";
-    $form = "<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+    $form = "<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
   <input type=\"hidden\" name=\"action\" value=\"predit\">
    $options
   <input type=\"submit\" name=\"submit\" value=\"Edit this project\">

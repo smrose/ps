@@ -97,8 +97,8 @@ function teamform($id = null) {
     
     $action = 'edit';
     $slabel = 'Absorb edits';
-    $title = "Editing Team <span style=\"color: #666\">${team['name']}</span>";
-    $id = "<input type=\"hidden\" name=\"id\" value=\"${team['id']}\">
+    $title = "Editing Team <span style=\"color: #666\">{$team['name']}</span>";
+    $id = "<input type=\"hidden\" name=\"id\" value=\"{$team['id']}\">
 <input type=\"hidden\" name=\"action\" value=\"edit\">
 ";
   } else {
@@ -111,7 +111,7 @@ function teamform($id = null) {
   }
   print "<h2>$title</h2>
 
-<form method=\"post\" action=\"${_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\" >
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\" >
 $id
 <input type=\"hidden\" name=\"action\" value=\"$action\">
 ";
@@ -119,17 +119,17 @@ $id
   foreach($fields as $field) {
   
     $value = $team[$field['name']];
-    print "<div class=\"fieldlabel\"><label for=\"${field['name']}\">${field['label']}:</label></div>\n";
+    print "<div class=\"fieldlabel\"><label for=\"{$field['name']}\">{$field['label']}:</label></div>\n";
     
     if($field['type'] == 'text') {
-      print "<div><input type=\"text\" name=\"${field['name']}\" size=\"${field['size']}\" maxlength=\"${field['maxlength']}\" value=\"$value\"></div>\n";
+      print "<div><input type=\"text\" name=\"{$field['name']}\" size=\"{$field['size']}\" maxlength=\"{$field['maxlength']}\" value=\"$value\"></div>\n";
     } elseif($field['type'] == 'textarea') {
-      print "<div><textarea name=\"${field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
+      print "<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
     } elseif($field['type'] == 'checkbox') {
       $checked = $value ? ' checked="checked"' : '';
-      print "<div><input type=\"checkbox\" value=\"1\" name=\"${field['name']}\"$checked></div>\n";
+      print "<div><input type=\"checkbox\" value=\"1\" name=\"{$field['name']}\"$checked></div>\n";
     } elseif($field['type'] == 'image') {
-      print "<div><input type=\"file\" name=\"${field['name']}\"></div>\n";
+      print "<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
     } elseif($field['type'] == 'popup_menu') {
       print $field['callback']();
     }
@@ -164,7 +164,7 @@ function AbsorbCreate() {
   }
 
   $id = InsertTeam($row);
-  print "<p class=\"alert\">Created a new team <tt>${row['name']}</tt> with ID <tt>$id</tt>.</p>\n";
+  print "<p class=\"alert\">Created a new team <tt>{$row['name']}</tt> with ID <tt>$id</tt>.</p>\n";
   return true;
   
 } /* end AbsorbCreate() */
@@ -189,9 +189,9 @@ function AbsorbEdit() {
   $update['id'] = $_POST['id'];    
  
   if(UpdateTeam($update))
-    print "<p class=\"alrt\">Updated team <tt>${update['name']} (ID ${update['id']})</tt>.</p>\n";
+    print "<p class=\"alrt\">Updated team <tt>{$update['name']} (ID {$update['id']})</tt>.</p>\n";
   else
-    print "<p class=\"alert\">No updates to team <tt>${update['name']}</tt>.</p>\n";
+    print "<p class=\"alert\">No updates to team <tt>{$update['name']}</tt>.</p>\n";
   return true;
   
 } /* end AbsorbEdit() */
@@ -211,9 +211,9 @@ function Members($id) {
   $members = GetTeamMembers($id);
   $users = GetUsers();
   
-  print "<h2>Membership Management for Team <tt>${team['name']}</tt></h2>
+  print "<h2>Membership Management for Team <tt>{$team['name']}</tt></h2>
   
-<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\" enctype=\"multipart/form-data\" class=\"mem\">
+<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" enctype=\"multipart/form-data\" class=\"mem\">
 <input type=\"hidden\" name=\"action\" value=\"edit\">
 <input type=\"hidden\" name=\"id\" value=\"$id\">
 <div class=\"memh\">Name</div>
@@ -231,11 +231,11 @@ function Members($id) {
     } else {
       $checked = $mchecked = '';
     }
-    print "<div>${user['fullname']}</div>
-<div>${user['username']}</div>
-<div>${user['email']}</div>
-<div class=\"memc\"><input type=\"checkbox\" value=\"1\" name=\"${user['uid']}\"$checked></div>
-<div class=\"memc\"><input type=\"checkbox\" value=\"1\" name=\"m${user['uid']}\"$mchecked></div>
+    print "<div>{$user['fullname']}</div>
+<div>{$user['username']}</div>
+<div>{$user['email']}</div>
+<div class=\"memc\"><input type=\"checkbox\" value=\"1\" name=\"{$user['uid']}\"$checked></div>
+<div class=\"memc\"><input type=\"checkbox\" value=\"1\" name=\"m{$user['uid']}\"$mchecked></div>
 ";
   }
   print "<div class=\"mems\">
@@ -303,7 +303,7 @@ function AbsorbMember($id) {
 
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
-  header("Location: ${_SERVER['SCRIPT_NAME']}\n");
+  header("Location: {$_SERVER['SCRIPT_NAME']}\n");
 }
 ?>
 <!doctype html>
@@ -397,7 +397,7 @@ if($rv) {
   $teams = GetTeams();
 
   if(count($teams)) {
-    $form = "<form method=\"POST\" action=\"${_SERVER['SCRIPT_NAME']}\">
+    $form = "<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
 <select name=\"id\">
 <option value=\"-1\" selected>Choose team</option>
 ";
@@ -406,7 +406,7 @@ if($rv) {
         continue; // a team not managed by this user
       if($team['id'])
         $name = $team['name'];
-      $form .= "<option value=\"${team['id']}\">$name</option>\n";
+      $form .= "<option value=\"{$team['id']}\">$name</option>\n";
     }
     $form .= "</select>
 <input type=\"submit\" name=\"submit\" value=\"Edit this team\">

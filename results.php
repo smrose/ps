@@ -183,14 +183,14 @@ foreach($pusers as $puser) {
   }
 
   $contact = (isset($ass) && $ass['contact'] == 'y')
-   ? "<a href=\"mailto:${puser['email']}\" title=\"compose mail to ${puser['fullname']}\">yes</a>" : 'no';
+   ? "<a href=\"mailto:{$puser['email']}\" title=\"compose mail to {$puser['fullname']}\">yes</a>" : 'no';
    
   if(isset($ass['acomment']) && strlen($ass['acomment'])) {
     $comment = 'Show';
     $cclass = ' class="commenter"';
-    $ctrid = " id=\"controller${puser['userid']}\"";
-    $cdiv = "<div class=\"mumps\" id=\"user${puser['userid']}\">
-${ass['acomment']}
+    $ctrid = " id=\"controller{$puser['userid']}\"";
+    $cdiv = "<div class=\"mumps\" id=\"user{$puser['userid']}\">
+{$ass['acomment']}
 </div>\n";
   } else {
     $cclass = '';
@@ -198,11 +198,11 @@ ${ass['acomment']}
     $ctrid = '';
     $cdiv = '';
   }
-  print "<div class=\"$class\">${puser['email']}</div>
- <div class=\"$class\">${puser['fullname']}</div>
- <div class=\"$class\">${puser['username']}</div>
+  print "<div class=\"$class\">{$puser['email']}</div>
+ <div class=\"$class\">{$puser['fullname']}</div>
+ <div class=\"$class\">{$puser['username']}</div>
  <div class=\"$class\" style=\"text-align: center\">" . ($puser['isactive'] ? 'yes' : 'no') . "</div>
- <div class=\"$class\">${puser['team']}</div>
+ <div class=\"$class\">{$puser['team']}</div>
  <div class=\"$class\" style=\"text-align: center\">$votes</div>
  <div class=\"$class\" style=\"text-align: center\">$contact</div>
  <div$cclass class=\"$class\"$ctrid>$comment</div>
@@ -268,10 +268,10 @@ foreach($patterns as &$pattern) {
       $class = isset($c['assessment'])
         ? $c['assessment'] : 'neutral';
       if($Anonymize) {
-        $Commentary .= "<span class=\"$class\">${c['commentary']}</span>\n";
+        $Commentary .= "<span class=\"$class\">{$c['commentary']}</span>\n";
       } else {
         $puser = $pusers[$c['userid']];
-        $Commentary .= "<span class=\"$class\" title=\"${puser['email']} ${puser['username']}\"><i>${puser['fullname']}</i> ${c['commentary']}</span>\n";
+        $Commentary .= "<span class=\"$class\" title=\"{$puser['email']} {$puser['username']}\"><i>{$puser['fullname']}</i> {$c['commentary']}</span>\n";
       }
     }
   } else {
@@ -282,14 +282,14 @@ foreach($patterns as &$pattern) {
     $cclass .= ' setoff';
   $pattern['vs'] = $vs;
   $lines = vmeter($in, $out, $counts['voter']);
-  print "<div$setoff>${pattern['ptitle']}</div>
-<div$setoff>${pattern['pltitle']}</div>
+  print "<div$setoff>{$pattern['ptitle']}</div>
+<div$setoff>{$pattern['pltitle']}</div>
 <div style=\"text-align: center\"$setoff>$vs</div>
 <div$setoff><svg class=\"epstein\">$lines</div>
 ";
   if($tclass == 'polio') {
-    print "<div class=\"$cclass\" id=\"c${pattern['pid']}\"$setoff>$commentary</div>
-<div class=\"influenza\" id=\"i${pattern['pid']}\">$Commentary</div>
+    print "<div class=\"$cclass\" id=\"c{$pattern['pid']}\"$setoff>$commentary</div>
+<div class=\"influenza\" id=\"i{$pattern['pid']}\">$Commentary</div>
 ";
   }
   $ovs = $vs;
@@ -302,13 +302,13 @@ if(!$Anonymize) {
   print "<h2 id=\"pcomments\">Pattern Comments</h2>\n\n";
 
   foreach($patterns as $pattern) {
-    print "<h3>${pattern['ptitle']} (${pattern['pltitle']}) ${pattern['vs']}</h3>
+    print "<h3>{$pattern['ptitle']} ({$pattern['pltitle']}) {$pattern['vs']}</h3>
 ";
     if(count($pattern['commentary'])) {
       foreach($pattern['commentary'] as $c) {
         $puser = $pusers[$c['userid']];
         $vote = isset($c['assessment']) ? $c['assessment'] : 'unranked';
-        print "<p><span style=\"text-decoration: underline\">${puser['fullname']} ($vote)</span>: ${c['commentary']}</p>\n";
+        print "<p><span style=\"text-decoration: underline\">{$puser['fullname']} ($vote)</span>: {$c['commentary']}</p>\n";
       }
     } else {
       print "<p>No comments.</p>\n";
@@ -324,7 +324,7 @@ if(!$Anonymize) {
        'projid' => $projid
       ]);
       if(isset($ass) && isset($ass['acomment']) && strlen($ass['acomment'])) {
-	print "<p><span style=\"text-decoration: underline\">${puser['fullname']}</span>: ${ass['acomment']}</p>\n";
+	print "<p><span style=\"text-decoration: underline\">{$puser['fullname']}</span>: {$ass['acomment']}</p>\n";
 	$sccount++;
       }
     }

@@ -109,7 +109,7 @@ if(isset($_POST['realm'])) {
       if($setting['value'] != $nvalue) {
 	if($config->__set($field, $nvalue)) {
 	  array_push($report,
-		     "Updated <tt>'$field'</tt> from <tt>'${setting['value']}'</tt> to <tt>'$nvalue'</tt><br>\n");
+		     "Updated <tt>'$field'</tt> from <tt>'{$setting['value']}'</tt> to <tt>'$nvalue'</tt><br>\n");
 	} else {
 	  array_push($report,
 		     "Update of <tt>'$setting'</tt> from <tt>'$value'</tt> to <tt>'$nvalue'</tt> failed.<br>\n");
@@ -161,9 +161,9 @@ if(isset($_POST['realm'])) {
     }
     if(UpdateProject($update)) {
       $id = isset($update['id']) ? $update['id'] : 0;
-      print "<p class=\"alert\">Updated project <tt>${update['title']} (ID ${update['id']})</tt>.</p>\n";
+      print "<p class=\"alert\">Updated project <tt>{$update['title']} (ID {$update['id']})</tt>.</p>\n";
     } else
-      print "<p class=\"alert\">No updates to project <tt>${update['title']}</tt>.</p>\n";
+      print "<p class=\"alert\">No updates to project <tt>{$update['title']}</tt>.</p>\n";
   }
 } # end case of submitted form
 
@@ -196,7 +196,7 @@ the form.</p>
       ? $setting['descript'] : 'no description';
     print "
  <div class=\"fieldlabel\" title=\"$descript\">$field</div>
- <div><input size=\"100\" type=\"text\" name=\"$field\" value=\"${setting['value']}\"></div>
+ <div><input size=\"100\" type=\"text\" name=\"$field\" value=\"{$setting['value']}\"></div>
 ";
   }
 ?>
@@ -301,9 +301,9 @@ project.</p>
 <?php
   $acs = GetAppConfig();
   foreach($acs as $ac) {
-    print "<div class=\"fieldlabel\" title=\"${ac['descr']}\">${ac['tag']}</div>
+    print "<div class=\"fieldlabel\" title=\"{$ac['descr']}\">{$ac['tag']}</div>
 <div>
-  <textarea rows=\"4\" cols=\"80\" name=\"${ac['tag']}\">${ac['value']}</textarea>
+  <textarea rows=\"4\" cols=\"80\" name=\"{$ac['tag']}\">{$ac['value']}</textarea>
 </div>
 ";
   }
