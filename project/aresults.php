@@ -44,6 +44,7 @@ function vmeter($in, $out, $total) {
 
 DataStoreConnect();
 Initialize();
+$labelString = implode(explode(':', $project['labels']), ' / ');
 
 /* Redirect if unauthenticated or unauthorized. */
 
@@ -146,7 +147,7 @@ if(!$Anonymize) {
 <div class="covid">Username</div>
 <div class="covid">Active</div>
 <div class="covid">Teams</div>
-<div class="covid">Votes (in/out)</div>
+<div class="covid">Votes <?=$labelString?></div>
 <div class="covid">Contact</div>
 <div class="covid">Comment</div>
 <?php
