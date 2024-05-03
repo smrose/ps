@@ -746,8 +746,7 @@ if(!$SuppressMain) {
 <p><?=$instructions?></p>
 </div>
 <?php
-  if(isset($user))
-    $participant = IsParticipant();
+  $participant = isset($user) ? IsParticipant() : false;
     
   $querystring = 'assess=1';
   $querystring .= (isset($masq) && $masq) ? "&masq=$masq" : '';
