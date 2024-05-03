@@ -2045,7 +2045,7 @@ function IsParticipant() {
     return(true);
   $pts = GetProjTeams($project['id']);
   foreach($pts as $pt) {
-    $tms = GetTeamMembers($pt['id']);
+    $tms = GetTeamMembers($pt['teamid']);
     if(array_key_exists($user['id'], $tms))
       return(true);
   }
