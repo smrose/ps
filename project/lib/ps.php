@@ -1687,7 +1687,7 @@ function inlove($a, $b) {
  *
  *  Returns a 2-element array with:
  *
- *   a 'byuser' array keyed on userid to an array keyed on {in, out}
+ *   a 'byuser' array keyed on userid to an array keyed on assessment values
  *   with a count of the 'passessment' elements for that user and
  *   vote.
  *
@@ -1696,8 +1696,8 @@ function inlove($a, $b) {
  *           'pid'  pattern.id
  *        'ptitle'  pattern title
  *       'pltitle'  pattern language title
- *        'assess'  2-element array with 'in' and 'out' counts
- *        'unattr'  2-element array with 'unattr_in' and 'unattr_out' values
+ *        'assess'  n-element array with assessment value counts
+ *        'unattr'  n-element array with 'unattr_in' and 'unattr_out' values
  *    'commentary'  array of 3-element arrays with 'userid', 'commentary', and
  *                   'assess' fields
  */
@@ -1706,6 +1706,7 @@ function Stats() {
   global $pdo, $project;
 
   $projid = $project['id'];
+  $acount = count(explode(':', $project['labels']));
   
   # User statistics - how many assessments of each value for each user for
   # this project.
@@ -1743,7 +1744,8 @@ function Stats() {
   foreach($patterns as &$pattern) {
     $rv = $sth->execute(['pid' => $pattern['pid']]);
     $ass = $sth->fetchAll(PDO::FETCH_ASSOC);
-    $pattern['assess'] = ['in' => 0, 'out' => 0];
+    for($i = 0; $i < $acount; $i++)
+      $pattern['assess'][$i] = 0;
     $pattern['commentary'] = [];
     
     foreach($ass as $as) {

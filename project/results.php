@@ -8,6 +8,10 @@
 #
 #  Pattern assessment results page.
 #
+# FUNCTIONS
+#
+#  vmeter()  vote meter
+#
 # NOTES
 #
 #  When called as 'aresults.php', show anonymized results to any user,
@@ -25,25 +29,30 @@ require "lib/ps.php";
 /* vmeter()
  *
  *  Vote meter function returns two SVG lines - a green one anchored on
- *  the left with a length proportional to the 'in' votes and a red one
- *  anchored on the right proportional to the 'out' votes. The total is
- *  the number of active voters.
+ *  the left with a length proportional to the 1 votes and a red one
+ *  anchored on the right proportional to the 0 votes. The total is
+ *  the number of active voters. NB: there is no support for assessment
+ *  spaces with more than two values.
  */
  
-function vmeter($in, $out, $total) {
+function vmeter($v1, $v0, $total) {
   if(!$total)
     return null;
-  $inprop = $in/$total * 100;
-  $outprop = $out/$total * 100;
-  $inline = '<line x1="0%" y1="50%" y2="50%" stroke-width="100%" stroke="green" x2="' . $inprop . '%"/>';
-  $outline = '<line x2="100%" y1="50%" y2="50%" stroke-width="100%" stroke="red" x1="' . (100 - $outprop) . '%"/>';
-  return("$inline\n$outline\n");
+  $prop1 = $v1/$total * 100;
+  $prop0 = $v0/$total * 100;
+  $line1 = '<line x1="0%" y1="50%" y2="50%" stroke-width="100%" stroke="green" x2="' . $prop1 . '%"/>';
+  $line0 = '<line x2="100%" y1="50%" y2="50%" stroke-width="100%" stroke="red" x1="' . (100 - $prop0) . '%"/>';
+  return("$line1\n$line0\n");
   
 } /* end vmeter() */
 
 
+/* Main program. */
+
 DataStoreConnect();
 Initialize();
+$labels = array_merge([$project['nulllabel']],
+                      explode(':', $project['labels']));
 $labelString = implode(' / ', explode(':', $project['labels']));
 
 /* Redirect if unauthenticated or unauthorized. */
@@ -101,17 +110,19 @@ $counts = [
 
 /* Compute $counts here; we need that data for both anonymized and
  * attributed screens. */
+ 
+$acount = count(explode(':', $project['labels']));
 
 foreach($pusers as $puser) {
   if($puser['isactive']) {
     $counts['active']++;
     if(isset($assessments[$puser['userid']])) {
       $stat = $assessments[$puser['userid']];
-      $in = isset($stat['in']) ? $stat['in']['count'] : '0';
-      $out = isset($stat['out']) ? $stat['out']['count'] : '0';
-      $assessed = $in || $out;
-    } else {
       $assessed = false;
+      for($i = 0; $i < $acount; $i++) {
+        if($stat[$i]['count'])
+	  $assessed = true;
+      }
     }
     if(isset($stat) && $assessed)
       $counts['voter']++;
@@ -159,16 +170,20 @@ foreach($pusers as $puser) {
 
     if(isset($assessments[$puser['userid']])) {
       $stat = $assessments[$puser['userid']];
-      $in = isset($stat['in']) ? $stat['in']['count'] : '0';
-      $out = isset($stat['out']) ? $stat['out']['count'] : '0';
-      $assessed = $in || $out;
-    } else {
       $assessed = false;
+      for($i = 0; $i < $acount; $i++)
+        if($stat[$i]['count'])
+	  $assessed = true;
     }
 
     if(isset($stat) && $assessed) {
       $class = 'voter';
-      $votes = "$in/$out";
+      $votes = '';
+      for($i = 0; $i < $acount; $i++) {
+        if(strlen($votes))
+	  $votes .= ' / ';
+	$votes .= $stat[$i]['count'];
+      }
       $ass = GetAssessment([
        'userid' => $puser['userid'],
        'projid' => $projid
@@ -240,7 +255,7 @@ $counts['voter'] += $project['unattr_voter'];
 <div class="<?=$tclass?>">
  <div class="covid" style="background-color: #ffc">Pattern Title</div>
  <div class="covid" style="background-color: #ffc">Origin</div>
- <div class="covid" style="background-color: #ffc">Votes (in/out)</div>
+ <div class="covid" style="background-color: #ffc">Votes (<?=$labelString?>)</div>
  <div class="covid" style="background-color: #ffc">Meter</div>
 <?php
 if(!$Anonymize) {
@@ -252,9 +267,13 @@ if(!$Anonymize) {
 $patterns = $results['bypid'];
 
 foreach($patterns as &$pattern) {
-  $in = $pattern['assess']['in'] + $pattern['unattr_in'];
-  $out = $pattern['assess']['out'] + $pattern['unattr_out']; 
-  $vs = $in . '/' . $out;
+  $vs = '';
+  for($i = 0; $i < $acount; $i++) {
+    if(strlen($vs))
+      $vs .= ' / ';
+    $vs .= $pattern['assess'][$i];
+  }
+
   if(isset($ovs) && $vs != $ovs)
     $setoff = ' class="setoff"';
   else
@@ -282,7 +301,7 @@ foreach($patterns as &$pattern) {
   if(strlen($setoff))
     $cclass .= ' setoff';
   $pattern['vs'] = $vs;
-  $lines = vmeter($in, $out, $counts['voter']);
+  $lines = vmeter($pattern['assess'][1], $pattern['assess'][0], $counts['voter']);
   print "<div$setoff>{$pattern['ptitle']}</div>
 <div$setoff>{$pattern['pltitle']}</div>
 <div style=\"text-align: center\"$setoff>$vs</div>
@@ -294,6 +313,7 @@ foreach($patterns as &$pattern) {
 ";
   }
   $ovs = $vs;
+  
 } /* end loop on assessed patterns */
 
 print "</div>\n\n";

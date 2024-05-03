@@ -39,14 +39,23 @@ require "lib/ps.php";
 function obsess() {
   global $user, $project;
 
+  # build an array of labels for the assessments
+  #  0 => project.nulllable
+  #  [1..n] => explode(project.labels)
+
+  $labels = array_merge([$project['nulllabel']],
+                        explode(':', $project['labels']));
+			
   // Fetch the patterns used in this project.
 
   $patterns = GetProjPatterns($project['id'], true);
-  $counts = [
-    'patterns' => count($patterns),
-    'in' => 0,
-    'out' => 0
-  ];
+
+  # counts of patterns and each assessment value
+
+  $counts = ['patterns' => count($patterns)];
+  foreach($labels as $lid => $label) {
+    $counts[$lid] = 0;
+  }
 
   // Fetch the existing 'assessment' record, if any.
 
@@ -85,12 +94,13 @@ function obsess() {
       // look at the radio buttons
 
       $newstate = isset($_POST[$pid]) ? $_POST[$pid] : '';
-      if($newstate == 'neutral')
+      if($newstate == 0)
           $newstate = null;
+      else
+         $newstate--;
       $oldstate = $passessment['assessment'];
-      if($newstate != $oldstate) {
+      if($newstate != $oldstate)
         $updates[$paid]['assessment'] = $newstate;
-      }
 
       if(isset($updates[$paid])) {
         $updates[$paid]['id'] = $paid;
@@ -241,6 +251,13 @@ decisions on ' . ($counts['in'] + $counts['out']) . ' of the ' .
 function assess() {
   global $user, $project, $masq;
 
+  # build an array of labels for the assessments
+  #  0 => project.nulllable
+  #  [1..n] => explode(project.labels)
+
+  $labels = array_merge([$project['nulllabel']],
+                        explode(':', $project['labels']));
+
   $participant = IsParticipant();
   
   // Fetch planguages implicated in this project.
@@ -309,27 +326,28 @@ $welcome
 		      ? $assessment['passessments'][$pid] : null;
         $commentary = isset($passessment) ? $passessment['commentary'] : '';
 
-	# If the 'passessment' record exists, the value of the 'assessment'
-	# field is either null, 'in', or 'out'. If it doesn't exist, it's
-	# logically null. Set radio to the value of 'assessment' or to
-	# 'neutral' if null.
+	# If the 'passessment' record exists, the value of the
+	# 'assessment' field is either null, or an integer. If it
+	# doesn't exist, it's logically null. Set radio to the due
+	# label for this passessment.
 
 	$radio = (isset($passessment) && isset($passessment['assessment']))
-	  ? $passessment['assessment'] : 'neutral';
+	  ? $labels[$passessment['assessment']+1] : $labels[0];
 
-	# Build the radio buttons here.
+	# Build the radio buttons in $radios here.
 
 	$radios = '';
-	foreach(['neutral', 'in', 'out'] as $state) {
-	  $label = ($state == 'neutral') ? 'neutral / not assessed' : $state;
+	foreach($labels as $lid => $state) {
 	  if($radio == $state)
 	    $checked = ' checked';
 	  else
 	    $checked = '';
-	  $id = $pid . '_' . $state;
-	  $radios .= strlen($radios) ? "<br>\n" : '';
-	  $radios .= "<label for=\"$id\"><input type=\"radio\" id=\"$id\" name=\"$pid\" value=\"$state\"$checked>$label</label>\n";
-	}
+	  $id = $pid . '_' . $lid;
+	  $radios .= strlen($radios) ? "<br>\n    " : '';
+	  $radios .= "<label for=\"$id\"><input type=\"radio\" id=\"$id\" name=\"$pid\" value=\"$lid\"$checked>$state</label>";
+	  
+	} // end loop on radio buttons
+	
 	print "
   <div class=\"pattern $radio\">
    <div class=\"ptitle\">{$pattern['title']}</div>
@@ -575,6 +593,7 @@ function inwork($id) {
 
 DataStoreConnect();
 Initialize();
+
 if(! isset($project) || !is_array($project)) {
 
   // can't find a project record for this path.
