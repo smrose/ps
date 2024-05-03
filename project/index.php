@@ -456,14 +456,22 @@ function consideration() {
   $results = Stats();
   $patterns = $results['bypid'];
   $ovs = '';
+
+  $labels = explode(':', $project['labels']);
   
   foreach($patterns as &$pattern) {
 
-    $vs = '<div style="background-color: #fcc; padding: 3px">' .
-     $pattern['assess']['in'] .
-     ' ins / '
-     . $pattern['assess']['out']
-     . ' outs</div>';
+    print "<h3 style=\"background-color: #eee; width: max-content\" title=\"{$pattern['pltitle']}\">{$pattern['ptitle']}</h3>
+";
+
+    $assstring = '';
+    foreach($labels as $lid => $label) {
+      if(strlen($assstring))
+        $assstring .= ' / ';
+      $assstring .= "{$pattern['assess'][$lid]} $label";
+    }
+
+    $vs = "<div style=\"background-color: #fcc; padding: 3px\">$assstring</div>\n";
     if($vs != $ovs) {
       print $vs;
       $ovs = $vs;
@@ -472,9 +480,6 @@ function consideration() {
     $p = GetPattern(['p.id' => $pattern['pid']]);
     $p = $p[0];
     $destination = $p['plid'] == $project['destination'];
-
-    print "<h3 style=\"background-color: #eee; width: max-content\" title=\"{$pattern['pltitle']}\">{$pattern['ptitle']}</h3>
-";
 
     foreach($paragraphs as $paragraph) {
 
