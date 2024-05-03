@@ -29,8 +29,12 @@ require "lib/ps.php";
  *  Absorb an assessment.
  *
  *  The per-passessment radio buttons are named with the pattern id and
- *  have values of 'on', 'off', or 'neutral'. The per-[assessment
- *  commentaries are named 'c<pid>'.
+ *  have values of 0..N, where a value of 0 corresponds to a null value
+ *  and the values 1..N correspond to the per-project labels in
+ *  project.label and are stored in passessment.assessment with a value
+ *  of 0..N-1.
+ *
+ *  The per-[assessment commentaries are named 'c<pid>'.
  *
  *  The 'assessment' fields - a comment and a checkbox - are named
  *  'acomment' and 'contact'.
@@ -119,8 +123,8 @@ function obsess() {
       /* no 'passessment' record exists for this pattern; do an insert if
        * there is input data for it */
        
-      if(isset($_POST[$pid]) && $_POST[$pid] != 'neutral')
-        $inserts[$pid]['assessment'] = $_POST[$pid];
+      if(isset($_POST[$pid]) && $_POST[$pid] != 0)
+        $inserts[$pid]['assessment'] = $_POST[$pid] - 1;
       if(isset($_POST["c$pid"]) && strlen($_POST["c$pid"]))
         $inserts[$pid]['commentary'] = $_POST["c$pid"];
       if(isset($inserts[$pid])) {
