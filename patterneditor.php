@@ -364,6 +364,11 @@ it contains.</p>
 } /* end pledit() */
 
 
+function bytitle($a, $b) {
+  return $a['title'] <=> $b['title'];
+} // end bytitle()
+
+
 /* pedit()
  *
  *  Edit or delete a pattern.
@@ -382,9 +387,9 @@ function pedit() {
       $plid = $_POST['plid'];
       $planguage = GetPLanguage(['id' => $plid]);
       $patterns = GetPattern(['plid' => $plid]);
-      if(! $patterns) {
+      if(! $patterns)
         Error("No patterns found in this language.");
-      }
+      usort($patterns, 'bytitle');
       $options = "<option value=\"\"selected>Choose</option>\n";
       foreach($patterns as $pattern) {
         $options .= "<option value=\"{$pattern['id']}\">{$pattern['title']}</option>\n";
