@@ -972,7 +972,11 @@ if(!$SuppressMain) {
   $participant = isset($user) ? IsParticipant() : false;
     
   $querystring = 'assess=1';
-  $querystring .= (isset($masq) && $masq) ? "&masq=$masq" : '';
+  $patquery = 'pattern=1';
+  if(isset($masq)) {
+    $querystring .= "&masq=$masq";
+    $patquery .= "&masq=$masq";
+  }
 
   if(isset($user))
     $edit = GetAssessment([
@@ -985,16 +989,20 @@ if(!$SuppressMain) {
   if($participant) {
     print '<p>Welcome ' .
       ($edit ? 'back ' : '') .
-      "<span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>. " .
+      "<span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>. <a href=\"?$querystring\"></p>
+
+<ul>
+ <li>" .
        ($edit ? 'Edit your' : 'Submit an') .
-      " assessment by clicking <a href=\"?$querystring\">here</a>.</p>
-<p>Edit or enter your own patterns <a href=\"?pattern=1" .
-      (isset($masq) ? "&masq=$masq" : '') .
-      "\">here</a>.</p>
+      " assessment</a>.</li>
+ <li><a href=\"?$patquery\">Edit or enter your own patterns</a>.</li>
+
 ";
   }
   if($participant || (isset($user) && $user['role'] == 'super')) {
-    print "<p><a href=\"?consideration=1\">View patterns under consideration</a>.</p>
+    print " <li><a href=\"?consideration=1\">View patterns under consideration</a>.</li>
+</ul>
+
 <h3>Patterns in work</h3>
 ";
     $projpatterns = GetProjPatterns($project['id']);
@@ -1011,7 +1019,9 @@ if(!$SuppressMain) {
       print "</ul>\n";
     else
       print "<p style=\"font-style: oblique; margin-left: 1em\">None yet.</p>\n";
-  }
+  } else
+    print "</ul>\n";
+
   if(! $participant)
     if(isset($user))
       print "<p>Welcome <span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>.

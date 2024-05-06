@@ -108,11 +108,11 @@ $counts = [
   'abstainer' => 0,
 ];
 
+$acount = count(explode(':', $project['labels']));
+
 /* Compute $counts here; we need that data for both anonymized and
  * attributed screens. */
  
-$acount = count(explode(':', $project['labels']));
-
 foreach($pusers as $puser) {
   if($puser['isactive']) {
     $counts['active']++;
@@ -121,7 +121,7 @@ foreach($pusers as $puser) {
       $assessed = false;
       for($i = 0; $i < $acount; $i++) {
         if($stat[$i]['count'])
-	  $assessed = true;
+          $assessed = true;
       }
     }
     if(isset($stat) && $assessed)
@@ -173,7 +173,7 @@ foreach($pusers as $puser) {
       $assessed = false;
       for($i = 0; $i < $acount; $i++)
         if($stat[$i]['count'])
-	  $assessed = true;
+          $assessed = true;
     }
 
     if(isset($stat) && $assessed) {
@@ -181,8 +181,8 @@ foreach($pusers as $puser) {
       $votes = '';
       for($i = 0; $i < $acount; $i++) {
         if(strlen($votes))
-	  $votes .= ' / ';
-	$votes .= $stat[$i]['count'];
+          $votes .= ' / ';
+        $votes .= $stat[$i]['count'];
       }
       $ass = GetAssessment([
        'userid' => $puser['userid'],
@@ -345,8 +345,8 @@ if(!$Anonymize) {
        'projid' => $projid
       ]);
       if(isset($ass) && isset($ass['acomment']) && strlen($ass['acomment'])) {
-	print "<p><span style=\"text-decoration: underline\">{$puser['fullname']}</span>: {$ass['acomment']}</p>\n";
-	$sccount++;
+        print "<p><span style=\"text-decoration: underline\">{$puser['fullname']}</span>: {$ass['acomment']}</p>\n";
+        $sccount++;
       }
     }
   } /* end loop on members */
@@ -374,9 +374,9 @@ if(!$Anonymize) {
       commenter = document.querySelector(commenterId)
       if(commenter.style.display == 'grid') {
         commenter.style.display = 'none'
-	controller.innerHTML = 'Show'
+        controller.innerHTML = 'Show'
       } else {
-	controller.innerHTML = 'Hide'
+        controller.innerHTML = 'Hide'
         commenter.style.display = 'grid'
       }
       
@@ -391,10 +391,10 @@ if(!$Anonymize) {
       commentary = document.querySelector(commentaryId)
       if(commentary.style.display == 'grid') {
         commentary.style.display = 'none'
-	//controller.innerHTML = controller.innerHTML.replace('Hide', 'Show')
+        //controller.innerHTML = controller.innerHTML.replace('Hide', 'Show')
       } else {
         commentary.style.display = 'grid'
-	//controller.innerHTML = controller.innerHTML.replace('Show', 'Hide')
+        //controller.innerHTML = controller.innerHTML.replace('Show', 'Hide')
       }
       
   } // end tog2()
