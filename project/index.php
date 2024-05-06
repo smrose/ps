@@ -12,6 +12,7 @@
  *  obsess        absorb an assessment submission
  *  assess        present the assessment form
  *  consideration view patterns under consideration
+ *  pat           present a form for entering/editing patterns
  *  inwork        view patterns in work
  *
  * $Id: index.php,v 1.47 2023/03/22 20:39:44 rose Exp $
@@ -506,6 +507,144 @@ function consideration() {
 } /* end consideration() */
 
 
+/* pat()
+ *
+ *  Manage pattern creation, editing, and deleting.
+ */
+
+function pat($p = null) {
+  if(! IsParticipant())
+    return false;
+
+  if($_REQUEST['pattern']) {
+    global $user, $project, $masq;
+
+    # Fetch any patterns created by this user and used in this project.
+
+    $theirs = [];
+    $cps = GetPattern([
+      'creator' => $user['id']
+    ]);
+    if(isset($cps)) {
+      $pps = GetProjPatterns($project['id'], true); # ordered by pattern.id
+      foreach($cps as $cp) {
+	if(isset($pps[$cp['id']]))
+	  $theirs[] = $cp;
+      }
+    }
+    if(count($theirs)) {
+
+      # this user has created one or more patterns for this project;
+      # present a form for selecting one to edit
+
+      print "<h2>Edit or Delete a Pattern</h2>
+  <p class=\"alert\">Select a pattern and an action.</h2>
+
+  <form id=\"selpat\" method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
+  ";
+      if($masq)
+	print "<input type=\"hidden\" name=\"masq\" value=\"$masq\">\n";
+  print "<div class=\"fieldlabel\">Pattern:</div>
+  <div>
+   <select name=\"id\">
+    <option value=\"\" selected>Choose</option>
+  ";
+      foreach($theirs as $their) {
+	print " <option value=\"{$their['id']}\">{$their['title']}</option>
+  ";
+      }
+      print "</select>
+  </div>
+  <div class=\"fieldlabel\">Action:</div>
+  <div>
+   <input type=\"radio\" name=\"paction\" value=\"edit\" id=\"pedit\"> edit
+   <input type=\"radio\" name=\"paction\" value=\"delete\" id=\"pdelete\"> delete
+  </div>
+  <div class=\"gs\">
+   <input type=\"submit\" name=\"submit\" value=\"Continue\" id=\"pedsubmit\">
+   <input type=\"submit\" name=\"submit\" value=\"Cancel\">
+  </div>
+  </form>
+  ";
+    } // end case of one or more owned patterns
+    
+  } // end case of ?pattern=1
+
+  $fields = [
+  [
+    'name' => 'title',
+    'label' => 'Pattern title',
+    'type' => 'text',
+    'size' => 40
+  ],
+  [
+    'name' => 'synopsis',
+    'label' => 'Brief description',
+    'type' => 'textarea',
+  ]
+  ];
+  
+  if(isset($p['id'])) {
+
+    # Edit existing.
+    
+    $paction = 'pedit';
+    $slabel = 'Absorb edits';
+    $title = "Editing Pattern <span style=\"font-style: oblique\">{$p['title']}</span>";
+    $fpid = "<input type=\"hidden\" name=\"id\" value=\"{$p['id']}\">
+<input type=\"hidden\" name=\"paction\" value=\"edit\">
+";
+    $instructions = '';
+    
+  } else {
+
+    # Create new.
+
+    $title = 'Create a Pattern';
+    $paction = 'pcreate';
+    $slabel = 'Create pattern';
+    $instructions = '';
+    $fpid = '';
+  }
+  
+  print "<h2>$title</h2>
+$instructions
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\">
+$fpid
+<input type=\"hidden\" name=\"paction\" value=\"$paction\">
+";
+
+  foreach($fields as $field) {
+
+    $stitle = '';
+    if(isset($p) && $field['type'] == 'image') {
+      $existing = image($p['id'], $field);
+      if(isset($existing))
+        $stitle = " title=\"{$existing['name']}, {$existing['size']} bytes\" style=\"text-decoration: underline\"";
+    }
+
+    print "<div class=\"fieldlabel\"$stitle>{$field['label']}:</div>\n";
+    
+    if($field['type'] == 'text') {
+      $value = (isset($p)) ? $p[$field['name']] : '';
+      print "<div><input type=\"textfield\" size=\"{$field['size']}\" name=\"{$field['name']}\" value=\"$value\"></div>\n";
+    } elseif($field['type'] == 'textarea') {
+      $value = (isset($p)) ? $p[$field['name']] : '';
+      print "<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
+    } elseif($field['type'] == 'image') {
+      print "<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
+    }
+  }
+  print "<div class=\"gs\">
+  <input type=\"submit\" name=\"submit\" value=\"$slabel\">
+  <input type=\"submit\" name=\"submit\" value=\"Cancel\">
+</div>
+</form>
+";
+
+} // end pat()
+
+
 /* inwork()
  *
  *  View a pattern in work. The argument is projpattern.id.
@@ -677,7 +816,7 @@ if($isLogged) {
 
   if($user['role'] == 'user') {
     $instructions = $project['user_text'];
-    $manager = $super = '';
+    $manager = '';
   } else {
     $instructions =
       $project['user_text'] .
@@ -693,16 +832,101 @@ if($isLogged) {
              '<li><a href="../log.php">Log in</a></li>',
              '<li><a href="../reset.php">Reset password</a></li>'
 	    ];
-  $super = $manager = '';
+  $manager = '';
   $instructions = $project['visitor_text'];
 }
 
-if(isset($_REQUEST['assess'])) {
+if(isset($_REQUEST['submit']) && $_REQUEST['submit'] == 'Cancel') {
+  true;
+} elseif(isset($_REQUEST['assess'])) {
 
   /* present the assessment form */
 
   assess();
   $SuppressMain = true;
+  
+} elseif(isset($_REQUEST['pattern'])) {
+
+  # Create and edit user patterns.
+  
+  pat();
+  $SuppressMain = true;
+
+} elseif(isset($_REQUEST['paction'])) {
+
+  # Actions on patterns - create, edit, delete.
+
+  if(isset($_REQUEST['id'])) {
+
+    # A pattern has been selected for editing or deletion.
+
+    $id = $_REQUEST['id'];
+    $p = GetPattern(['p.id' => $id]);
+    $p = $p[0];
+    if($_REQUEST['paction'] == 'delete') {
+
+      // Delete this pattern.
+      
+      DeletePattern($id);
+      print "<p class='alert'>Deleted pattern <span style=\"font-style: oblique\">{$p['text']}</span></p>\n";
+      
+    } elseif($_REQUEST['paction'] == 'edit') {
+
+      // Edit this pattern.
+
+      pat($p);
+      $SuppressMain = true;
+    } elseif($_REQUEST['paction'] == 'pedit') {
+    
+      # absorb pattern edits
+      
+      $title = $_REQUEST['title'];
+      $synopsis = $_REQUEST['synopsis'];
+
+      UpdatePattern([
+        'id' => $id,
+	'title' => $title,
+	'synopsis' => $synopsis
+      ]);
+      print "<p class='alert'>Updated pattern <span style=\"font-style: oblique\">$title</span></p>\n";
+    }
+  } elseif($_REQUEST['paction'] == 'pcreate') {
+
+    # Absorb a pattern creation submission.
+
+    $plid = $project['destination'];
+    $patterns = GetPattern(['plid' => $plid]);
+    $title = trim($_POST['title']);
+    $synopsis = trim($_POST['synopsis']);
+    if(! strlen($title))
+      Error("Pattern title cannot be empty.");
+    $maxprank = 0;
+    if(! is_null($patterns)) {
+    
+      # title must be unique in the destination language
+
+      foreach($patterns as $pattern) {
+        if($pattern['title'] == $title) {
+          Error("Pattern titles must be unique within the language, but '{$pattern['title']}' already exists in this language.");
+        }
+        if($pattern['prank'] > $maxprank)
+          $maxprank = $pattern['prank'];
+      }
+    }
+    $value = [
+      'title' => $title,
+      'synopsis' => $synopsis,
+      'plid' => $plid,
+      'prank' => $maxprank+1,
+      'creator' => $user['id'],
+      'discussion' => null,
+      'context' => null,
+      'solution' => null
+    ];
+    $id = InsertPattern($value);
+    InsertProjPattern(['projid' => $project['id'], 'pid' => $id]);
+    print "<p class=\"alert\">Created a new <tt>$title</tt> pattern with ID <tt>$id</tt>.</p>";
+  }
   
 } elseif(isset($_REQUEST['consideration'])) {
 
@@ -737,7 +961,6 @@ if(!$SuppressMain) {
 </ul>
 </div>
 <?=$manager?>
-<?=$super?>
 </div>
 
 <h2>Welcome to the <span class="apptitle"><?=$project['title']?></span> project.</h2>
@@ -759,14 +982,17 @@ if(!$SuppressMain) {
   else
     $edit = false;
 
-  if($participant) 
+  if($participant) {
     print '<p>Welcome ' .
       ($edit ? 'back ' : '') .
       "<span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>. " .
        ($edit ? 'Edit your' : 'Submit an') .
       " assessment by clicking <a href=\"?$querystring\">here</a>.</p>
+<p>Edit or enter your own patterns <a href=\"?pattern=1" .
+      (isset($masq) ? "&masq=$masq" : '') .
+      "\">here</a>.</p>
 ";
-
+  }
   if($participant || (isset($user) && $user['role'] == 'super')) {
     print "<p><a href=\"?consideration=1\">View patterns under consideration</a>.</p>
 <h3>Patterns in work</h3>

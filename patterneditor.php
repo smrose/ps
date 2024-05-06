@@ -621,12 +621,12 @@ function pcreate($action) {
       'synopsis' => $synopsis,
       'discussion' => $discussion,
       'context' => $context,
-      'solution' => $solution
+      'solution' => $solution,
+      'creator' => null
     ];
     $id = InsertPattern($value);
     print "<p class=\"alert\">Created a new <tt>$title</tt> pattern in <tt>{$pattern['pltitle']}</tt> with ID <tt>$id</tt>.</p>";
     return(true);
-    
   }
   return(false);
    

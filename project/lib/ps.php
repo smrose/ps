@@ -281,8 +281,8 @@ function InsertPLanguage($params) {
 function InsertPattern($params) {
   global $pdo;
 
-  $sql = 'INSERT INTO pattern (title, plid, synopsis, discussion, context, solution, prank)
- VALUES(:title, :plid, :synopsis, :discussion, :context, :solution, :prank)';
+  $sql = 'INSERT INTO pattern (title, plid, synopsis, discussion, context, solution, prank, creator)
+ VALUES(:title, :plid, :synopsis, :discussion, :context, :solution, :prank, :creator)';
   try {
     $sth = $pdo->prepare($sql);
   } catch(PDOException $e) {
