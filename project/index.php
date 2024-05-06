@@ -320,9 +320,10 @@ $welcome
     // Loop on patterns in this language.
     
     foreach($patterns as $pattern) {
-      if($pattern['plid'] != $planguage['id']) {
+
+      if($pattern['plid'] != $planguage['id'])
         continue;
-      }
+
       $pid = $pattern['id'];
       if($participant) {
         $passessment = (isset($assessment) &&
@@ -337,7 +338,7 @@ $welcome
 	# label for this passessment.
 
 	$radio = (isset($passessment) && isset($passessment['assessment']))
-	  ? $labels[$passessment['assessment']+1] : $labels[0];
+	  ? ACLASSES[$passessment['assessment']+1] : ACLASSES[0];
 
 	# Build the radio buttons in $radios here.
 

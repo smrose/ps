@@ -88,6 +88,7 @@ define('FOOT', '<div id="foot"><a href="https://www.publicsphereproject.org/">Pu
 define('MAXSIZE', 200000); # define elsewhere
 define('IMAGEDIR', 'images');
 define('DEFAULTLANG', 'en_GB');
+define('ACLASSES', array('neutral', 'out', 'in'));
 
 require 'lib/db.php';
 require 'vendor/autoload.php';
