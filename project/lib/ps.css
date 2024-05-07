@@ -261,10 +261,10 @@ li.spacer {
     opacity: 1;
 }
 .in {
-    background-color: #efe;
+    background-color: #afa;
 }
 .out {
-    background-color: #fee;
+    background-color: #cfc;
 }
 .neutral {
     background-color: #ddd;
