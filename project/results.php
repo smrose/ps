@@ -28,22 +28,40 @@ require "lib/ps.php";
 
 /* vmeter()
  *
- *  Vote meter function returns two SVG lines - a green one anchored on
- *  the left with a length proportional to the 1 votes and a red one
- *  anchored on the right proportional to the 0 votes. The total is
- *  the number of active voters. NB: there is no support for assessment
- *  spaces with more than two values.
+ *  Vote meter function that returns SVG lines. $v[] is the number of
+ *  votes with that value. We stack those from left to right against
+ *  $total is the number of voters. To color the lines, we read from
+ *  $project['vcolors'], which is a :-delimited string with the colors.
  */
  
-function vmeter($v1, $v0, $total) {
+function vmeter($v, $total) {
+  global $project;
+  
   if(!$total)
     return null;
-  $prop1 = $v1/$total * 100;
-  $prop0 = $v0/$total * 100;
-  $line1 = '<line x1="0%" y1="50%" y2="50%" stroke-width="100%" stroke="green" x2="' . $prop1 . '%"/>';
-  $line0 = '<line x2="100%" y1="50%" y2="50%" stroke-width="100%" stroke="red" x1="' . (100 - $prop0) . '%"/>';
-  return("$line1\n$line0\n");
+
+  $colors = explode(':', $project['vcolors']);
+
+  # Compute the number of neutral votes.
   
+  $sum = 0;  
+  foreach($v as $value)
+    $sum += $value;
+  $neutral = $total - $sum;
+  
+  # Compute the lines.
+
+  $line = '';
+  $accum = $neutral;
+  foreach($v as $i => $value) {
+    $x1 = sprintf('%.0f', 100 * $accum/$total);
+    $accum += $value;
+    $x2 = sprintf('%.0f', 100 * $accum/$total);
+    if($x1 != $x2)
+      $line .= "<line x1=\"{$x1}%\" y1=\"50%\" y2=\"50%\" stroke-width=\"100%\" stroke=\"{$colors[$i]}\" x2=\"{$x2}%\"/>\n";
+  }
+  return("$line\n");
+
 } /* end vmeter() */
 
 
@@ -301,7 +319,7 @@ foreach($patterns as &$pattern) {
   if(strlen($setoff))
     $cclass .= ' setoff';
   $pattern['vs'] = $vs;
-  $lines = vmeter($pattern['assess'][1], $pattern['assess'][0], $counts['voter']);
+  $lines = vmeter($pattern['assess'], $counts['voter']);
   print "<div$setoff>{$pattern['ptitle']}</div>
 <div$setoff>{$pattern['pltitle']}</div>
 <div style=\"text-align: center\"$setoff>$vs</div>
