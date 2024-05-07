@@ -50,7 +50,7 @@ function obsess() {
 
   $labels = array_merge([$project['nulllabel']],
                         explode(':', $project['labels']));
-			
+                        
   // Fetch the patterns used in this project.
 
   $patterns = GetProjPatterns($project['id'], true);
@@ -82,8 +82,8 @@ function obsess() {
     
     if(isset($assessment)
         && isset($assessment['passessments'])
-	&& isset($assessment['passessments'][$pid])) {
-	
+        && isset($assessment['passessments'][$pid])) {
+
       // a 'passessment' record already exists; look for changes
       
       $passessment = $assessment['passessments'][$pid];
@@ -95,7 +95,7 @@ function obsess() {
       $oldcom = $passessment['commentary'];
       if($newcom != $oldcom)
         $updates[$paid]['commentary'] = $newcom;
-	
+
       // look at the radio buttons
 
       $newstate = isset($_POST[$pid]) ? $_POST[$pid] : '';
@@ -110,13 +110,13 @@ function obsess() {
       if(isset($updates[$paid])) {
         $updates[$paid]['id'] = $paid;
 
-	// delete instead of update if there is no data
+        // delete instead of update if there is no data
 
-	if(! strlen(trim($newcom)) && is_null($newstate)) {
-	  if(DEBUG) error_log("add passessment $paid to deletes");
-	  array_push($deletes, $paid);
-	  unset($updates[$paid]);
-	}
+        if(! strlen(trim($newcom)) && is_null($newstate)) {
+          if(DEBUG) error_log("add passessment $paid to deletes");
+          array_push($deletes, $paid);
+          unset($updates[$paid]);
+        }
       }
       
     } else {
@@ -153,10 +153,10 @@ function obsess() {
       if((isset($assessment['acomment']) &&
           $acomment != $assessment['acomment'])
           || !isset($assessment['acomment']))
-	$update['acomment'] = $acomment;
+        $update['acomment'] = $acomment;
       $ocontact = $assessment['contact'] == 'y';
       if($ocontact != $contact)
-	$update['contact'] = $contact ? 'y' : 'n';
+        $update['contact'] = $contact ? 'y' : 'n';
       if(isset($update)) {
         $update['id'] = $assid;
         UpdateAssessment($update);
@@ -328,34 +328,33 @@ $welcome
       if($participant) {
         $passessment = (isset($assessment) &&
                       isset($assessment['passessments']) &&
-		      isset($assessment['passessments'][$pid]))
-		      ? $assessment['passessments'][$pid] : null;
+                      isset($assessment['passessments'][$pid]))
+                      ? $assessment['passessments'][$pid] : null;
         $commentary = isset($passessment) ? $passessment['commentary'] : '';
 
-	# If the 'passessment' record exists, the value of the
-	# 'assessment' field is either null, or an integer. If it
-	# doesn't exist, it's logically null. Set radio to the due
-	# label for this passessment.
+        # If the 'passessment' record exists, the value of the
+        # 'assessment' field is either null, or an integer. If it
+        # doesn't exist, it's logically null. Set $radio to the due
+        # label for this passessment, $rclass to the CSS class.
 
-	$radio = (isset($passessment) && isset($passessment['assessment']))
-	  ? ACLASSES[$passessment['assessment']+1] : ACLASSES[0];
+        $index = (isset($passessment) && isset($passessment['assessment']))
+          ? $passessment['assessment']+1 : 0;
+        $radio = $labels[$index];
+        $rclass = ACLASSES[$index];
 
-	# Build the radio buttons in $radios here.
+        # Build the radio buttons in $radios here.
 
-	$radios = '';
-	foreach($labels as $lid => $state) {
-	  if($radio == $state)
-	    $checked = ' checked';
-	  else
-	    $checked = '';
-	  $id = $pid . '_' . $lid;
-	  $radios .= strlen($radios) ? "<br>\n    " : '';
-	  $radios .= "<label for=\"$id\"><input type=\"radio\" id=\"$id\" name=\"$pid\" value=\"$lid\"$checked>$state</label>";
-	  
-	} // end loop on radio buttons
-	
-	print "
-  <div class=\"pattern $radio\">
+        $radios = '';
+        foreach($labels as $lid => $state) {
+          $checked = ($index == $lid) ? ' checked' : '';
+          $id = $pid . '_' . $lid;
+          $radios .= strlen($radios) ? "<br>\n    " : '';
+          $radios .= "<label for=\"$id\"><input type=\"radio\" id=\"$id\" name=\"$pid\" value=\"$lid\"$checked>$state</label>";
+          
+        } // end loop on radio buttons
+        
+        print "
+  <div class=\"pattern $rclass\">
    <div class=\"ptitle\">{$pattern['title']}</div>
    <div class=\"synopsis\">{$pattern['synopsis']}</div>
    <div class=\"radios\">
@@ -369,7 +368,7 @@ $welcome
 
         // visitor
 
-	print "<div class=\"pattern neutral\">
+        print "<div class=\"pattern neutral\">
  <div class=\"ptitle\">{$pattern['title']}</div>
  <div class=\"synopsis\">{$pattern['synopsis']}</div>
 </div>
@@ -529,8 +528,8 @@ function pat($p = null) {
     if(isset($cps)) {
       $pps = GetProjPatterns($project['id'], true); # ordered by pattern.id
       foreach($cps as $cp) {
-	if(isset($pps[$cp['id']]))
-	  $theirs[] = $cp;
+        if(isset($pps[$cp['id']]))
+          $theirs[] = $cp;
       }
     }
     if(count($theirs)) {
@@ -544,14 +543,14 @@ function pat($p = null) {
   <form id=\"selpat\" method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
   ";
       if($masq)
-	print "<input type=\"hidden\" name=\"masq\" value=\"$masq\">\n";
+        print "<input type=\"hidden\" name=\"masq\" value=\"$masq\">\n";
   print "<div class=\"fieldlabel\">Pattern:</div>
   <div>
    <select name=\"id\">
     <option value=\"\" selected>Choose</option>
   ";
       foreach($theirs as $their) {
-	print " <option value=\"{$their['id']}\">{$their['title']}</option>
+        print " <option value=\"{$their['id']}\">{$their['title']}</option>
   ";
       }
       print "</select>
@@ -832,7 +831,7 @@ if($isLogged) {
              '<li><a href="../register.php">Register</a></li>',
              '<li><a href="../log.php">Log in</a></li>',
              '<li><a href="../reset.php">Reset password</a></li>'
-	    ];
+            ];
   $manager = '';
   $instructions = $project['visitor_text'];
 }
@@ -886,8 +885,8 @@ if(isset($_REQUEST['submit']) && $_REQUEST['submit'] == 'Cancel') {
 
       UpdatePattern([
         'id' => $id,
-	'title' => $title,
-	'synopsis' => $synopsis
+        'title' => $title,
+        'synopsis' => $synopsis
       ]);
       print "<p class='alert'>Updated pattern <span style=\"font-style: oblique\">$title</span></p>\n";
     }
@@ -1011,8 +1010,8 @@ if(!$SuppressMain) {
     foreach($projpatterns as $projpattern) {
       if($projpattern['status'] == 'inwork') {
         if(!$count)
-	  print "<ul>\n";
-	$count++;
+          print "<ul>\n";
+        $count++;
         print "<li><a href=\"?inwork={$projpattern['apid']}\">{$projpattern['title']}</a></li>\n";
       }
     }
@@ -1052,8 +1051,8 @@ if(!$SuppressMain) {
       $uid = $user['uid'];
       $style = ($user['role'] == 'super') ? 'font-weight: bold' : '';
       print "<option style=\"$style\" value=\"$uid\"" . 
-	  (($masq == $uid) ? ' selected' : '') .
-	  ">{$user['fullname']} ($uid)</option>\n";
+          (($masq == $uid) ? ' selected' : '') .
+          ">{$user['fullname']} ($uid)</option>\n";
     }
     print '</select>
   <input type="submit" name="submit" value="Masquerade">
