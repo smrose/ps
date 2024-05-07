@@ -1002,23 +1002,24 @@ if(!$SuppressMain) {
   if($participant || (isset($user) && $user['role'] == 'super')) {
     print " <li><a href=\"?consideration=1\">View patterns under consideration</a>.</li>
 </ul>
-
-<h3>Patterns in work</h3>
 ";
-    $projpatterns = GetProjPatterns($project['id']);
-    $count = 0;
-    foreach($projpatterns as $projpattern) {
-      if($projpattern['status'] == 'inwork') {
-        if(!$count)
-          print "<ul>\n";
-        $count++;
-        print "<li><a href=\"?inwork={$projpattern['apid']}\">{$projpattern['title']}</a></li>\n";
+    if(false) {
+      print "<h3>Patterns in work</h3>\n";
+      $projpatterns = GetProjPatterns($project['id']);
+      $count = 0;
+      foreach($projpatterns as $projpattern) {
+	if($projpattern['status'] == 'inwork') {
+	  if(!$count)
+	    print "<ul>\n";
+	  $count++;
+	  print "<li><a href=\"?inwork={$projpattern['apid']}\">{$projpattern['title']}</a></li>\n";
+	}
       }
+      if($count)
+	print "</ul>\n";
+      else
+	print "<p style=\"font-style: oblique; margin-left: 1em\">None yet.</p>\n";
     }
-    if($count)
-      print "</ul>\n";
-    else
-      print "<p style=\"font-style: oblique; margin-left: 1em\">None yet.</p>\n";
   } else
     print "</ul>\n";
 
