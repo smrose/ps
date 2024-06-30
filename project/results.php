@@ -186,9 +186,9 @@ foreach($pusers as $puser) {
   $votes = '';
   if($puser['isactive']) {
 
+    $assessed = false;
     if(isset($assessments[$puser['userid']])) {
       $stat = $assessments[$puser['userid']];
-      $assessed = false;
       for($i = 0; $i < $acount; $i++)
         if($stat[$i]['count'])
           $assessed = true;
