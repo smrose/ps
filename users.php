@@ -340,8 +340,8 @@ function DoUpload() {
   $fname = $_FILES['filetoupload']['tmp_name'];
   $o = fopen($fname, 'r');
 
-  // these are the fields in the file
-    
+  // $filefields are the fields in the file; lowercase them
+
   $filefields = fgetcsv($o);
   for($i = 0; $i < count($filefields); $i++)
     $filefields[$i] = strtolower(trim($filefields[$i], '\'" '));
@@ -351,7 +351,7 @@ function DoUpload() {
   foreach($filefields as $filefield) {
     if(!in_array($filefield, $fields)) {
       error("Unsupported field '$filefield' found in file");
-xit;
+      exit;
     }
   }
 
@@ -360,7 +360,7 @@ xit;
   foreach($fields as $field) {
     if(!in_array($field, $filefields)) {
       error("Required field '$field' not found in file");
-xit;
+      exit;
     }
   }
     
@@ -374,10 +374,12 @@ xit;
     }
     $user = [];
     for($i = 0; $i < count($fields); $i++)
-      $user[$fields[$i]] = trim($data[$i], '\'" ');
+      $user[$filefields[$i]] = trim($data[$i], '\'" ');
     $users[] = $user;
   }
+
   $count = 0;
+
   foreach($users as $user) {
     $user['username'] = strtolower($user['username']);
     if(IsUsernameTaken($user['username'])) {
@@ -399,9 +401,11 @@ xit;
       print "<p class=\"alert\">Error: <span style=\"font-style: oblique\">{$rval['message']}</span> for username <tt>{$user['username']}</tt>.</p>\n";
     } else
       $count++;
-    }
+      
+  } // end loop on new users
+
   print "<p class=\"alert\">Inserted $count of attempted " .
-   count($users) . " users.</p>\n";
+  count($users) . " users.</p>\n";
 
 } /* end DoUpload() */
 
