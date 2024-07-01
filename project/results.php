@@ -200,7 +200,10 @@ foreach($pusers as $puser) {
       for($i = 0; $i < $acount; $i++) {
         if(strlen($votes))
           $votes .= ' / ';
-        $votes .= $stat[$i]['count'];
+	if(isset($stat[$i]))
+          $votes .= $stat[$i]['count'];
+	else
+	  $votes .= 0;
       }
       $ass = GetAssessment([
        'userid' => $puser['userid'],
