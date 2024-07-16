@@ -470,3 +470,14 @@ li.spacer {
     text-align: center;
     background-color: #fcc;
 }
+#newld {
+    grid-column: span 2;
+    text-align: center;
+}
+#newl {
+    background: black;
+    color: white;
+    padding: 3px;
+    margin: 0;
+}
+

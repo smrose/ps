@@ -64,6 +64,10 @@ if(!$user || $user['role'] != 'super') {
   exit;
 }
 
+/* $fields is used to build the form. The 'callback' field, when present,
+ * is the name of a function that is called to build the form element for
+ * that field. */
+
 $fields = [
   [
     'name' => 'tag',
@@ -125,6 +129,11 @@ $fields = [
     'label' => 'Destination language',
     'type' => 'popup_menu',
     'callback' => 'dmenu'
+  ],
+  [
+    'name' => 'labels',
+    'label' => 'Labels',
+    'type' => 'labels',
   ],
   [
     'name' => 'active',
@@ -225,6 +234,11 @@ function prform($prid = null) {
   }
   print "<h2>$title</h2>
 
+<p>Label/value pairs are used to determine how the assessments are
+presented and scored. The labels are assigned to radio buttons in the
+assessment form. The values are used to determine how the assessments
+are weighted in scoring each pattern.</p>
+
 <p>NB: the <tt>short name</tt> field is used to set the URL of the project
 under <tt>" . ROOTDIR . "</tt>. That needs to be created manually as a
 symbolic link before the project will be implemented.</p>
@@ -237,19 +251,43 @@ $prid
   foreach($fields as $field) {
   
     $value = $pr[$field['name']];
-    print "<div class=\"fieldlabel\"><label for=\"{$field['name']}\">{$field['label']}:</label></div>\n";
+    $flabel = "<div class=\"fieldlabel\"><label for=\"{$field['name']}\">{$field['label']}:</label></div>\n";
     
     if($field['type'] == 'text') {
-      print "<div><input type=\"text\" name=\"{$field['name']}\" size=\"{$field['size']}\" maxlength=\"{$field['maxlength']}\" value=\"$value\"></div>\n";
+      print "$flabel<div><input type=\"text\" name=\"{$field['name']}\" size=\"{$field['size']}\" maxlength=\"{$field['maxlength']}\" value=\"$value\"></div>\n";
     } elseif($field['type'] == 'textarea') {
-      print "<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
+      print "$flabel<div><textarea name=\"{$field['name']}\" rows=\"4\" cols=\"80\">$value</textarea></div>\n";
     } elseif($field['type'] == 'checkbox') {
       $checked = $value ? ' checked="checked"' : '';
-      print "<div><input type=\"checkbox\" value=\"1\" name=\"{$field['name']}\"$checked></div>\n";
+      print "$flabel<div><input type=\"checkbox\" value=\"1\" name=\"{$field['name']}\"$checked></div>\n";
     } elseif($field['type'] == 'image') {
-      print "<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
+      print "$flabel<div><input type=\"file\" name=\"{$field['name']}\"></div>\n";
     } elseif($field['type'] == 'popup_menu') {
-      print $field['callback']();
+      print $flabel . $field['callback']();
+    } elseif($field['type'] == 'labels') {
+
+      // Assessment labels e.g. [out, in] and associated weights e.g. [2, 3]
+
+      $labels = explode(':', $value);
+      $lvalues = explode(':', $pr['lvalues']);
+      $count = 1;
+      foreach($labels as $label) {
+        $l = $labels[$count-1];
+	$v = $lvalues[$count-1];
+        print "<div class=\"fieldlabel\">Label/value $count:</div>
+<div>
+ <input type=\"text\" name=\"l$count\" size=\"20\" value=\"$l\">
+ <input type=\"text\" name=\"v$count\" size=\"4\" value=\"$v\">
+</div>
+";
+	$count++;
+	
+      } // end loop on labels
+
+      print "<div id=\"newld\">
+ <input type=\"button\" value=\"Add another\" id=\"newl\">
+</div>
+";
     }
   } // end loop on fields
 
@@ -262,6 +300,41 @@ $prid
   return(false);
 
 } /* end prform() */
+
+
+/* labels()
+ *
+ *  $_POST[l[1..n]] => project.labels, $_POST[va[1..n]] => project.lvalues.
+ */
+
+function labels() {
+  $labels = [];
+  $values = [];
+  
+  for($i = 1; 1; $i++) {
+    $l = strtolower(trim($_POST["l$i"]));
+    $v = trim($_POST["v$i"]);
+    if(!isset($l) || !strlen($l) )
+      break;
+
+    // check that the label is unique
+
+    if(in_array($l, $labels))
+      Error("Duplicate labels are not allowed (<tt>$l</tt>).");
+
+    // check that the value is an integer
+    
+    if(! preg_match('/^\d+$/', $v))
+      Error("Values must be integers (<tt>$v</tt>)");
+
+    $labels[] = $l;
+    $values[] = $v;
+  }
+  $ls = implode(':', $labels);
+  $vs = implode(':', $values);
+  return [$ls, $vs];
+     
+} /* end labels() */
 
 
 /* AbsorbCreate()
@@ -277,6 +350,8 @@ function AbsorbCreate() {
     $name = $field['name'];
     if($field['type'] == 'checkbox')
       $row[$name] = is_null($_POST[$name]) ? 0 : 1;
+    elseif($field['type'] == 'labels')
+      [$row['labels'], $row['lvalues']] = labels();
     else
       $row[$field['name']] = $_POST[$field['name']];
   }
@@ -297,10 +372,13 @@ function AbsorbEdit($prid) {
   global $fields;
   
   $update = ['id' => $prid];
+  
   foreach($fields as $field) {
     $name = $field['name'];
     if($field['type'] == 'checkbox')
       $update[$name] = is_null($_POST[$name]) ? 0 : 1;
+    elseif($field['type'] == 'labels')
+      [$update['labels'], $update['lvalues']] = labels();
     else
       $update[$field['name']] = $_POST[$field['name']];
   }
@@ -505,6 +583,59 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
  <title>Project Management</title>
  <link rel="stylesheet" href="project/lib/ps.css">
  <script src="project/lib/ps.js"></script>
+ <script>
+   
+   /* Number of labels we have. */
+   
+   var count = 2
+   
+   /* init()
+    *
+    * Add an event listener for 'click' on #newl to invoke addl().
+    */
+   
+   function init() {
+       newl = document.querySelector('#newl')
+       newl.addEventListener('click', addl)
+   }
+
+   /* addl()
+    *
+    *  Event handler for the 'click' event on #newl adds a text label and
+    *  two input elements.
+    */
+   
+   function addl() {
+       // alert('add')
+       count++
+       const d = this.parentElement // DIV containing 'add' button
+       const contents = d.parentElement // FORM
+
+       // create and insert a DIV for the field label
+       
+       var d1 = document.createElement('div')
+       d1.setAttribute('class', 'fieldlabel')
+       d1.innerHTML = 'Label/value ' + count + ':'
+       contents.insertBefore(d1, d)
+
+       // create and insert a DIV for the INPUTs
+
+       var d2 = document.createElement('div')
+       var i1 = document.createElement('input')
+       var i2 = document.createElement('input')
+       i1.setAttribute('style', 'margin: 2px')
+       i2.setAttribute('style', 'margin: 2px')
+       i1.setAttribute('type', 'text')
+       i2.setAttribute('type', 'text')
+       i1.setAttribute('name', 'l' + count)
+       i2.setAttribute('name', 'v' + count)
+       i1.setAttribute('size', 20)
+       i2.setAttribute('size', 4)
+       d2.appendChild(i1)
+       d2.appendChild(i2)
+       contents.insertBefore(d2, d)
+   }
+ </script>
 </head>
 
 <body>
