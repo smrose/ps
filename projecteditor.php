@@ -13,6 +13,7 @@
 #  dmenu          callback for destination language popup
 #  omenu          callback for organization popup
 #  prform         present a form for editing or creating a project
+#  labels         process labels, values, and vcolors
 #  AbsorbCreate   create a new project from form input
 #  AbsorbEdit     edit an existing project from form input
 #  ProjTeams      select which teams work this project
@@ -35,6 +36,12 @@
 #   tag varchar(80) NOT NULL,
 #   active tinyint(1) NOT NULL DEFAULT 1,
 #   destination int(10) unsigned DEFAULT NULL,
+#   unattr_voter int(10) unsigned DEFAULT 0,
+#   orgid int(10) unsigned DEFAULT NULL,
+#   nulllabel varchar(20) NOT NULL DEFAULT 'neutral/not assessed' COMMENT 'how null assessments are labeled',
+#   labels varchar(255) NOT NULL DEFAULT 'out:in' COMMENT 'how assessments are labeled',
+#   vcolors varchar(255) DEFAULT '#080:#0f0',
+#   lvalues varchar(255) NOT NULL DEFAULT '2:3',
 #   PRIMARY KEY (id),
 #   UNIQUE KEY tag (tag),
 #   CONSTRAINT FOREIGN KEY(destination) REFERENCES planguage(id)
@@ -234,10 +241,11 @@ function prform($prid = null) {
   }
   print "<h2>$title</h2>
 
-<p>Label/value pairs are used to determine how the assessments are
+<p>Label/value/color triads are used to determine how the assessments are
 presented and scored. The labels are assigned to radio buttons in the
 assessment form. The values are used to determine how the assessments
-are weighted in scoring each pattern.</p>
+are weighted in scoring each pattern. The colors are used in presenting
+assessments and results.</p>
 
 <p>NB: the <tt>short name</tt> field is used to set the URL of the project
 under <tt>" . ROOTDIR . "</tt>. That needs to be created manually as a
@@ -266,18 +274,24 @@ $prid
       print $flabel . $field['callback']();
     } elseif($field['type'] == 'labels') {
 
-      // Assessment labels e.g. [out, in] and associated weights e.g. [2, 3]
+      /* Assessment labels e.g. [out, in] and associated weights e.g. [2, 3],
+       * and colors e.g. [#080, #0f0]. */
 
       $labels = explode(':', $value);
       $lvalues = explode(':', $pr['lvalues']);
+      $vcolors = explode(':', $pr['vcolors']);
+
       $count = 1;
+
       foreach($labels as $label) {
         $l = $labels[$count-1];
 	$v = $lvalues[$count-1];
-        print "<div class=\"fieldlabel\">Label/value $count:</div>
+	$c = $vcolors[$count-1];
+        print "<div class=\"fieldlabel\">Label/value/color $count:</div>
 <div>
- <input type=\"text\" name=\"l$count\" size=\"20\" value=\"$l\">
- <input type=\"text\" name=\"v$count\" size=\"4\" value=\"$v\">
+ <input type=\"text\" name=\"l$count\" style=\"background-color: $c\" size=\"20\" value=\"$l\">
+ <input type=\"text\" name=\"v$count\" style=\"background-color: $c\" size=\"4\" value=\"$v\">
+ <input type=\"text\" name=\"c$count\" style=\"background-color: $c\" size=\"4\" value=\"$c\">
 </div>
 ";
 	$count++;
@@ -304,16 +318,20 @@ $prid
 
 /* labels()
  *
- *  $_POST[l[1..n]] => project.labels, $_POST[va[1..n]] => project.lvalues.
+ *  $_POST[l[1..n]] => project.labels
+ *  $_POST[v[1..n]] => project.lvalues.
+ *  $_POST[c[1..n]] => project.vcolors.
  */
 
 function labels() {
   $labels = [];
   $values = [];
+  $vcolors = [];
   
   for($i = 1; 1; $i++) {
     $l = strtolower(trim($_POST["l$i"]));
     $v = trim($_POST["v$i"]);
+    $c = strtolower(trim($_POST["c$i"]));
     if(!isset($l) || !strlen($l) )
       break;
 
@@ -329,10 +347,12 @@ function labels() {
 
     $labels[] = $l;
     $values[] = $v;
+    $vcolors[] = $c;
   }
   $ls = implode(':', $labels);
   $vs = implode(':', $values);
-  return [$ls, $vs];
+  $cs = implode(':', $vcolors);
+  return [$ls, $vs, $cs];
      
 } /* end labels() */
 
@@ -351,7 +371,7 @@ function AbsorbCreate() {
     if($field['type'] == 'checkbox')
       $row[$name] = is_null($_POST[$name]) ? 0 : 1;
     elseif($field['type'] == 'labels')
-      [$row['labels'], $row['lvalues']] = labels();
+      [$row['labels'], $row['lvalues'], $row['vcolors']] = labels();
     else
       $row[$field['name']] = $_POST[$field['name']];
   }
@@ -378,7 +398,7 @@ function AbsorbEdit($prid) {
     if($field['type'] == 'checkbox')
       $update[$name] = is_null($_POST[$name]) ? 0 : 1;
     elseif($field['type'] == 'labels')
-      [$update['labels'], $update['lvalues']] = labels();
+      [$update['labels'], $update['lvalues'], $update['vcolors']] = labels();
     else
       $update[$field['name']] = $_POST[$field['name']];
   }
@@ -602,7 +622,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
    /* addl()
     *
     *  Event handler for the 'click' event on #newl adds a text label and
-    *  two input elements.
+    *  three input elements (for label, value, color).
     */
    
    function addl() {
@@ -623,16 +643,22 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
        var d2 = document.createElement('div')
        var i1 = document.createElement('input')
        var i2 = document.createElement('input')
+       var i3 = document.createElement('input')
        i1.setAttribute('style', 'margin: 2px')
        i2.setAttribute('style', 'margin: 2px')
+       i3.setAttribute('style', 'margin: 2px')
        i1.setAttribute('type', 'text')
        i2.setAttribute('type', 'text')
+       i3.setAttribute('type', 'text')
        i1.setAttribute('name', 'l' + count)
        i2.setAttribute('name', 'v' + count)
+       i3.setAttribute('name', 'c' + count)
        i1.setAttribute('size', 20)
        i2.setAttribute('size', 4)
+       i2.setAttribute('size', 10)
        d2.appendChild(i1)
        d2.appendChild(i2)
+       d2.appendChild(i3)
        contents.insertBefore(d2, d)
    }
  </script>
