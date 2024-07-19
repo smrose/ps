@@ -318,7 +318,7 @@ li.spacer {
 }
 .polio {
     display: grid;
-    grid-template-columns: repeat(5, auto);
+    grid-template-columns: repeat(6, auto);
     margin-left: 30px;
     margin-bottom: 2em;
     margin-top: 1em;
@@ -327,7 +327,7 @@ li.spacer {
 }
 .omicron {
     display: grid;
-    grid-template-columns: repeat(4, auto);
+    grid-template-columns: repeat(5, auto);
     margin-left: 30px;
     margin-bottom: 2em;
     margin-top: 1em;

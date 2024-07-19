@@ -152,118 +152,128 @@ foreach($pusers as $puser) {
 }
 
 if(!$Anonymize) {
-?>
-<ul>
- <li><a href="#users">Users</a></li>
- <li><a href="#patterns">Patterns</a></li>
- <li><a href="#pcomments">Pattern Comments</a></li>
- <li><a href="#scomments">System Comments</a></li>
- <li style="margin-top: .5em"><a href="./">Return to project</a></li> 
+  print "<ul>
+ <li><a href=\"#users\">Users</a></li>
+ <li><a href=\"#patterns\">Patterns</a></li>
+ <li><a href=\"#pcomments\">Pattern Comments</a></li>
+ <li><a href=\"#scomments\">System Comments</a></li>
+ <li style=\"margin-top: .5em\"><a href=\"./\">Return to project</a></li> 
 </ul>
 
-<h2 id="users">Users</h2>
-
-<div class="measles">
-<div class="smallpox">Key</div>
-<div class="f voter">voter</div><div class="voter">has voted</div>
-<div class="f abstainer">abstainer</div><div class="abstainer">has not voted</div>
-<div class="f inactive">inactive</div><div class="inactive">did not complete registration</div>
-</div>
-
-<div class="flu">
-<div class="covid">Email</div>
-<div class="covid">Fullname</div>
-<div class="covid">Username</div>
-<div class="covid">Active</div>
-<div class="covid">Teams</div>
-<div class="covid">Votes (<?=$labelString?>)</div>
-<div class="covid">Contact</div>
-<div class="covid">Comment</div>
-<?php
-
-foreach($pusers as $puser) {
-
-  $votes = '';
-  if($puser['isactive']) {
-
-    $assessed = false;
-    if(isset($assessments[$puser['userid']])) {
-      $stat = $assessments[$puser['userid']];
-      for($i = 0; $i < $acount; $i++)
-        if($stat[$i]['count'])
-          $assessed = true;
-    }
-
-    if(isset($stat) && $assessed) {
-      $class = 'voter';
-      $votes = '';
-      for($i = 0; $i < $acount; $i++) {
-        if(strlen($votes))
-          $votes .= ' / ';
-	if(isset($stat[$i]))
-          $votes .= $stat[$i]['count'];
-	else
-	  $votes .= 0;
-      }
-      $ass = GetAssessment([
-       'userid' => $puser['userid'],
-       'projid' => $projid
-      ]);
-    } else {
-      $class = 'abstainer';
-      $ass = null;
-      $votes = '';
-    }
-  } else {
-     $class = 'inactive';
-     $ass = null;
-  }
-
-  $contact = (isset($ass) && $ass['contact'] == 'y')
-   ? "<a href=\"mailto:{$puser['email']}\" title=\"compose mail to {$puser['fullname']}\">yes</a>" : 'no';
-   
-  if(isset($ass['acomment']) && strlen($ass['acomment'])) {
-    $comment = 'Show';
-    $cclass = ' class="commenter"';
-    $ctrid = " id=\"controller{$puser['userid']}\"";
-    $cdiv = "<div class=\"mumps\" id=\"user{$puser['userid']}\">
-{$ass['acomment']}
-</div>\n";
-  } else {
-    $cclass = '';
-    $comment = '(none)';
-    $ctrid = '';
-    $cdiv = '';
-  }
-  print "<div class=\"$class\">{$puser['email']}</div>
- <div class=\"$class\">{$puser['fullname']}</div>
- <div class=\"$class\">{$puser['username']}</div>
- <div class=\"$class\" style=\"text-align: center\">" . ($puser['isactive'] ? 'yes' : 'no') . "</div>
- <div class=\"$class\">{$puser['team']}</div>
- <div class=\"$class\" style=\"text-align: center\">$votes</div>
- <div class=\"$class\" style=\"text-align: center\">$contact</div>
- <div$cclass class=\"$class\"$ctrid>$comment</div>
-$cdiv
+<h2 id=\"users\">Users</h2>
 ";
-  }
-    
-} /* end loop on pusers */
 
-// If we have unattributed voters, subtract from 'abstainer' and add to 'voter'.
+  if(count($pusers))
+    print "<div class=\"measles\">
+<div class=\"smallpox\">Key</div>
+<div class=\"f voter\">voter</div><div class=\"voter\">has voted</div>
+<div class=\"f abstainer\">abstainer</div><div class=\"abstainer\">has not voted</div>
+<div class=\"f inactive\">inactive</div><div class=\"inactive\">did not complete registration</div>
+</div>
+";
 
-$counts['abstainer'] -= $project['unattr_voter'];
-$counts['voter'] += $project['unattr_voter'];
+  print "<div class=\"flu\">
+<div class=\"covid\">Email</div>
+<div class=\"covid\">Fullname</div>
+<div class=\"covid\">Username</div>
+<div class=\"covid\">Active</div>
+<div class=\"covid\">Teams</div>
+<div class=\"covid\">Votes ($labelString)</div>
+<div class=\"covid\">Contact</div>
+<div class=\"covid\">Comment</div>
+";
 
+  if(count($pusers)) {
+
+    foreach($pusers as $puser) {
+      $votes = '';
+      if($puser['isactive']) {
+
+	$assessed = false;
+	if(isset($assessments[$puser['userid']])) {
+	  $stat = $assessments[$puser['userid']];
+	  for($i = 0; $i < $acount; $i++)
+	    if($stat[$i]['count'])
+	      $assessed = true;
+	}
+
+	if(isset($stat) && $assessed) {
+	  $class = 'voter';
+	  $votes = '';
+	  for($i = 0; $i < $acount; $i++) {
+	    if(strlen($votes))
+	      $votes .= ' / ';
+	    if(isset($stat[$i]))
+	      $votes .= $stat[$i]['count'];
+	    else
+	      $votes .= 0;
+	  }
+	  $ass = GetAssessment([
+	   'userid' => $puser['userid'],
+	   'projid' => $projid
+	  ]);
+	} else {
+	  $class = 'abstainer';
+	  $ass = null;
+	  $votes = '';
+	}
+      } else {
+	 $class = 'inactive';
+	 $ass = null;
+      }
+
+      $contact = (isset($ass) && $ass['contact'] == 'y')
+       ? "<a href=\"mailto:{$puser['email']}\" title=\"compose mail to {$puser['fullname']}\">yes</a>" : 'no';
+
+      if(isset($ass['acomment']) && strlen($ass['acomment'])) {
+	$comment = 'Show';
+	$cclass = ' class="commenter"';
+	$ctrid = " id=\"controller{$puser['userid']}\"";
+	$cdiv = "<div class=\"mumps\" id=\"user{$puser['userid']}\">
+    {$ass['acomment']}
+    </div>\n";
+      } else {
+	$cclass = '';
+	$comment = '(none)';
+	$ctrid = '';
+	$cdiv = '';
+      }
+      print "<div class=\"$class\">{$puser['email']}</div>
+     <div class=\"$class\">{$puser['fullname']}</div>
+     <div class=\"$class\">{$puser['username']}</div>
+     <div class=\"$class\" style=\"text-align: center\">" . ($puser['isactive'] ? 'yes' : 'no') . "</div>
+     <div class=\"$class\">{$puser['team']}</div>
+     <div class=\"$class\" style=\"text-align: center\">$votes</div>
+     <div class=\"$class\" style=\"text-align: center\">$contact</div>
+     <div$cclass class=\"$class\"$ctrid>$comment</div>
+    $cdiv
+    ";
+    } /* end loop on pusers */
+  } else
+    print "<div class=\"inactive\" style=\"grid-column: span 8; text-align: center; font-weight: bold\">No users in participating teams were found.</div>
+";
+  print "</div>\n";
+
+} // end if(!$Anonymize)
+
+if(count($pusers)) {
+
+  /* If we have unattributed voters, subtract from 'abstainer' and add
+   * to 'voter'. */
+
+  $counts['abstainer'] -= $project['unattr_voter'];
+  $counts['voter'] += $project['unattr_voter'];
+
+  print "<div class=\"measles\">
+ <div class=\"f\">All members</div><div>{$counts['total']}</div>
+ <div class=\"f\">Active</div><div>{$counts['active']}</div>
+ <div class=\"f\">Voters</div><div>{$counts['voter']}</div>
+ <div class=\"f\">Abstainers</div><div>{$counts['abstainer']}</div>
+ <div class=\"f\">Inactive</div><div>{$counts['inactive']}</div>
+</div>
+";
+}
 ?>
-</div>
-
-<div class="measles">
- <div class="f">All members</div><div><?=$counts['total']?></div>
- <div class="f">Active</div><div><?=$counts['active']?></div>
- <div class="f">Voters</div><div><?=$counts['voter']?></div>
- <div class="f">Abstainers</div><div><?=$counts['abstainer']?></div>
- <div class="f">Inactive</div><div><?=$counts['inactive']?></div>
-</div>
 
 <h2 id="patterns">Patterns</h2>
 
@@ -278,6 +288,7 @@ $counts['voter'] += $project['unattr_voter'];
  <div class="covid" style="background-color: #ffc">Origin</div>
  <div class="covid" style="background-color: #ffc">Votes (<?=$labelString?>)</div>
  <div class="covid" style="background-color: #ffc">Meter</div>
+ <div class="covid" style="background-color: #ffc">Score</div>
 <?php
 if(!$Anonymize) {
   print "<div class=\"covid\" style=\"background-color: #ffc\">Commentary</div>\n";
@@ -327,6 +338,7 @@ foreach($patterns as &$pattern) {
 <div$setoff>{$pattern['pltitle']}</div>
 <div style=\"text-align: center\"$setoff>$vs</div>
 <div$setoff><svg class=\"epstein\">$lines</div>
+<div style=\"text-align: center\">{$pattern['score']}</div>
 ";
   if($tclass == 'polio') {
     print "<div class=\"$cclass\" id=\"c{$pattern['pid']}\"$setoff>$commentary</div>

@@ -1668,18 +1668,11 @@ function GetConfig() {
 
 /* inlove()
  *
- * Comparison function on count of 'in' votes with a penalty of .01 for each
- * 'out' vote.
+ *  Comparison function on pattern score.
  */
 
 function inlove($a, $b) {
-  $in = (isset($a['assess']['in']) ? $a['assess']['in'] : 0) + $a['unattr_in'];
-  $out = ((isset($a['assess']['out']) ? $a['assess']['out'] : 0) + $a['unattr_out']) * .01;
-  $acount = $in - $out;
-  $in = (isset($b['assess']['in']) ? $b['assess']['in'] : 0) + $b['unattr_in'];
-  $out = ((isset($b['assess']['out']) ? $b['assess']['out'] : 0) + $b['unattr_out']) * .01;
-  $bcount = $in - $out;
-  return($bcount <=> $acount);
+  return($b['score'] <=> $a['score']);
   
 } /* end inlove() */
 
@@ -1708,6 +1701,7 @@ function Stats() {
 
   $projid = $project['id'];
   $acount = count(explode(':', $project['labels']));
+  $lvalues = explode(':', $project['lvalues']);
   
   # User statistics - how many assessments of each value for each user for
   # this project.
@@ -1760,7 +1754,15 @@ function Stats() {
 	]);
       }
     }
-  }
+
+    // compute the pattern score
+
+    $pattern['score'] = 0;
+    for($i = 0; $i < $acount; $i++)
+      $pattern['score'] += $pattern['assess'][$i] * $lvalues[$i];
+
+  } // end loop on patterns
+
   usort($patterns, 'inlove');
   return(['byuid' => $byuid, 'bypid' => $patterns]);
   
