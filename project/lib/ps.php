@@ -2129,3 +2129,31 @@ function UpdateAppConfig($update) {
   return(true);
     
 } /* end UpdateAppConfig() */
+
+
+/* GetSessions()
+ *
+ *  Return an array of user/session data ordered by expiredate.
+ */
+
+function GetSessions() {
+  global $pdo;
+  $query = 'SELECT u.id AS uid, expiredate, email, username, fullname, expiredate < now() AS expired
+ FROM phpauth_sessions s
+  JOIN phpauth_users u ON s.uid = u.id
+ ORDER BY expiredate DESC';
+ 
+  try {
+    $sth = $pdo->prepare($query);
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  try {
+    $rv = $sth->execute();
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  $sessions = $sth->fetchall(PDO::FETCH_ASSOC);
+  return($sessions);
+  
+} /* end GetSessions() */
