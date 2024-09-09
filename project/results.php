@@ -141,6 +141,8 @@ foreach($pusers as $puser) {
         if($stat[$i]['count'])
           $assessed = true;
       }
+    } else {
+      unset($stat);
     }
     if(isset($stat) && $assessed)
       $counts['voter']++;
@@ -238,7 +240,7 @@ if(!$Anonymize) {
 	$ctrid = '';
 	$cdiv = '';
       }
-      print "<div class=\"$class\">{$puser['email']}</div>
+      print "<div class=\"$class\" title=\"id {$puser['userid']}\">{$puser['email']}</div>
      <div class=\"$class\">{$puser['fullname']}</div>
      <div class=\"$class\">{$puser['username']}</div>
      <div class=\"$class\" style=\"text-align: center\">" . ($puser['isactive'] ? 'yes' : 'no') . "</div>
