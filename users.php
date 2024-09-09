@@ -15,6 +15,7 @@
  *  AbsorbCreate absorb user creation form input
  *  Upload       present the form for uploading a CSV file
  *  DoUpload     absorb an upload
+ *  Sessions     show a table of sessions
  *
  * NOTES
  *
@@ -91,7 +92,8 @@ function Manage($uid) {
   $isactive = '<input type="checkbox" name="isactive" value="1"' .
    ($user['isactive'] ? ' checked="checked"' : '') . '>';
 
-  print '
+  print '<h2>Editing User</h2>
+  
 <p class="alert">Here, you can edit metadata for this user, edit their
 membership in teams, or delete them entirely. Press "Cancel" here to
 leave the user as they were.</p>
@@ -234,7 +236,7 @@ function Create() {
   }
   $roles .= "</select>\n";
   
-  print '<h2 id="add">Create a User</h2>
+  print '<h3 id="add">Create a User</h3>
 
 <p style="font-weight: bold">Use this form to create a user. If you
 select "activate," they won\'t be required to go through the usual
@@ -297,7 +299,7 @@ function AbsorbCreate() {
  */
 
 function Upload() {
-  print "<h2 id=\"upload\">Upload User Data</h2>
+  print "<h3 id=\"upload\">Upload User Data</h3>
 
 <p class=\"alert\">Use this screen to upload a CSV file of new
 users. We will create user accounts for each of the users that meet
@@ -410,6 +412,67 @@ function DoUpload() {
 } /* end DoUpload() */
 
 
+/* Sessions()
+ *
+ *  The table phpauth_sessions stores per-user session
+ *  data. Interesting fields are uid, which is a value from
+ *  phpauth_users.id and expiredate, which is a datetime. Our task
+ *  here is to show a table of sessions along with information on who
+ *  the user is and if their session is still active.
+ */
+
+function Sessions() {
+  $sessions = GetSessions();
+
+  print '<h2>Sessions</h2>
+
+<style type="text/css">
+.ss {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    margin-left: 2em;
+    margin-top: 1em;
+    width: max-content;
+    background-color: #ffd;
+    border: 1px solid #322;
+}
+.ss div {
+    padding: .4em;
+    border: 1px dotted #666;
+}
+.expired {
+    background-color: pink;
+}
+.unexpired {
+    background-color: lightgreen;
+}
+</style>
+
+<p><span class="expired">Expired sessions</span>. <span class="unexpired">Unexpired sessions</span>.</p>
+
+<div class="ss">
+ <div class="gb">UID</div>
+ <div class="gb">Email</div>
+ <div class="gb">Username</div>
+ <div class="gb">Fullname</div>
+ <div class="gb">Expiry</div>
+';
+
+  foreach($sessions as $session) {
+    $class = $session['expired'] ? 'expired' : 'unexpired';
+    print "<div class=\"$class\">{$session['uid']}</div>
+<div class=\"$class\">{$session['email']}</div>
+<div class=\"$class\">{$session['username']}</div>
+<div class=\"$class\">{$session['fullname']}</div>
+<div class=\"$class\">{$session['expiredate']}</div>
+";
+  }
+  print "</div>
+";
+
+} /* end Sessions() */
+
+
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require "lib/ps.php";
 
@@ -479,6 +542,11 @@ if(isset($_REQUEST['uid'])) {
 
     Manage($uid);
   }
+
+} elseif(isset($_REQUEST['action']) && $_REQUEST['action'] == 'sessions') {
+
+    Sessions();
+    $uid = true;
     
 } elseif(isset($_POST['submit']) && $_POST['submit'] == 'Create user') {
 
@@ -512,14 +580,17 @@ if(isset($uid)) {
   $ufclass = ($project['id']) ? 'uf7' : 'uf6';
 ?>
 
+<h2>Actions</h2>
+
 <ul>
  <li><a href="#edit">Edit an existing user</a></li>
  <li><a href="#add">Add a user</a></li>
  <li><a href="#upload">Add a file of users</a></li>
+ <li><a href="?action=sessions">View sessions</a></li>
  <li style="margin-top: .5em"><a href="<?=$return?>">Return</a></li>
 </ul>
 
-<h2 id="edit">Edit an Existing User</h2>
+<h3 id="edit">Edit an Existing User</h3>
 
 <p style="font-weight: bold">Select a user to edit.</p>
 
