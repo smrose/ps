@@ -65,6 +65,7 @@
 #  IsParticipant     true if the current user is on a participating team
 #  GetAppConfig      read application configuration
 #  UpdateAppConfig   update application configuration
+#  InsertVolunteer   insert a volunteer record
 #
 # NOTES
 #
@@ -2157,3 +2158,35 @@ function GetSessions() {
   return($sessions);
   
 } /* end GetSessions() */
+
+
+/* InsertVolunteer()
+ *
+ *  Create a record in the volunteer table.
+ */
+
+function InsertVolunteer($meta) {
+  global $pdo;
+
+  $fields = '';
+  $values = '';
+
+  foreach($meta as $f => $v) {
+    if(strlen($fields)) {
+      $fields .= ',';
+      $values .= ',';
+    }
+    $fields .= $f;
+    $values .= ":$f";
+  }
+
+  $sql = "INSERT INTO volunteer($fields) VALUES($values)";
+  try {
+    $sth = $pdo->prepare($sql);
+    $rv = $sth->execute($meta);
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  return($rv);
+
+} /* end InsertVolunteer() */
