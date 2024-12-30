@@ -414,11 +414,15 @@ function DoUpload() {
 
 /* Sessions()
  *
- *  The table phpauth_sessions stores per-user session
- *  data. Interesting fields are uid, which is a value from
- *  phpauth_users.id and expiredate, which is a datetime. Our task
- *  here is to show a table of sessions along with information on who
- *  the user is and if their session is still active.
+ *  The table phpauth_sessions stores session data. Interesting fields are
+ *  uid, which is a value from phpauth_users.id and expiredate, which is a
+ *  datetime. Our task here is to show a table of sessions along with
+ *  information on who the user is and if their session is still active.
+ *
+ *  We show all the active sessions, but for expired sessions we only show
+ *  users the first time they would appear in the table. In this fashion,
+ *  we are sure to have at least one row for any user that has ever had
+ *  a session.
  */
 
 function Sessions() {
@@ -459,6 +463,12 @@ function Sessions() {
 ';
 
   foreach($sessions as $session) {
+  
+    // skip rows for expired users for whom we have already displayed a row
+
+    if($session['expired'] && isset($users[$session['username']]))
+      continue;
+    $users[$session['username']] = 1; // record this user as displayed
     $class = $session['expired'] ? 'expired' : 'unexpired';
     print "<div class=\"$class\">{$session['uid']}</div>
 <div class=\"$class\">{$session['email']}</div>
