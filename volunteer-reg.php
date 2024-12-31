@@ -6,7 +6,6 @@
  * CONCEPT
  *
  *  Volunteer interest form.
- *
  */
 
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
@@ -31,7 +30,7 @@ Initialize();
       margin-bottom: 5vh;
     }
     p {
-      color: #555;
+      color: #444;
     }
     #heading {
       display: grid;
@@ -52,7 +51,7 @@ Initialize();
     }
     #doug {
       text-align: center;
-      color: #555;
+      color: #444;
       margin-top: 50vh;
     }
     .fs {
@@ -65,8 +64,8 @@ Initialize();
       color: #a00;
     }
     .fh {
-      color: #555;
-      margin-top: .4vh;
+      color: #444;
+      margin-top: .6vh;
       font-size: 11pt;
     }
     #int {
@@ -76,16 +75,16 @@ Initialize();
     }
     .ir {
       text-align: center;
-      color: #555;
+      color: #444;
     }
     .i {
       font-size: 11pt;
-      color: #555;
+      color: #444;
     }
     #opt {
       display: grid;
       grid-template-columns: repeat(2, max-content);
-      color: #555;
+      color: #444;
       column-gap: .5vw;
       row-gap: .5vh;
       margin-left: 2vw;
@@ -121,63 +120,91 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Absorbing a form submission.
 
   $email = trim($_POST['email']);
-  $username = strtolower(trim($_POST['username']));
 
-  if($auth->isEmailTaken($email)) {
+  if($_POST['already']) {
 
-    // An existing email.
-
-    print "<p>We already have a user <code>$email</tt>.</p>\n";
-    exit();
-
-  } else if(IsUsernameTaken($username)) {
-
-    // An existing username.
-
-    print "<p>We already have a user with the username <code>$username</tt>. Pick another.</p>\n";
-    exit();
-  } else if(! IsUsernameValid($username)) {
-
-    // An invalid username.
+    // User asserts having an existing account.
     
-    print "<p>We require a username to consist of between four and twenty characters consisting of lower-case letters, digits, underscores, and dashes. Choose another.</p>\n";
-    exit();
+    if(! $auth->isEmailTaken($email)) {
 
-  } else {
+      // We didn't find that email.
 
-    // A new user. Validate fullname.
-    
-    $fullname = trim($_POST['fullname']);
-    $password = trim($_POST['password']);
-
-    if(!strlen($fullname)) {
-      print "<p>We require that you include your name.</p>\n";
+      print "<p>We didn't find a user with email <code>$email</tt>.</p>\n";
       exit();
     }
-  }
+    $uid = $auth->getUID($email);
 
-  // Register.
+    // Check the password.
 
-  $activate = isset($_POST['status']) ? 1 : 0;
+    if(! $auth->comparePasswords($uid, trim($_POST['password']))) {
+      print "<p>The password doesn't match.</p>\n";
+      exit();
+    }
+
+  } else {
   
-  $rval = $auth->register($email,
-                         $password,
-                         $password,
-                         [
-			   'fullname' => $fullname,
-			   'username' => $username,
-			 ],
-			 '',
-			 $activate);
-  if($rval['error']) {
-    print "<p>Registration failed: " . $rval['message'] . "</p>\n";
-    exit();
+    // New user
+    
+    $username = strtolower(trim($_POST['username']));
+
+    if($auth->isEmailTaken($email)) {
+
+      // An existing email.
+
+      print "<p>We already have a user <code>$email</tt>.</p>\n";
+      exit();
+
+    } else if(IsUsernameTaken($username)) {
+
+      // An existing username.
+
+      print "<p>We already have a user with the username <code>$username</tt>. Pick another.</p>\n";
+      exit();
+
+    } else if(! IsUsernameValid($username)) {
+
+      // An invalid username.
+    
+      print "<p>We require a username to consist of between four and twenty characters consisting of lower-case letters, digits, underscores, and dashes. Choose another.</p>\n";
+      exit();
+
+    } else {
+
+      // Validate fullname.
+    
+      $fullname = trim($_POST['fullname']);
+      $password = trim($_POST['password']);
+
+      if(!strlen($fullname)) {
+        print "<p>We require that you include your name.</p>\n";
+        exit();
+      }
+    }
+
+    // Register.
+
+    $activate = isset($_POST['status']) ? 1 : 0;
+  
+    $rval = $auth->register($email,
+                           $password,
+                           $password,
+                           [
+                             'fullname' => $fullname,
+                             'username' => $username,
+			   ],
+			   '',
+			   $activate);
+    if($rval['error']) {
+      print "<p>Registration failed: " . $rval['message'] . "</p>\n";
+      exit();
+    }
+    $uid = $rval['uid'];
   }
   
   // required fields
   
   $meta = [
-    'id' => $rval['uid'],
+    'id' => $uid,
     'heard' => trim($_POST['heard']),
     'start' => trim($_POST['start']),
     'end' => trim($_POST['end']),
@@ -245,17 +272,19 @@ PS.</div>
 
 <div class="fs">A. Personal Information</div>
 
-<div class="fh">Your Full Name <span class="rstar">*</span></div>
+<div class="fh">Check here if you already have a PS account
+ <input type="checkbox" name="already" id="already"></div>
+<div class="fh" id="fnlabel">Your Full Name <span class="rstar">*</span></div>
 <div><input type="text" name="fullname" id="fullname" required></div>
-<div class="fh">Email address <span class="rstar">*</span></div>
+<div class="fh" id="emlabel">Email address <span class="rstar">*</span></div>
 <div><input type="text" name="email" id="email" required></div>
-<div class="fh">Please confirm Email address <span class="rstar">*</span></div>
+<div class="fh" id="celabel">Please confirm Email address <span class="rstar">*</span></div>
 <div><input type="text" name="cemail" id="cemail" required></div>
 <div class="fh">How did you hear about the project? <span class="rstar">*</span></div>
-<div><input type="text" name="heard" id="heard" required></div>
-<div class="fh">Preferred user name for Pattern Sphere Project login (2 characters minimum) <span class="rstar">*</span></div>
+<div><input type="text" name="heard" id="heard" size="128" required></div>
+<div class="fh" id="unlabel">Preferred user name for Pattern Sphere Project login (2 characters minimum) <span class="rstar">*</span></div>
 <div><input type="text" name="username" id="username" required></div>
-<div class="fh">Preferred password for Pattern Sphere Project login (8 characters minimum) <span class="rstar">*</span></div>
+<div class="fh" id="pwlabel">Preferred password for Pattern Sphere Project login (8 characters minimum) <span class="rstar">*</span></div>
 <div><input type="password" name="password" id="password" required></div>
 
 <div class="fs">B. Volunteer Contribution</div>
@@ -395,7 +424,7 @@ soon, there will be a page specifically for volunteers.</p>
   <div class="o">Age:</div>
   <div><input type="text" name="age" size="2"></div>
 
-  <div class="o">Current Location:</div>
+  <div class="o">Current Residence:</div>
   <div><input type="text" name="location" size="30"></div>
 
   <div class="o">Nationality:</div>
@@ -415,6 +444,7 @@ soon, there will be a page specifically for volunteers.</p>
 <script>
 
   const form = document.querySelector('#form')
+  const already = document.querySelector('#already')
 
   // Elements for which input is required.
   
@@ -424,22 +454,60 @@ soon, there will be a page specifically for volunteers.</p>
   const password = document.querySelector('#password') // password
   const agree = document.querySelector('#agree')       // checkbox
 
+  // Elements not used for existing accounts.
+
+  const emlabel = document.querySelector('#emlabel')
+  const celabel = document.querySelector('#celabel')
+  const fullname = document.querySelector('#fullname')
+  const fnlabel = document.querySelector('#fnlabel')
+  const pwlabel = document.querySelector('#pwlabel')
+  const unlabel = document.querySelector('#unlabel')
+
+  // Values.
+  
+  const pwl = pwlabel.innerHTML
+  const labelcolor = fnlabel.style.color
+
+  // Transform form for existing accounts.
+
+  already.addEventListener('click', (event) => {
+    if(already.checked) {
+
+      /* For existing accounts, ee don't need fullname, username, or email
+      * confirmation. We want the existing password. */
+
+      fnlabel.style.color = celabel.style.color = unlabel.style.color = '#999'
+      fullname.disabled = cemail.disabled = username.disabled = true
+      pwlabel.innerHTML = 'Your existing password'
+
+    } else {
+      fnlabel.style.color = celabel.style.color = unlabel.style.color = labelcolor
+      fullname.disabled = username.disabled = cemail.disabled = false
+      pwlabel.innerHTML = pwl
+    }
+  })
+
   // Validate input on form submission.
 
   form.addEventListener('submit', (event) => {
     let error = ''
     const re = /^.+@.+\..+$/
 
-    if(email.value.match(re)) {
-      if(cemail.value != email.value)
-        error += "Emails do not match.\n"
-    } else
-      error += 'Enter a valid mail address'
-    usernamev = username.value.trim()
-    if(usernamev.length < 4)
-      error += "Enter a username of at least four characters.\n"
-    if(password.value.length < 8)
-      error += "Enter a password of at least eight characters.\n"
+    if(! already.checked) {
+
+      // new user - validate email, username, password
+      
+      if(email.value.match(re)) {
+        if(cemail.value != email.value)
+          error += "Emails do not match.\n"
+      } else
+        error += 'Enter a valid mail address'
+      usernamev = username.value.trim()
+      if(usernamev.length < 4)
+        error += "Enter a username of at least four characters.\n"
+      if(password.value.length < 8)
+        error += "Enter a password of at least eight characters.\n"
+    }
     if(! agree.checked)
       error += "Please agree to the terms.\n"
 
