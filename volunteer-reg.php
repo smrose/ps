@@ -5,7 +5,7 @@
  *
  * CONCEPT
  *
- * Volunteer interest form.
+ *  Volunteer interest form.
  *
  */
 
@@ -25,6 +25,11 @@ Initialize();
       font-family: sans-serif;
       margin: 0;
     }
+    #congrats {
+      font-size: 16pt; font-weight: bold;
+      margin-top: 10vh;
+      margin-bottom: 5vh;
+    }
     p {
       color: #555;
     }
@@ -35,9 +40,20 @@ Initialize();
       background-color: #eee;
       padding: .2em;
     }
-   #partook {
+    #partook {
       margin-right: 10vw;
       margin-left: 10vw;
+    }
+    #perchance {
+      margin-right: 10vw;
+      margin-left: 10vw;
+      text-align: center;
+      height: 10vh;
+    }
+    #doug {
+      text-align: center;
+      color: #555;
+      margin-top: 50vh;
     }
     .fs {
       font-weight: 700;
@@ -141,6 +157,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 
   // Register.
+
+  $activate = isset($_POST['status']) ? 1 : 0;
   
   $rval = $auth->register($email,
                          $password,
@@ -150,7 +168,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 			   'username' => $username,
 			 ],
 			 '',
-			 !AUTOACTIVATE);
+			 $activate);
   if($rval['error']) {
     print "<p>Registration failed: " . $rval['message'] . "</p>\n";
     exit();
@@ -192,8 +210,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     print "<p>Creating volunteer record failed</p>\n";
     exit();
   }
-  print "<p>Success</p>\n";
-  
+  print "<div id=\"perchance\">
+
+<div id=\"congrats\">CONGRATULATIONS</div>
+
+<div>Thanks for volunteering for the PS project! Your account has been created.
+We will contact you when your account is activated. At that point, you will
+have access to volunteer resources and to the Volunteer Project within the
+PS.</div>
+
+<div id=\"doug\">douglas@publicsphereproject.org</div>
+
+</div>
+";
 } else {
 
   // Presenting a form.
@@ -211,7 +240,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <p>Required fields are marked with <span class="rstar">*</span>.</p>
 
-<form method="POST" action="" id="form">
+<form method="POST" action="volunteer-reg.php" id="form">
 <?=$status?>
 
 <div class="fs">A. Personal Information</div>
