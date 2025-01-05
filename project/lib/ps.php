@@ -45,6 +45,7 @@
 #  Initialize        load application data and initialize auth system
 #  IsUsernameTaken   check for unique username
 #  IsUsernameValid   check for username validity
+#  GetUser           return one user
 #  GetUsers          load phpauth_users to an array
 #  ProjectMembers    users who are participating in a project
 #  GetProjTeams      fetch 'projteam' records
@@ -66,6 +67,9 @@
 #  GetAppConfig      read application configuration
 #  UpdateAppConfig   update application configuration
 #  InsertVolunteer   insert a volunteer record
+#  GetVolunteers     return selected volunteers
+#  GetVolunteer      return selected volunteer
+#  UpdateVolunteer   update a volunteer record
 #
 # NOTES
 #
@@ -168,7 +172,7 @@ function GetPLanguage($which = null) {
     }
     $prank = $sth->fetch(PDO::FETCH_NUM);
     $planguage['maxprank'] = $prank[0];
-    return($planguage);
+    return $planguage;
     
   } else {
 
@@ -186,7 +190,7 @@ function GetPLanguage($which = null) {
       throw new PDOException($e->getMessage(), $e->getCode());
     }
     $planguages = $sth->fetchall(PDO::FETCH_ASSOC);
-    return($planguages);
+    return $planguages;
   }
   
 } /* end GetPLanguage() */
@@ -239,10 +243,7 @@ function GetPattern($which = null) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
   $patterns = $sth->fetchall(PDO::FETCH_ASSOC);
-  if(!$patterns) {
-    return(null);
-  }
-  return($patterns);
+  return $patterns ? $patterns : null;
   
 } /* end GetPattern() */
 
@@ -1231,6 +1232,21 @@ function IsUsernameValid($username) {
 } /* end IsUsernameValid() */
 
 
+/* GetUser()
+ *
+ *  Return useful contents of the row in phpauth_users corresponding to
+ *  this user id.
+ */
+
+function GetUser($id) {
+  $users = GetUsers(['id' => $id]);
+  if(count($users))
+    return $users[$id];
+  return false;
+  
+} // end GetUser()
+
+
 /* GetUsers()
  *
  *  Return the useful contents of the phpauth_users table, indexed by uid.
@@ -1260,7 +1276,7 @@ function GetUsers($filter = null) {
   while($user = $sth->fetch(PDO::FETCH_ASSOC)) {
     $users[$user['uid']] = $user;
   }
-  return($users);
+  return $users;
   
 } /* end GetUsers() */
 
@@ -2190,3 +2206,90 @@ function InsertVolunteer($meta) {
   return($rv);
 
 } /* end InsertVolunteer() */
+
+
+/* GetVolunteers()
+ *
+ *  Return the matching volunteer records.
+ */
+
+function GetVolunteers($filter = null) {
+  global $pdo;
+
+  $sql = 'SELECT v.*, email, isactive, dt, fullname, username, role
+ FROM volunteer v
+  LEFT JOIN phpauth_users u ON v.id = u.id';
+
+  if(isset($filter)) {
+    $conditions = '';
+    foreach($filter as $name => $value) {
+      if(strlen($conditions))
+        $conditions .= ' AND ';
+      $conditions .= "$name = $value";
+    }
+    $sql .= " WHERE $conditions";
+  }
+  $sth = $pdo->prepare($sql);
+  $sth->execute();
+  $volunteers = [];
+  while($volunteer = $sth->fetch(PDO::FETCH_ASSOC))
+    $volunteers[$volunteer['id']] = $volunteer;
+  return $volunteers;
+
+} // end GetVolunteers()
+
+
+/* GetVolunteer()
+ *
+ *  Return the volunteer record matching the argument id, or false.
+ */
+
+function GetVolunteer($id) {
+  $volunteers = GetVolunteers(['v.id' => $id]);
+  if(count($volunteers))
+    return $volunteers[$id];
+  return false;
+
+} // end GetVolunteer()
+
+
+/* UpdateVolunteer()
+ *
+ *  Update a volunteer record.
+ */
+
+function UpdateVolunteer($update) {
+  global $pdo;
+
+  $id = $update['id'];
+  $volunteer = GetVolunteer($id);
+  $u = '';
+  foreach($update as $column => $value) {
+    if($column == 'id')
+      continue;
+    if($volunteer[$column] == $update[$column])
+      unset($update[$column]);
+    else {
+      if(strlen($u))
+        $u .= ',';
+      $u .= "$column = :$column";
+    }
+  }
+  if(strlen($u)) {
+
+    # we found fields that changed
+
+    $sql = "UPDATE volunteer SET $u WHERE id = :id";
+    if(DEBUG) error_log($sql);
+    try {
+      $sth = $pdo->prepare($sql);
+    } catch(PDOException $e) {
+      throw new PDOException($e->getMessage(), $e->getCode());
+    }
+    if(!$sth->execute($update))
+      Error("System error; update failed");
+    return "Updated volunteer record.";
+  } else
+    return "No changes to volunteer record.";
+  
+} // end UpdateVolunteer()
