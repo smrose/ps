@@ -47,6 +47,7 @@ function Manage($uid) {
   global $auth, $project;
   
   $user = $auth->getUser($uid);
+  $isVolunteer = GetVolunteer($user['id']) ? 'yes' : 'no';
 
   // allow the selection of super role
 
@@ -98,12 +99,15 @@ function Manage($uid) {
 membership in teams, or delete them entirely. Press "Cancel" here to
 leave the user as they were.</p>
 
-<p>Deleting a user will discard all of their assessments (if any).</p>
+<p>Deleting a user will discard all of their assessments and volunteer
+record.</p>
 ';
 
   print "<form action=\"users.php\" method=\"POST\" class=\"gf\">
 <div class=\"fieldlabel\">UID:</div>
 <div><input type=\"hidden\" name=\"uid\" value=\"{$user['uid']}\">{$user['uid']}</div>
+<div class=\"fieldlabel\">Is volunteer:</div>
+<div>$isVolunteer</div>
 <div class=\"fieldlabel\">Email:</div> <div><input type=\"text\" name=\"email\" value=\"{$user['email']}\"></div>
 <div class=\"fieldlabel\">Fullname:</div> <div><input type=\"text\" name=\"fullname\" value=\"{$user['fullname']}\"></div>
 <div class=\"fieldlabel\">Username:</div> <div><input type=\"text\" name=\"username\" value=\"{$user['username']}\"></div>
