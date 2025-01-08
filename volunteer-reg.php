@@ -738,7 +738,7 @@ PS.</div>
       radio($radio['name'], range(1,5), 'ir', $value, true);
   }
 ?>
-  <div class="i">9. Other (please specify)</div>
+  <div class="i">Other (please specify)</div>
   <div style="grid-column: span 5"><input type="text" name="other" <?= $values['other'] ?> size="60"></div>
 </div>
 
