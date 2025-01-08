@@ -29,6 +29,9 @@
  *  linked to a detail page.
  */
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require 'project/lib/ps.php';
 
@@ -453,6 +456,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // New user
     
     $username = strtolower(trim($_POST['username']));
+    $email = strtolower(trim($_POST['email']));
 
     if($auth->isEmailTaken($email)) {
 
