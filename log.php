@@ -49,6 +49,12 @@ if($isLogged) {
 }
 
 // This user is not authenticated; offer a login form.
+
+if(isset($_SERVER['HTTP_REFERER']) &&
+   preg_match('%//[^/]+(/.+)%', $_SERVER['HTTP_REFERER'], $matches))
+  $referer = "<input type=\"hidden\" name=\"referer\" value=\"$matches[1]\">\n";
+else
+  $referer = '';
   
 $title = 'Pattern Sphere Login';
 ?>
@@ -78,7 +84,7 @@ Checking the "remember me" box will keep you logged in on the browser you
 are using across sessions, and for about a month.</p>
 
 <form method="POST" action="<?=ROOTDIR?>/login.php" class="gf">
-<div class="fieldlabel">Email address:</div>
+<?=$referer?><div class="fieldlabel">Email address:</div>
 <div><input type="text" size="35" name="email"></div>
 <div class="fieldlabel">Password:</div>
 <div><input type="password" name="password" id="logpassword"><input type="button" value="Unmask" id="logpassword-mask" onclick="Mask('logpassword')"></div>

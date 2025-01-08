@@ -10,9 +10,9 @@
  * $Id: login.php,v 1.7 2023/03/22 20:43:25 rose Exp $
  */
 
-if(isset($_POST) && isset($_POST['cancel'])) {
+if(isset($_POST) && isset($_POST['cancel']))
   header('Location: ./');
-}
+
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -24,6 +24,10 @@ DataStoreConnect();
 Initialize();
 
 $title = "{$project['title']}: Login Result";
+
+# Where we go after a successful login.
+
+$redirect = isset($_POST['referer']) ? $_POST['referer'] : './';
 
 $page = "<!doctype html>
 <html lang=\"en\">
@@ -79,7 +83,7 @@ if($auth->isEmailTaken($email)) {
 
       // Redirect to top page.
       
-      header('Location: ./');
+      header("Location: $redirect");
       exit();
     }
     print("<p>Logged in. <a href=\"./\">Click here</a> to continue.</p>\n");
