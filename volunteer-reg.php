@@ -436,8 +436,8 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
  <div>Public Sphere Project</div>
  <div>About Us</div>
  <div>Our Team</div>
- <div>Volunteer Resources</div>
- <div>Sign Up</div>
+ <div><a href="volunteer/">Volunteer Resources</a></div>
+ <div><a href="volunteer-reg.php">Sign Up</a></div>
 </div>
 
 <?php
