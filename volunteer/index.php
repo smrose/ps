@@ -1,17 +1,46 @@
+<?php
+set_include_path(get_include_path() . PATH_SEPARATOR . '../project');
+require '../project/lib/ps.php';
+
+DataStoreConnect();
+Initialize();
+
+if($isLogged = $auth->isLogged()) {
+  $action = [
+    ' <li><a href="../log.php">Log out</a></li>',
+    ' <li><a href="../profile.php">Edit profile</a></li>',
+  ];
+} else {
+  $action = [
+    '<li><a href="../log.php">Log in</a></li>',
+    '<li><a href="../reset.php">Reset password</a></li>'
+  ];
+}
+$actions = join('', $action);
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
- <title>Pattern Sphere</title>
+ <title>Pattern Sphere Volunteer Resources</title>
  <link rel="stylesheet" href="../project/lib/ps.css">
  <script src="../project/lib/ps.js"></script>
  <script>
- let exptime = 1692051396
-</script>
+  let exptime = 1692051396
+ </script>
 
 </head>
 
 <body>
+
+<div id="actions">
+  <div id="authactions">
+  <div class="banner">Actions</div>
+  <ul>
+    <?= $actions ?>
+  </ul>
+</div>
+</div>
 
 <header>
 <h1>Pattern Sphere</h1>
@@ -21,12 +50,10 @@
 <div id="poutine">
 <img src="../images/pattern-sphere-band.png" id="gravy">
 
-<h3>
-This page is intended to provide resources for developers. It's a draft!
-</h3>
+<h3>This page is intended to provide resources for developers. It's a draft!</h3>
+
 <p>If you have any insights or suggestions as to what should be added or 
-clarified, on this page, let us (Roma & Doug) know. 
-</p>
+clarified, on this page, let us (Roma & Doug) know.</p>
 
 <p>The purpose of the Pattern Sphere (PS) is to support the use of
 patterns and languages to help address difficult social and
@@ -54,13 +81,11 @@ styles and take different approaches.</p>
 
 <h3>Priorities (rough draft)</h3>
 
-<p>
-I have listed the people whom I believe are 
-working on these priorities. 
-If you would like to be listed on one of them (or have your name taken
-down), let me know. If you have comments on any of these, and there is no 
-name listed, please get in touch with me (Doug).
-</p>
+<p>I have listed the people whom I believe are working on these
+priorities.  If you would like to be listed on one of them (or have
+your name taken down), let me know. If you have comments on any of
+these, and there is no name listed, please get in touch with me
+(Doug).</p>
 
 
 <ul>
