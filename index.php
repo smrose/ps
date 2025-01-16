@@ -23,7 +23,7 @@ function aintactive($p) {
 } /* end aintactive() */
 
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
-require 'project/lib/ps.php';
+require 'lib/ps.php';
 
 DataStoreConnect();
 Initialize();
