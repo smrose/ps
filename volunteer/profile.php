@@ -32,8 +32,9 @@
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
-require 'project/lib/ps.php';
+preg_match('$(.+)/volunteer/profile.php$', $_SERVER['SCRIPT_FILENAME'], $matches);
+set_include_path(get_include_path() . PATH_SEPARATOR . $matches[1] . '/project');
+require 'lib/ps.php';
 
 DataStoreConnect();
 Initialize();
@@ -437,7 +438,7 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
  <div>About Us</div>
  <div>Our Team</div>
  <div><a href="volunteer/">Volunteer Resources</a></div>
- <div><a href="volunteer-reg.php">Sign Up</a></div>
+ <div><a href="profile.php">Sign Up</a></div>
 </div>
 
 <?php
@@ -656,7 +657,7 @@ PS.</div>
     // this is a new PS user
 
     $listem = '';
-    $log = '<a href="log.php">Login</a> if you already have a PS account';
+    $log = '<a href="../log.php">Login</a> if you already have a PS account';
     $fullname = '<input type="text" name="fullname" id="fullname" required>';
     $email = '<input type="text" name="email" id="email" required>';
     $cemail = '<div class="fh" id="celabel">Please confirm Email address <span class="rstar">*</span></div>
