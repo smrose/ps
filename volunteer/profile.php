@@ -149,10 +149,10 @@ function Volunteer($id) {
  <div>{$volunteer['comments']}</div>
 
  <div class=\"dh\">Share publicly:</div>
- <div>{$volunteer['public']}</div>
+ <div>" . ($volunteer['public'] ? 'yes' : 'no') . "</div>
 
  <div class=\"dh\">Seeks recommendation:</div>
- <div>{$volunteer['recommend']}</div>
+ <div>" . ($volunteer['recommend'] ? 'yes' : 'no') . "</div>
 
  <div class=\"dh\">Registered:</div>
  <div>{$volunteer['dt']}</div>
