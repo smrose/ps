@@ -85,6 +85,9 @@ if($isLogged = $auth->isLogged()) {
 }
 
 
+define('RADIO', true); # display interests in volunteer detail as radio buttons
+
+
 /* Volunteer()
  *
  *  Display all the details for this volunteer.
@@ -163,18 +166,36 @@ function Volunteer($id) {
  <div class=\"dhh\">Interests</div>
 ";
 
+  if(RADIO) {
+    print ' <div></div>
+ <div class="int">
+  <div class="ir">Very High</div>
+  <div style="grid-column: span 3"></div>
+  <div class="ir">Very Low</div>
+ </div>
+';
+  }
+
   foreach($Interests as $interest) {
     $i = $volunteer[$interest['name']];
-    print " <div class=\"dh\">{$interest['label']}</div>
- <div>
+    print " <div class=\"dh\">{$interest['label']}:</div>\n";
+    if(RADIO) {
+      print " <div class=\"int\">\n" .
+        radio($radio['name'], range(1,5), 'ir', $i, true) .
+        "</div>\n";
+    } else {
+      print " <div>
   <svg class=\"farnsworth\">
    <line stroke-width=\"100%\" y1=\"50%\" y2=\"50%\" x1=\"0%\" x2=\"{$lchar[$i]['width']}\" stroke=\"{$lchar[$i]['color']}\"></line>
   </svg>
  </div>
 ";
-  }
+    }
+  } // end loop on interests
 
-  print " <div class=\"dh\">Comments:</div>
+  print " <div class=\"dh\">Other interests:</div>
+ <div>{$volunteer['other']}</div>
+ <div class=\"dh\">Additional comments:</div>
  <div>{$volunteer['icomments']}</div>
 
  <div class=\"dhh\">Committment</div>
@@ -318,7 +339,7 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
       grid-template-columns: repeat(2, max-content);
       width: max-content;
       column-gap: .5vw;
-    }
+   }
     .dh {
       font-weight: bold;
       text-align: right;
@@ -395,10 +416,10 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
       margin-top: .6vh;
       font-size: 11pt;
     }
-    #int {
+    .int {
       margin-left: 2vw;
       display: grid;
-      grid-template-columns: max-content repeat(5, 6em);
+      grid-template-columns: repeat(5, 6em);
     }
     .ir {
       text-align: center;
