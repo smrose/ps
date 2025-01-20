@@ -47,7 +47,9 @@ function Manage($uid) {
   global $auth, $project;
   
   $user = $auth->getUser($uid);
-  $isVolunteer = GetVolunteer($user['id']) ? 'yes' : 'no';
+  $isVolunteer = GetVolunteer($user['id'])
+    ? "<a href=\"volunteer/profile.php?id={$user['id']}\">yes</a>" :
+    'no';
 
   // allow the selection of super role
 
@@ -589,9 +591,9 @@ if(isset($uid)) {
 
   /* Offer:
    *  a grid of users to select one for editing
-   *  a form for adding a user
-   */
-  $ufclass = ($project['id']) ? 'uf7' : 'uf6';
+   *  a form for adding a user */
+
+  $ufclass = ($project['id']) ? 'uf8' : 'uf7';
 ?>
 
 <h2>Actions</h2>
@@ -606,7 +608,7 @@ if(isset($uid)) {
 
 <h3 id="edit">Edit an Existing User</h3>
 
-<p style="font-weight: bold">Select a user to edit.</p>
+<p style="font-weight: bold">Select a user to view and edit their details.</p>
 
 <div class="<?=$ufclass?>">
 <div class="gb">UID</div>
@@ -614,6 +616,7 @@ if(isset($uid)) {
 <div class="gb">Fullname</div>
 <div class="gb">Username</div>
 <div class="gb">Active</div>
+<div class="gb">Volunteer</div>
 <?php
 
   if($project['id']) {
@@ -633,7 +636,11 @@ if(isset($uid)) {
     print "<div class=\"gb\">Teams</div>\n";
   }
 
+  $volunteers = GetVolunteers();
+
   foreach($users as $user) {
+
+    $isVolunteer = (isset($volunteers[$user['uid']])) ? 'yes' : 'no';
 
     if($project['id']) {
       $votes = '';
@@ -653,7 +660,9 @@ if(isset($uid)) {
       }
       $counts[$class]++;
       $counts['total']++;
+      
     } else {
+    
       if($uts = UserTeams($user['uid'])) {
         $p = '';
 	foreach($uts as $ut) {
@@ -682,6 +691,9 @@ if(isset($uid)) {
 <div class=\"$class\">{$user['fullname']}</div>
 <div class=\"$class\">{$user['username']}</div>
 <div class=\"$class\" style=\"text-align: center\">" . ($user['isactive'] ? 'yes' : 'no') . "</div>
+<div style=\"text-align: center\">
+ $isVolunteer
+</div>
 ";
     if($project['id']) {
       print "<div class=\"$class\">{$user['role']}</div>
