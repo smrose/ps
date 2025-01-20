@@ -134,31 +134,25 @@ input[type=submit]:disabled {
     background-color: #ffd;
     border: 1px solid #322;
 }
-.uf7 {
+.uf8, .uf7, .uf6 {
     display: grid;
-    grid-template-columns: repeat(7, auto);
     margin-left: 2em;
     margin-bottom: 2em;
     margin-top: 1em;
     width: max-content;
     background-color: #ffd;
     border: 1px solid #322;
+}
+.uf8 {
+    grid-template-columns: repeat(8, auto);
+}
+.uf7 {
+    grid-template-columns: repeat(7, auto);
 }
 .uf6 {
-    display: grid;
     grid-template-columns: repeat(6, auto);
-    margin-left: 2em;
-    margin-bottom: 2em;
-    margin-top: 1em;
-    width: max-content;
-    background-color: #ffd;
-    border: 1px solid #322;
 }
-.uf7 div {
-    padding: .4em;
-    border: 1px dotted #666;
-}
-.uf6 div {
+.uf8 div, .uf7 div, .uf6 div {
     padding: .4em;
     border: 1px dotted #666;
 }
