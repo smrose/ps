@@ -1,7 +1,7 @@
 <?php
 /* NAME
  *
- *  volunteer-reg.php
+ *  volunteer/profile.php
  *
  * CONCEPT
  *
@@ -169,9 +169,9 @@ function Volunteer($id) {
   if(RADIO) {
     print ' <div></div>
  <div class="int">
-  <div class="ir">Very High</div>
-  <div style="grid-column: span 3"></div>
   <div class="ir">Very Low</div>
+  <div style="grid-column: span 3"></div>
+  <div class="ir">Very High</div>
  </div>
 ';
   }
@@ -193,9 +193,9 @@ function Volunteer($id) {
     }
   } // end loop on interests
 
-  print " <div class=\"dh\">Other interests:</div>
+  print " <div class=\"dh tall\">Other interests:</div>
  <div>{$volunteer['other']}</div>
- <div class=\"dh\">Additional comments:</div>
+ <div class=\"dh tall\">Additional comments:</div>
  <div>{$volunteer['icomments']}</div>
 
  <div class=\"dhh\">Committment</div>
@@ -294,17 +294,15 @@ function ListVolunteers() {
  */
  
 function radio($name, $values, $class, $checked, $required, $labels = null) {
-
-  $rs = $required ? true : false;
   $rv = '';
   
   foreach($values as $value) {
     if(isset($class))
       $rv .= "<div class=\"$class\">";
     $rv .= "<input type=\"radio\" name=\"$name\" value=\"$value\"";
-    if(!$rs) {
+    if($required) {
       $rv .= ' required';
-      $rs = true;
+      $required = false;
     }
     $rv .= ($value == $checked) ? ' checked' : '';
     $rv .= '>';
@@ -343,6 +341,9 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
     .dh {
       font-weight: bold;
       text-align: right;
+    }
+    .tall {
+      margin-top: .5em;
     }
     .dhh {
       font-size: 15pt;
@@ -419,7 +420,7 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
     .int {
       margin-left: 2vw;
       display: grid;
-      grid-template-columns: repeat(5, 6em);
+      grid-template-columns: max-content 6em 6em 6em 6em 6em;
     }
     .ir {
       text-align: center;
@@ -458,7 +459,7 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
  <div>Public Sphere Project</div>
  <div>About Us</div>
  <div>Our Team</div>
- <div><a href="volunteer/">Volunteer Resources</a></div>
+ <div><a href="./">Volunteer Resources</a></div>
  <div><a href="profile.php">Sign Up</a></div>
 </div>
 
@@ -700,7 +701,7 @@ PS.</div>
 
 <p>Required fields are marked with <span class="rstar">*</span>.</p>
 
-<form method="POST" action="volunteer-reg.php" id="form">
+<form method="POST" action="profile.php" id="form">
 <?=$status?>
 
 <div class="fs">A. Personal Information</div>
@@ -751,11 +752,11 @@ PS.</div>
 <div class="fh">How many hours per week can you commit to the program? <span class="rstar">*</span></div>
 <div><input type="text" name="hours" id="hours" size=3 style="margin-left: 2vw" <?= $values['hours'] ?> required></div>
 <div class="fh">Please rate your interests in the following areas: <span class="rstar">*</span></div>
-<div id="int">
+<div class="int">
   <div></div>
-  <div class="ir">Very High</div>
-  <div style="grid-column: span 3"></div>
   <div class="ir">Very Low</div>
+  <div style="grid-column: span 3"></div>
+  <div class="ir">Very High</div>
 <?php
   foreach($Interests as $radio) {
     $value = (isset($volunteer) && isset($volunteer[$radio['name']]))
