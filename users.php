@@ -618,6 +618,7 @@ if(isset($uid)) {
  <li><a href="#add">Add a user</a></li>
  <li><a href="#upload">Add a file of users</a></li>
  <li><a href="?action=sessions">View sessions</a></li>
+ <li><a href="volunteer/profile.php?list=all">View volunteers</a></li>
  <li style="margin-top: .5em"><a href="<?=$return?>">Return</a></li>
 </ul>
 
