@@ -314,9 +314,10 @@ function Upload() {
 <p class=\"alert\">Use this screen to upload a CSV file of new
 users. We will create user accounts for each of the users that meet
 requirements, such a having unique email addresses and usernames and
-passwords that meet complexity requirements. The uploaded file must
+passwords that meet complexity requirements. The uploaded file <em>must</em>
 have all of the following fields: <tt>email</tt>, <tt>username</tt>,
-<tt>fullname</tt>, <tt>password</tt>, and <tt>active</tt>. All the
+<tt>fullname</tt>, <tt>password</tt>, and <tt>active</tt> and <em>may</em>
+have the field <tt>notes</tt>. All the
 users will have the <tt>user</tt> role. Set the <tt>active</tt> field
 to <tt>1</tt> for those users that you wish to autoactivate.</p>
 
@@ -346,15 +347,23 @@ to <tt>1</tt> for those users that you wish to autoactivate.</p>
 function DoUpload() {
   global $auth;
 
-  // these are the fields we support.
+  // Keys are names of fields we support. Values are whether required.
     
-  $fields = ['email', 'password', 'fullname', 'username', 'active'];
+  $fields = [
+    'email' => true,
+    'password' => true,
+    'fullname' => true,
+    'username' => true,
+    'active' => true,
+    'notes' => false
+  ];
   $fname = $_FILES['filetoupload']['tmp_name'];
   $o = fopen($fname, 'r');
 
   // $filefields are the fields in the file; lowercase them
 
   $filefields = fgetcsv($o);
+
   for($i = 0; $i < count($filefields); $i++)
     $filefields[$i] = strtolower(trim($filefields[$i], '\'" '));
 
@@ -369,18 +378,17 @@ function DoUpload() {
 
   // ensure that all the fields we support are present
 
-  foreach($fields as $field) {
-    if(!in_array($field, $filefields)) {
+  foreach($fields as $field => $required)
+    if($required && !in_array($field, $filefields)) {
       error("Required field '$field' not found in file");
       exit;
     }
-  }
     
   // load all the data lines into $users, failing on malformed lines
     
   $users = [];
   while($data = fgetcsv($o)) {
-    if(count($data) != count($fields)) {
+    if(count($data) != count($filefields)) {
       error('Data line ' . count($users)+1 . ' has ' . count($data) . ' fields but ' . count($fields) . ' are expected');
       exit;
     }
@@ -405,8 +413,11 @@ function DoUpload() {
     $rval = $auth->register($user['email'],
 	      $user['password'],
 	      $user['password'],
-	      ['fullname' => $user['fullname'],
-	       'username' => $user['username']],
+	      [
+	        'fullname' => $user['fullname'],
+	         'username' => $user['username'],
+		 'notes' => $user['notes']
+	      ],
 	      '',
 	      $user['active'] ? false : true);
     if($rval['error']) {
