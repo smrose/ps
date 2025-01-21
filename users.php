@@ -51,12 +51,15 @@ function Manage($uid) {
     ? "<a href=\"volunteer/profile.php?id={$user['id']}\">yes</a>" :
     'no';
 
-  // allow the selection of super role
+  // allow selection of role
 
-  $role = 'Super';
-  $roles = '<input type="checkbox" name="super" value="1" ' .
-    (($user['role'] == 'super') ? ' checked="checked"' : '') .
-    '>';
+  $roles = "<select name=\"role\">\n";
+  foreach(ROLE as $role => $roleval) {
+    $roles .= " <option value=\"$role\"" .
+      (($role == $user['role']) ? ' selected' : '') .
+      ">$role</option>\n";
+  }
+  $roles .= "</select>\n";
 
   // present a list of teams as a set of checkboxes
   
@@ -86,9 +89,7 @@ function Manage($uid) {
 <div><input type=\"checkbox\" name=\"m$tid\" value=\"1\"$mgrchecked>manager</div>
 ";
   }
-  $p .= "</div>
-</div>
-";
+  $p .= "</div>\n";
 
   $da = '';
 
@@ -116,6 +117,10 @@ record.</p>
 <div class=\"fieldlabel\">Active:</div> <div>$isactive</div>
 <div class=\"fieldlabel\">$role:</div> <div>$roles</div>
 $p
+<div class=\"fieldlabel\">Notes:</div>
+<div>
+ <textarea rows=\"4\" cols=\"60\" name=\"notes\">{$user['notes']}</textarea>
+</div>
 <div class=\"gs\">
  <input type=\"submit\" name=\"submit\" value=\"Apply changes\">
  <input type=\"submit\" name=\"submit\" value=\"Delete user\">
@@ -166,16 +171,18 @@ function AbsorbManage($uid) {
   
     $update = [];
 
+    if($_POST['notes'] != $user['notes'] &&
+       (isset($user['notes']) || strlen($_POST['notes'])))
+      $update['notes'] = $_POST['notes'];
+
     if($_POST['isactive'] != $user['isactive'])
       $update['isactive'] = $_POST['isactive']; // integer value
-    if($_POST['super'] && $user['role'] != 'super')
-      $update['role'] = 'super';
-    elseif($user['role'] == 'super' && ! isset($_POST['super']))
-      $update['role'] = 'user';
+    if($_POST['role'] != $user['role'])
+      $update['role'] = $_POST['role'];
 
     if(count($update)) {
       $rval = $auth->updateUser($uid, $update);
-      print "<p>{$rval['message']}</p>\n";
+      print "<p class=\"alert\">{$rval['message']}</p>\n";
     } else {
       print "<p class=\"alert\">No changes to user record.</p>\n";
     }
@@ -235,11 +242,8 @@ function AbsorbManage($uid) {
  
 function Create() {
   $roles = "<select name=\"role\">\n";
-  foreach(ROLE as $role => $roleval) {
-    if($role == 'manager')
-      continue;
+  foreach(ROLE as $role => $roleval)
     $roles .= " <option value=\"$role\">$role</option>\n";
-  }
   $roles .= "</select>\n";
   
   print '<h3 id="add">Create a User</h3>
@@ -593,7 +597,7 @@ if(isset($uid)) {
    *  a grid of users to select one for editing
    *  a form for adding a user */
 
-  $ufclass = ($project['id']) ? 'uf8' : 'uf7';
+  $ufclass = ($project['id']) ? 'uf9' : 'uf8';
 ?>
 
 <h2>Actions</h2>
@@ -616,6 +620,7 @@ if(isset($uid)) {
 <div class="gb">Fullname</div>
 <div class="gb">Username</div>
 <div class="gb">Active</div>
+<div class="gb">Role</div>
 <div class="gb">Volunteer</div>
 <?php
 
@@ -692,6 +697,9 @@ if(isset($uid)) {
 <div class=\"$class\">{$user['username']}</div>
 <div class=\"$class\" style=\"text-align: center\">" . ($user['isactive'] ? 'yes' : 'no') . "</div>
 <div style=\"text-align: center\">
+ {$user['role']}
+</div>
+<div style=\"text-align: center\">
  $isVolunteer
 </div>
 ";
@@ -715,7 +723,10 @@ if(isset($uid)) {
 }
 ?>
 
-<p><a href="./">Return</a>.</p>
+<ul>
+ <li><a href="./">Return</a>.</li>
+ <li><a href="users.php">Manage users</a>.</li>
+</ul>
 
 </div>
 
