@@ -134,7 +134,7 @@ input[type=submit]:disabled {
     background-color: #ffd;
     border: 1px solid #322;
 }
-.uf8, .uf7, .uf6 {
+.uf9, .uf8, .uf7, .uf6 {
     display: grid;
     margin-left: 2em;
     margin-bottom: 2em;
@@ -142,6 +142,9 @@ input[type=submit]:disabled {
     width: max-content;
     background-color: #ffd;
     border: 1px solid #322;
+}
+.uf9 {
+    grid-template-columns: repeat(9, auto);
 }
 .uf8 {
     grid-template-columns: repeat(8, auto);
@@ -152,7 +155,7 @@ input[type=submit]:disabled {
 .uf6 {
     grid-template-columns: repeat(6, auto);
 }
-.uf8 div, .uf7 div, .uf6 div {
+.uf9 div, .uf8 div, .uf7 div, .uf6 div {
     padding: .4em;
     border: 1px dotted #666;
 }
