@@ -9,6 +9,7 @@
  *
  * FUNCTIONS
  *
+ *  Interests       grid of interests in radio buttons
  *  Volunteer       detail this volunteer
  *  ListVolunteers  table of volunteers
  *  radio           form-construction helper
@@ -39,40 +40,6 @@ require 'lib/ps.php';
 DataStoreConnect();
 Initialize();
 
-$Interests = [
-  [
-    'name' => 'ui',
-    'label' => 'Page and Site UI',
-  ],
-  [
-    'name' => 'design',
-    'label' => 'Process and Site Design',
-  ],
-  [
-    'name' => 'ux',
-    'label' => 'UX Design and Research',
-  ],
-  [
-    'name' => 'code',
-    'label' => 'Database and Coding',
-  ],
-  [
-    'name' => 'market',
-    'label' => 'Outreach and Marketing',
-  ],
-  [
-    'name' => 'pm',
-    'label' => 'Project Management',
-  ],
-  [
-    'name' => 'vs',
-    'label' => 'Volunteer Support',
-  ],
-  [
-    'name' => 'content',
-    'label' => 'Content Development',
-  ]
-];
 
 if($isLogged = $auth->isLogged()) {
 
@@ -88,37 +55,72 @@ if($isLogged = $auth->isLogged()) {
 define('RADIO', true); # display interests in volunteer detail as radio buttons
 
 
+/* Interests()
+ *
+ *  Grid of interests.
+ */
+
+function Interests($volunteer) {
+  $Interests = [
+    [
+      'name' => 'ui',
+      'label' => 'Page and Site UI',
+    ],
+    [
+      'name' => 'design',
+      'label' => 'Process and Site Design',
+    ],
+    [
+      'name' => 'ux',
+      'label' => 'UX Design and Research',
+    ],
+    [
+      'name' => 'code',
+      'label' => 'Database and Coding',
+    ],
+    [
+      'name' => 'market',
+      'label' => 'Outreach and Marketing',
+    ],
+    [
+      'name' => 'pm',
+      'label' => 'Project Management',
+    ],
+    [
+      'name' => 'vs',
+      'label' => 'Volunteer Support',
+    ],
+    [
+      'name' => 'content',
+      'label' => 'Content Development',
+    ]
+  ];
+  
+  print '<div class="int">
+  <div></div>
+  <div class="ir">Very Low</div>
+  <div class="ir" style="grid-column: span 3"></div>
+  <div class="ir">Very High</div>
+';
+
+  foreach($Interests as $radio) {
+    $value = (isset($volunteer) && isset($volunteer[$radio['name']]))
+      ? $volunteer[$radio['name']] : null;
+    print "<div class=\"i\">{$radio['label']}</div>\n" .
+      radio($radio['name'], range(1,5), 'ir', $value, true);
+  }
+  print "</div>\n";
+
+} // end Interests()
+
+
 /* Volunteer()
  *
  *  Display all the details for this volunteer.
  */
 
 function Volunteer($id) {
-  global $Interests;
-  $lchar = [
-    1 => [
-      'color' => '#f60',
-      'width' => '20%'
-    ],
-    2 => [
-      'color' => '#c80',
-      'width' => '40%'
-    ],
-    3 => [
-      'color' => '#aa0',
-      'width' => '60%'
-    ],
-    4 => [
-      'color' => '#8c0',
-      'width' => '80%'
-    ],
-    5 => [
-      'color' => '#6f0',
-      'width' => '100%'
-    ],
-  ];
-  
-  print "<div style=\"margin-left: 4vw\">\n";
+ print "<div style=\"margin-left: 4vw\">\n";
 
   if(!($volunteer = GetVolunteer($id))) {
     print "<p>System error: failed to locate this volunteer record.</p>
@@ -162,38 +164,13 @@ function Volunteer($id) {
 
  <div class=\"dh\">Modified:</div>
  <div>{$volunteer['modified']}</div>
-
  <div class=\"dhh\">Interests</div>
-";
-
-  if(RADIO) {
-    print ' <div></div>
- <div class="int">
-  <div class="ir">Very Low</div>
-  <div style="grid-column: span 3"></div>
-  <div class="ir">Very High</div>
- </div>
-';
-  }
-
-  foreach($Interests as $interest) {
-    $i = $volunteer[$interest['name']];
-    print " <div class=\"dh\">{$interest['label']}:</div>\n";
-    if(RADIO) {
-      print " <div class=\"int\">\n" .
-        radio($radio['name'], range(1,5), 'ir', $i, true) .
-        "</div>\n";
-    } else {
-      print " <div>
-  <svg class=\"farnsworth\">
-   <line stroke-width=\"100%\" y1=\"50%\" y2=\"50%\" x1=\"0%\" x2=\"{$lchar[$i]['width']}\" stroke=\"{$lchar[$i]['color']}\"></line>
-  </svg>
- </div>
-";
-    }
-  } // end loop on interests
-
-  print " <div class=\"dh tall\">Other interests:</div>
+ <div style=\"grid-column: span 2\">\n";
+ 
+  Interests($volunteer);
+  
+  print " </div>
+ <div class=\"dh tall\">Other interests:</div>
  <div>{$volunteer['other']}</div>
  <div class=\"dh tall\">Additional comments:</div>
  <div>{$volunteer['icomments']}</div>
@@ -332,6 +309,7 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
       height: 12px;
       border: 1px solid black;
     }
+    /* div { border: 1px dotted grey; } */
     #deetz {
       display: grid;
       grid-template-columns: repeat(2, max-content);
@@ -420,7 +398,7 @@ function radio($name, $values, $class, $checked, $required, $labels = null) {
     .int {
       margin-left: 2vw;
       display: grid;
-      grid-template-columns: max-content 6em 6em 6em 6em 6em;
+      grid-template-columns: max-content repeat(5, 6em);
     }
     .ir {
       text-align: center;
@@ -650,7 +628,7 @@ PS.</div>
     $usernamef = "<div class=\"fh\">Your username:</div>
  <div>{$userdata['username']}</div>\n";
     $passwordf = '';
-    if($islogged)
+    if($isLogged)
       print '<script>
  isLogged = true
 </script>
@@ -752,22 +730,13 @@ PS.</div>
 <div class="fh">How many hours per week can you commit to the program? <span class="rstar">*</span></div>
 <div><input type="text" name="hours" id="hours" size=3 style="margin-left: 2vw" <?= $values['hours'] ?> required></div>
 <div class="fh">Please rate your interests in the following areas: <span class="rstar">*</span></div>
-<div class="int">
-  <div></div>
-  <div class="ir">Very Low</div>
-  <div style="grid-column: span 3"></div>
-  <div class="ir">Very High</div>
 <?php
-  foreach($Interests as $radio) {
-    $value = (isset($volunteer) && isset($volunteer[$radio['name']]))
-      ? $volunteer[$radio['name']] : null;
-    print "<div class=\"i\">{$radio['label']}</div>\n" .
-      radio($radio['name'], range(1,5), 'ir', $value, true);
-  }
+  Interests($volunteer);
 ?>
-  <div class="i">Other (please specify)</div>
-  <div style="grid-column: span 5"><input type="text" name="other" <?= $values['other'] ?> size="60"></div>
-</div>
+  <div class="i tall">Other (please specify)</div>
+  <div style="grid-column: span 5" class="tall">
+   <input type="text" name="other" <?= $values['other'] ?> size="60" style="margin-left: 2vw">
+  </div>
 
 <p>Additional comments about your interests</p>
 <textarea name="icomments" cols="80" rows="4" style="margin-left: 2vw"><?= $values['icomments'] ?></textarea>
