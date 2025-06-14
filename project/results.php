@@ -16,8 +16,6 @@
 #
 #  When called as 'aresults.php', show anonymized results to any user,
 #  including a visitor. A symlink makes aresults.php exist.
-#
-# $Id: results.php,v 1.28 2023/03/22 20:43:02 rose Exp $
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -69,6 +67,7 @@ function vmeter($v, $total) {
 
 DataStoreConnect();
 Initialize();
+
 $labels = array_merge([$project['nulllabel']],
                       explode(':', $project['labels']));
 $labelString = implode(' / ', explode(':', $project['labels']));
@@ -97,8 +96,8 @@ if(preg_match('/aresults.php$/', $_SERVER['SCRIPT_NAME'])) {
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <title><?=$project['title']?> : Results</title>
- <link rel="stylesheet" href="lib/ps.css">
- <script src="lib/ps.js"></script>
+ <link rel="stylesheet" href="<?=LIBDIR?>ps.css">
+ <script src="<?=LIBDIR?>ps.js"></script>
  <style>
  </style>
 </head>
@@ -110,7 +109,7 @@ if(preg_match('/aresults.php$/', $_SERVER['SCRIPT_NAME'])) {
 </header>
 
 <div id="poutine">
-<img src="../images/pattern-sphere-band.png" id="gravy">
+<img src="<?=ROOTDIR?>/images/pattern-sphere-band.png" id="gravy">
 
 <?php
 
@@ -159,7 +158,7 @@ if(!$Anonymize) {
  <li><a href=\"#patterns\">Patterns</a></li>
  <li><a href=\"#pcomments\">Pattern Comments</a></li>
  <li><a href=\"#scomments\">System Comments</a></li>
- <li style=\"margin-top: .5em\"><a href=\"./\">Return to project</a></li> 
+ <li style=\"margin-top: .5em\"><a href=\"" . PROJECT . "\">Return to project</a></li> 
 </ul>
 
 <h2 id=\"users\">Users</h2>
@@ -391,7 +390,7 @@ if(!$Anonymize) {
 ';
 } /* end not anonymized */
 ?>
-<p><a href="./">Return to the project.</a></p>
+<p><a href="<?=PROJECT?>">Return to the project.</a></p>
 
 <script>
 

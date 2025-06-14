@@ -34,20 +34,18 @@
 #    CONSTRAINT FOREIGN KEY (projid) REFERENCES project(id),
 #    CONSTRAINT FOREIGN KEY (pid) REFERENCES pattern(id)
 #   );
-#
-# $Id: projpatterns.php,v 1.5 2023/03/22 20:39:44 rose Exp $
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
+require "lib/ps.php";
+
 if(isset($_POST) && isset($_POST['cancel'])) {
   error_log('CANCEL');
-  header('Location: ./');
+  header('Location: ' . PROJECT);
   exit;
 }
-
-require "lib/ps.php";
 
 DataStoreConnect();
 Initialize();
@@ -152,14 +150,14 @@ function pmanage() {
 
 <p class="alert">' .
     count($pbypid) . " patterns are assignable. " .
-    count($apbyid) . " patterns are assigned.</p>
+    count($apbyid) . ' patterns are assigned.</p>
 
-<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
-<input type=\"hidden\" name=\"action\" value=\"passign\">
-<div class=\"fieldlabel\"><label for=\"pid\"><b>Select patterns:</b></label></div>
+<form method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO']  . '" class="gf">
+<input type="hidden" name="action" value="passign">
+<div class="fieldlabel"><label for="pid"><b>Select patterns:</b></label></div>
 <div>
- <select id=\"pid\" name=\"pid[]\" size=\"12\" multiple>
-";
+ <select id="pid" name="pid[]" size="12" multiple>
+';
 
   // Loop on pattern languages, making OPTGROUPs.
 
@@ -195,7 +193,7 @@ function pmanage() {
 <p class="alert">You can optionally select a pattern language to be the destination
 language for this project.</p>
 
-<form method="POST" action="' . $_SERVER['SCRIPT_NAME'] . '" class="gf">
+<form method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '" class="gf">
 <input type="hidden" name="action" value="destination">
 <div class="fieldlabel">Destination language:</div>
 <div>
@@ -232,13 +230,14 @@ language for this project.</p>
     /* Offer a form for setting the status of each projpattern record - iff
      * any exist. */
 
-    print("<h2>Set Pattern Status</h2>
+    print('<h2>Set Pattern Status</h2>
 
-<p class=\"alert\">Use this form to set the status of patterns.</p>
+<p class="alert">Use this form to set the status of patterns.</p>
 
-<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
-<input type=\"hidden\" name=\"action\" value=\"pstatus\">
-");
+<form method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO']  . '" class="gf">
+<input type="hidden" name="action" value="pstatus">
+');
+
     foreach($aps as $ap) {
       print "<div>{$ap['title']}</div>
 <div><select name=\"{$ap['apid']}\">
@@ -324,12 +323,12 @@ function passign() {
       $ap = $aps[$defer];
       print "<li>{$ap['title']}</li>\n";
     }
-    print "</ul>
+    print '</ul>
 
-<p class=\"alert\">Deleting these patterns will delete those assessments. Delete anyway?</p>
-<form method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
-<input type=\"hidden\" name=\"action\" value=\"delete\">
-";
+<p class="alert">Deleting these patterns will delete those assessments. Delete anyway?</p>
+<form method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '">
+<input type="hidden" name="action" value="delete">
+';
     foreach($defers as $defer)
       print "<input type=\"hidden\" name=\"pid[]\" value=\"$defer\">\n";
       
@@ -440,8 +439,8 @@ function deletes() {
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  <title><?=$project['title']?> : Pattern Management</title>
- <link rel="stylesheet" href="lib/ps.css">
- <script src="lib/ps.js"></script>
+ <link rel="stylesheet" href="<?=LIBDIR?>ps.css">
+ <script src="<?=LIBDIR?>ps.js"></script>
 </head>
 
 <body>
@@ -451,7 +450,7 @@ function deletes() {
 </header>
 
 <div id="poutine">
-<img src="../images/pattern-sphere-band.png" id="gravy">
+<img src="<?=ROOTDIR?>/images/pattern-sphere-band.png" id="gravy">
 
 <?php
 
@@ -481,7 +480,7 @@ if($rv) {
 }
 
 ?>
-<p><a href="./">Return to project</a></p>
+<p><a href="<?=PROJECT?>">Return to project</a></p>
 
 <script>
 init();

@@ -80,14 +80,15 @@
 define('DEBUG', true);
 define('AUTOACTIVATE', false);
 define('AUTH', true);
+require 'lib/db.php';
 
-if(preg_match('/analydia\.net$/', $_SERVER['SERVER_NAME']))
-  define('ROOTDIR', '/publicsphereproject/ps');
-else {
-  preg_match('%(/[^/]+)/%', $_SERVER['SCRIPT_NAME'], $matches);
-  define('ROOTDIR', $matches[1]);
+define('PROOT', ROOTDIR . '/project/');
+define('LIBDIR', PROOT . 'lib/');
+if(preg_match('%^.+/project/[^/]+/([^/]+)$%',
+              $_SERVER['PHP_SELF'],
+              $matches)) {
+    define('PROJECT', PROOT . 'index.php/' . $matches[1]);
 }
-define('LIBDIR', ROOTDIR . '/project/lib');
 define('ROLE', array('user' => 1, 'super' => 2, 'manager' => 3));
 define('FOOT', '<div id="foot"><a href="https://www.publicsphereproject.org/">Public Sphere Project</a></div>');
 define('MAXSIZE', 200000); # define elsewhere
@@ -95,7 +96,6 @@ define('IMAGEDIR', 'images');
 define('DEFAULTLANG', 'en_GB');
 define('ACLASSES', array('neutral', 'out', 'in'));
 
-require 'lib/db.php';
 require 'vendor/autoload.php';
 
 
@@ -700,15 +700,25 @@ function GetPAssessments($id) {
 function GetProject($projid = null) {
   global $pdo;
 
-
   if(isset($projid)) {
+
+    // the project ID is a function argument
+    
     $sth = $pdo->prepare('SELECT * FROM project WHERE id = :id');
     $sth->execute(['id' => $projid]);
-  } else {
-  
-    // tease out the trailing path component and match that to a project.tag
 
-    preg_match('%/([^/]+)/[^/]*$%', $_SERVER['SCRIPT_NAME'], $matches);
+  } else {
+    if(isset($_SERVER['PATH_INFO'])) {
+
+      // match PATH_INFO to a project.tag
+
+      preg_match('%^/(.+)$%', $_SERVER['PATH_INFO'], $matches);
+    } else {
+  
+      // tease out the trailing path component and match that to a project.tag
+
+      preg_match('%/([^/]+)/[^/]*$%', $_SERVER['SCRIPT_NAME'], $matches);
+    }
     $tag = $matches[1];
     if($tag == 'ps') {
       $tag = 'project';

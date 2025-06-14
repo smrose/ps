@@ -15,7 +15,6 @@
  *  pat           present a form for entering/editing patterns
  *  inwork        view patterns in work
  *
- * $Id: index.php,v 1.47 2023/03/22 20:39:44 rose Exp $
  */
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
@@ -304,8 +303,8 @@ function assess() {
 $welcome
 ";
   if($participant) {
-    print "<form id=\"assess\" method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\">
-";
+    print '<form id="assess" method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '">
+';
   }
 
   if($masq)
@@ -501,7 +500,7 @@ function consideration() {
     }
   } /* end loop on patterns */
 
-  print '<p><a href="./">Return to the project</a>.</p>
+  print '<p><a href="' . PROJECT . '">Return to the project</a>.</p>
 ';
   
 } /* end consideration() */
@@ -537,11 +536,12 @@ function pat($p = null) {
       # this user has created one or more patterns for this project;
       # present a form for selecting one to edit
 
-      print "<h2>Edit or Delete a Pattern</h2>
-  <p class=\"alert\">Select a pattern and an action.</h2>
+      print '<h2>Edit or Delete a Pattern</h2>
 
-  <form id=\"selpat\" method=\"POST\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\">
-  ";
+<p class="alert">Select a pattern and an action.</h2>
+
+<form id="selpat" method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '" class="gf">
+';
       if($masq)
         print "<input type=\"hidden\" name=\"masq\" value=\"$masq\">\n";
   print "<div class=\"fieldlabel\">Pattern:</div>
@@ -609,7 +609,7 @@ function pat($p = null) {
   
   print "<h2>$title</h2>
 $instructions
-<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\" enctype=\"multipart/form-data\">
+<form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}{$_SERVER['PATH_INFO']}\" class=\"gf\" enctype=\"multipart/form-data\">
 $fpid
 <input type=\"hidden\" name=\"paction\" value=\"$paction\">
 ";
@@ -665,7 +665,7 @@ function inwork($id) {
   while($direntry = readdir($dh))
     foreach($pats as $tag => $pat)
       if(preg_match($pat, $direntry))
-        $images[$tag] = IMAGEROOT . "/$direntry";
+        $images[$tag] = IMAGEDIR . "/$direntry";
 
   closedir($dh);
 
@@ -766,8 +766,8 @@ print "<!doctype html>
 
 <head>
  <title>{$project['title']}</title>
- <link rel=\"stylesheet\" href=\"lib/ps.css\">
- <script src=\"lib/ps.js\"></script>
+ <link rel=\"stylesheet\" href=\"" . LIBDIR . "ps.css\">
+ <script src=\"" . LIBDIR . "ps.js\"></script>
  $expire
 </head>
 
@@ -778,7 +778,7 @@ print "<!doctype html>
 </header>
 
 <div id=\"poutine\">
-<img src=\"../images/pattern-sphere-band.png\" id=\"gravy\">
+<img src=\"" . ROOTDIR . "/images/pattern-sphere-band.png\" id=\"gravy\">
 ";
 
 if($isLogged) {
@@ -798,20 +798,20 @@ if($isLogged) {
     if(DEBUG) error_log("masquerading as {$user['fullname']}");
   }
 
-  $action = array(' <li><a href="../log.php">Log out</a></li>',
-    ' <li><a href="../profile.php">Edit profile</a></li>');
+  $action = array(' <li><a href="' . ROOTDIR . '/log.php">Log out</a></li>',
+    ' <li><a href="' . ROOTDIR . '/profile.php">Edit profile</a></li>');
 
-  if($user['role'] == 'manager' || $user['role'] == 'super') {
+  if(IsProjectManager() || $user['role'] == 'super') {
 
     $manager= '<div id="manager">
 <div class="banner">Manager actions</div>
  <ul>
-  <li><a href="teams.php">Manage teams</a></li>
-  <li><a href="projpatterns.php">Manage patterns</a></li>
-  <li><a href="results.php">View results</a></li>
+  <li><a href="' . PROOT . "teams.php/{$project['tag']}\">Manage teams</a></li>
+  <li><a href=\"" . PROOT . "projpatterns.php/{$project['tag']}\">Manage patterns</a></li>
+  <li><a href=\"" . PROOT . "results.php/{$project['tag']}\">View results</a></li>
  </ul>
 </div>
-';
+";
   }
 
   if($user['role'] == 'user') {
@@ -833,7 +833,9 @@ if($isLogged) {
              '<li><a href="../reset.php">Reset password</a></li>'
             ];
   $manager = '';
-  $instructions = $project['visitor_text'];
+  $instructions = "{$project['visitor_text']}
+<p><a href=\"aresults.php/{$project['tag']}\">View (anonymized) results</a>.</p>
+";
 }
 
 if(isset($_REQUEST['submit']) && $_REQUEST['submit'] == 'Cancel') {
@@ -1033,8 +1035,8 @@ if(!$SuppressMain) {
  can view the pattern set <a href=\"?$querystring\">here</a>.</p>
 ";
 
-  print "<p>Visit the <a href=\"../\">project directory</a>.</p>
-";
+  print '<p>Visit the <a href="' . ROOTDIR . '">project directory</a>.</p>
+';
 
   if(isset($actual) && $actual['role'] == 'super') {
 
@@ -1043,22 +1045,22 @@ if(!$SuppressMain) {
     $users = GetUsers();
     $masq = isset($_REQUEST['masq']) ? $_REQUEST['masq'] : 0;
     $nullopt = ($masq) ? 'Stop masquerading' : 'Choose a user';
-    print "<div class=\"masq\"><p class=\"alert\">You can masquerade as a different user.</p>
- <form action=\"./\" method=\"POST\">
- <select name=\"masq\">
- <option value=\"0\"" . ($masq ? '' : 'selected') . ">$nullopt</option>
+    print '<div class="masq"><p class="alert">You can masquerade as a different user.</p>
+<form action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '" method="POST">
+ <select name="masq">
+  <option value="0"' . ($masq ? '' : 'selected') . ">$nullopt</option>
 ";
     foreach($users as $user) {
       $uid = $user['uid'];
       $style = ($user['role'] == 'super') ? 'font-weight: bold' : '';
-      print "<option style=\"$style\" value=\"$uid\"" . 
+      print "  <option style=\"$style\" value=\"$uid\"" . 
           (($masq == $uid) ? ' selected' : '') .
           ">{$user['fullname']} ($uid)</option>\n";
     }
-    print '</select>
-  <input type="submit" name="submit" value="Masquerade">
-  </form>
-  <div>
+    print ' </select>
+ <input type="submit" name="submit" value="Masquerade">
+</form>
+<div>
   ';
   
   } // end role == super

@@ -16,7 +16,6 @@
  *  Arriving here without a suitable role - superuser or manager of this
  *  project - silently redirects to the top of the project.
  *
- * $Id: teams.php,v 1.2 2023/03/22 18:15:39 rose Exp $
  */
 
 
@@ -66,8 +65,10 @@ require "lib/ps.php";
 DataStoreConnect();
 Initialize();
 
-if(isset($_POST) && isset($_POST['cancel']))
-  header("Location: ./");
+if(isset($_POST) && isset($_POST['cancel'])) {
+  header('Location: ' . PROJECT);
+  exit;
+}
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -79,7 +80,7 @@ if(DEBUG && isset($_POST)) error_log(var_export($_POST, true));
 
 $user = $auth->getCurrentUser(true);
 if($user['role'] != 'super' && !IsProjectManager())
-  header('Location: ./');
+  header('Location: ' . PROJECT);
 
 /* This user is authorized. */
 
@@ -101,7 +102,7 @@ $title = "{$project['title']}: Membership Management";
 </header>
 
 <div id="poutine">
-<img src="../images/pattern-sphere-band.png" id="gravy">
+<img src="<?=ROOTDIR?>/images/pattern-sphere-band.png" id="gravy">
 
 <?php
 
@@ -119,7 +120,7 @@ print '<p class="alert">Below is a table of all the teams in the
 system. Check any unchecked team to add and uncheck any checked team
 to remove. Press the Submit button to absorb your changes.<p>
 
-<form action="teams.php" method="POST">
+<form action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '" method="POST">
 <div class="gf">
 <div class="gb" style="border-bottom: 1px solid #644">Team</div>
 <div class="gb" style="border-bottom: 1px solid #644">Member</div>
@@ -143,7 +144,7 @@ print '<div style="grid-column: span 2; text-align: center">
 ';
 ?>
 
-<p><a href="./">Return</a>.</p>
+<p><a href="<?=PROJECT?>">Return</a>.</p>
 </div>
 <?=FOOT?>
 </body>
