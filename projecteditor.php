@@ -247,10 +247,6 @@ assessment form. The values are used to determine how the assessments
 are weighted in scoring each pattern. The colors are used in presenting
 assessments and results.</p>
 
-<p>NB: the <tt>short name</tt> field is used to set the URL of the project
-under <tt>" . ROOTDIR . "</tt>. That needs to be created manually as a
-symbolic link before the project will be implemented.</p>
-
 <form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\"enctype=\"multipart/form-data\" >
 $prid
 <input type=\"hidden\" name=\"action\" value=\"$action\">
