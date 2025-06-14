@@ -143,7 +143,8 @@ else
 if(count($aprojects)) {
   print "<ul>\n";
   foreach($aprojects as $aproject) {
-    print "<li><a href=\"{$aproject['tag']}/\">{$aproject['title']}</a></li>\n";
+    $purl = "project/index.php/{$aproject['tag']}";
+    print "<li><a href=\"$purl\">{$aproject['title']}</a></li>\n";
   }
   print "</ul>\n";
 } else {
