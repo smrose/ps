@@ -130,7 +130,7 @@ if($state == 'reset') {
 
     // Error submitting new password via resetPass().
   
-    print "<p class=\"error\">Error: ${rval['message']}</p>
+    print "<p class=\"error\">Error: {$rval['message']}</p>
 
 <p><a href=\"./\">Return</a> or <a href=\"reset.php\">retry</a>.</p>
 ";
