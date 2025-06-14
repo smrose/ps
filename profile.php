@@ -110,7 +110,7 @@ dashes. Choose another.</a>\n";
                    $updates,
                    array('uid' => $user['uid']));
     if($rVal['error']) {
-      print "<p>Error: ${rVal['message']}</p>\n";
+      print "<p>Error: {$rVal['message']}</p>\n";
       exit();
     }
     foreach($updates as $k => $v) {
@@ -125,7 +125,7 @@ dashes. Choose another.</a>\n";
 			          $newpass,
 			          $newpass);
     if($rVal['error']) {
-      print "<p>Error: ${rVal['message']}</p>\n";
+      print "<p>Error: {$rVal['message']}</p>\n";
       exit();
     } else {
       print "<p>Password updated.</p>\n";
@@ -139,7 +139,7 @@ dashes. Choose another.</a>\n";
       $rVal = 
         changeEmail($user['uid'], $email, $curpass);
       if($rVal['error']) {
-        print "<p>Error: ${rVal['message']}</p>\n";
+        print "<p>Error: {$rVal['message']}</p>\n";
         exit();
       }
     }
