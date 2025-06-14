@@ -23,7 +23,7 @@ require "lib/ps.php";
 DataStoreConnect();
 Initialize();
 
-$title = "{$project['title']}: Login Result";
+$title = 'Login Result';
 
 # Where we go after a successful login.
 
@@ -34,8 +34,8 @@ $page = "<!doctype html>
 
 <head>
  <title>$title</title>
- <link rel=\"stylesheet\" href=\"" . ROOTDIR . '/lib/ps.css">
- <script src="' . ROOTDIR . "/lib/ps.js\"></script>
+ <link rel=\"stylesheet\" href=\"" . ROOTDIR . '/project/lib/ps.css">
+ <script src="' . ROOTDIR . "/project/lib/ps.js\"></script>
 </head>
 
 <body>
