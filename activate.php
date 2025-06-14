@@ -53,7 +53,7 @@ $page = "<!doctype html>
 <header><h1>$title</h1></header>
 
 <div id=\"poutine\">
-<img src=\"" . IMAGEROOT . "/pattern-sphere-band.png\" id=\"gravy\">
+<img src=\"" . IMAGEDIR . "/pattern-sphere-band.png\" id=\"gravy\">
 ";
 
 if(isset($_POST['submit']) || isset($key)) {
