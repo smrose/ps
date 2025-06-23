@@ -834,7 +834,7 @@ if($isLogged) {
             ];
   $manager = '';
   $instructions = "{$project['visitor_text']}
-<p><a href=\"aresults.php/{$project['tag']}\">View (anonymized) results</a>.</p>
+<p><a href=\"" . PROOT . "/aresults.php/{$project['tag']}\">View (anonymized) results</a>.</p>
 ";
 }
 
