@@ -828,9 +828,9 @@ if($isLogged) {
   // is not authenticated
   
   $action = [
-             '<li><a href="../register.php">Register</a></li>',
-             '<li><a href="../log.php">Log in</a></li>',
-             '<li><a href="../reset.php">Reset password</a></li>'
+             '<li><a href="' . ROOTDIR . '/register.php">Register</a></li>',
+             '<li><a href="' . ROOTDIR . '/log.php">Log in</a></li>',
+             '<li><a href="' . ROOTDIR . '/reset.php">Reset password</a></li>'
             ];
   $manager = '';
   $instructions = "{$project['visitor_text']}
