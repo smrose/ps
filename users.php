@@ -102,31 +102,50 @@ function Manage($uid) {
 membership in teams, or delete them entirely. Press "Cancel" here to
 leave the user as they were.</p>
 
-<p>Deleting a user will discard all of their assessments and volunteer
+<p>Deleting a user will discard all of their assessments and their volunteer
 record.</p>
 ';
 
   print "<form action=\"users.php\" method=\"POST\" class=\"gf\">
-<div class=\"fieldlabel\">UID:</div>
-<div><input type=\"hidden\" name=\"uid\" value=\"{$user['uid']}\">{$user['uid']}</div>
-<div class=\"fieldlabel\">Is volunteer:</div>
-<div>$isVolunteer</div>
-<div class=\"fieldlabel\">Email:</div> <div><input type=\"text\" name=\"email\" value=\"{$user['email']}\"></div>
-<div class=\"fieldlabel\">Fullname:</div> <div><input type=\"text\" name=\"fullname\" value=\"{$user['fullname']}\"></div>
-<div class=\"fieldlabel\">Username:</div> <div><input type=\"text\" name=\"username\" value=\"{$user['username']}\"></div>
-<div class=\"fieldlabel\">Active:</div> <div>$isactive</div>
-<div class=\"fieldlabel\">$role:</div> <div>$roles</div>
-$p
-<div class=\"fieldlabel\">Notes:</div>
-<div>
- <textarea rows=\"4\" cols=\"60\" name=\"notes\">{$user['notes']}</textarea>
-</div>
-<div class=\"gs\">
- <input type=\"submit\" name=\"submit\" value=\"Apply changes\">
- <input type=\"submit\" name=\"submit\" value=\"Delete user\">
- $da
- <input type=\"submit\" name=\"cancel\" value=\"Cancel\">
-</div>
+
+ <div class=\"fieldlabel\">UID:</div>
+ <div><input type=\"hidden\" name=\"uid\" value=\"{$user['uid']}\">{$user['uid']}</div>
+
+ <div class=\"fieldlabel\">Registered:</div>
+ <div>{$user['dt']}</div>
+
+ <div class=\"fieldlabel\">Is volunteer:</div>
+ <div>$isVolunteer</div>
+ 
+ <div class=\"fieldlabel\">Email:</div>
+ <div><input type=\"text\" name=\"email\" value=\"{$user['email']}\"></div>
+
+ <div class=\"fieldlabel\">Fullname:</div>
+ <div><input type=\"text\" name=\"fullname\" value=\"{$user['fullname']}\"></div>
+ 
+ <div class=\"fieldlabel\">Username:</div>
+ <div><input type=\"text\" name=\"username\" value=\"{$user['username']}\"></div>
+
+ <div class=\"fieldlabel\">Active:</div>
+ <div>$isactive</div>
+
+ <div class=\"fieldlabel\">Role:</div>
+ <div>$roles</div>
+ 
+ $p
+
+ <div class=\"fieldlabel\">Notes:</div>
+ <div>
+  <textarea rows=\"4\" cols=\"60\" name=\"notes\">{$user['notes']}</textarea>
+ </div>
+
+ <div class=\"gs\">
+  <input type=\"submit\" name=\"submit\" value=\"Apply changes\">
+  <input type=\"submit\" name=\"submit\" value=\"Delete user\">
+  $da
+  <input type=\"submit\" name=\"cancel\" value=\"Cancel\">
+ </div>
+
 </form>
 ";
 
@@ -163,7 +182,7 @@ function AbsorbManage($uid) {
     if($rval['error'])
       error_log("Deleting user $uid failed: {$rval['message']}");
     else
-      print "<p>Deleted user $uid</p>\n";
+      print "<p class=\"alert\">Deleted user $uid</p>\n";
       
   } elseif($_POST['submit'] == 'Apply changes') {
 

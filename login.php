@@ -5,7 +5,7 @@
  *
  * CONCEPT
  *
- *  Submit login information.
+ *  Absorb submitted login information.
  *
  * $Id: login.php,v 1.7 2023/03/22 20:43:25 rose Exp $
  */
@@ -19,6 +19,13 @@ header("Pragma: no-cache");
 
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require "lib/ps.php";
+
+if(isset($_POST['email'])) {
+  $email = $_POST['email'];
+} else {
+  header('Location: ./');
+  exit;
+}
 
 DataStoreConnect();
 Initialize();
@@ -50,7 +57,6 @@ $page = "<!doctype html>
 
 // Form data.
 
-$email = $_POST['email'];
 $password = $_POST['password'];
 $remember = isset($_POST['remember']) ? true : false;
 
@@ -71,9 +77,9 @@ if($auth->isEmailTaken($email)) {
     
     if($rval['message'] == 'Account has not yet been activated.') {
       $url = "register.php?resend=1&email=$email";
-      print "$page <p>Error: {$rval['message']} Shall I <a href=\"$url\">resend the activation email</a>?</p>\n";
+      print "$page <p class=\"alert\">Error: {$rval['message']} Shall I <a href=\"$url\">resend the activation email</a>?</p>\n";
     } else {
-      print "$page <p>Error: {$rval['message']}. <a href=\"log.php\">Click here</a> to retry.</p>\n";
+      print "$page <p class=\"alert\">Error: {$rval['message']} <a href=\"log.php\">Click here</a> to retry or <a href=\"reset\">here</a> to reset it.</p>\n";
     }
   } else {
   
@@ -86,13 +92,15 @@ if($auth->isEmailTaken($email)) {
       header("Location: $redirect");
       exit();
     }
-    print("<p>Logged in. <a href=\"./\">Click here</a> to continue.</p>\n");
+    print("<p class=\"alert\">Logged in. <a href=\"./\">Click here</a> to continue.</p>\n");
   }
 } else {
 
   // A new user (or misentered email).
 
-  print "$page <p>There is no user with the email address <tt>$email</tt>. To retry login or create a new account, <a href=\"log.php\">click here</a>.</p>\n";
+  print "$page <p class=\"alert\">There is no user with the email
+  address <tt>$email</tt>. To retry login or create a new account, <a
+  href=\"log.php\">click here</a>.</p>\n";
 }
 ?>
 </div>

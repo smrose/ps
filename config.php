@@ -53,8 +53,6 @@ if(isset($_POST) && isset($_POST['cancel'])) {
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require "lib/ps.php";
 
-const BLACKLIST = array('dictionary', 'recaptcha');
-
 DataStoreConnect();
 Initialize();
 

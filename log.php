@@ -78,10 +78,11 @@ $title = 'Pattern Sphere Login';
 
 <h2 id="login">Login</h2>
 
-<p>If you already have an account, enter your credentials below to login.
-(If not, go <a href="register.php">here</a> to create one.)
-Checking the "remember me" box will keep you logged in on the browser you
-are using across sessions, and for about a month.</p>
+<p class="alert">If you already have an account, enter your
+credentials below to login.  (If not, go <a
+href="register.php">here</a> to create one.)  Checking the "remember
+me" box will keep you logged in on the browser you are using across
+sessions, and for about a month.</p>
 
 <form method="POST" action="<?=ROOTDIR?>/login.php" class="gf">
 <?=$referer?><div class="fieldlabel">Email address:</div>

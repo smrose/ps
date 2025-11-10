@@ -82,7 +82,7 @@ if(isset($_REQUEST['resend'])) {
   } else if(IsUsernameTaken($username)) {
     
     print "$page
-<p>We already have a user with the username <tt>$username</tt>. If this is your username and you need to reset your password, <a href=\"reset.php\">click here</a>. To register with a different username, <a href=\"log.php\">click here</a>.</p>\n";
+<p class=\"alert\">We already have a user with the username <tt>$username</tt>. If this is your username and you need to reset your password, <a href=\"reset.php\">click here</a>. To register with a different username, <a href=\"log.php\">click here</a>.</p>\n";
 
   } else if(! IsUsernameValid($username)) {
     
@@ -128,11 +128,13 @@ if(isset($_REQUEST['resend'])) {
       }
 
       // Not auto-activating.
-	
+
+      $settings = GetConfig();
+      $rqe = $settings['request_key_expiration']['value'];
       print "$page
-<p>Registration accepted. You will immedately be receiving an email with a 
-link containing the key required to activate your account. Please follow 
-that link promptly, as the activation key has a limited lifetime.</p>
+<p class=\"alert\">Registration accepted. You will immedately be receiving an email
+with a link containing the key required to activate your account. Please follow 
+that link promptly, as the activation key has a limited lifetime ($rqe).</p>
 ";
     }
   }
@@ -140,14 +142,18 @@ that link promptly, as the activation key has a limited lifetime.</p>
 
   # Solicit registration information.
 
+  $settings = GetConfig();
+  $rqe = $settings['request_key_expiration']['value'];
+
   print $page;
 ?>    
 <h2 id="register">Register</h2>
 
-<p>If you don't yet have an account, you can create one here. Enter your
-email, name, a username and the password you wish to use. We'll send an email
-to that account with the link and a key that you will use to activate the
-new account. Note: the activation key is only valid for a few minutes.</p>
+<p class="alert">If you don't yet have an account, you can create
+one here. Enter your email, name, a username and the password you wish
+to use. We'll send an email to that account with the link and a key
+that you will use to activate the new account. Note: the activation
+key is valid for a limited time (<?=$rqe?>).</p>
 
 <form method="POST" action="register.php" class="gf">
 <div class="fieldlabel">Email address:</div> <div><input type="text" size="35" name="email"></div>
@@ -163,8 +169,8 @@ new account. Note: the activation key is only valid for a few minutes.</p>
 
 <h3>Resend the Activation Email</h3>
 
-<p>If you need another copy of the activation email, enter your email in the
-form below.</p>
+<p class="alert">If you need another copy of the activation email,
+enter your email in the form below.</p>
 
 <form method="POST" action="register.php" class="gf">
 <div class="fieldlabel">Email address:</div> <div><input type="text" size="35" name="email"></div>
