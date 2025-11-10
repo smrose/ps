@@ -53,18 +53,24 @@ $page = "<!doctype html>
 <header><h1>$title</h1></header>
 
 <div id=\"poutine\">
-<img src=\"" . IMAGEDIR . "/pattern-sphere-band.png\" id=\"gravy\">
+<img src=\"" . ROOTDIR . '/' . IMAGEDIR . "/pattern-sphere-band.png\" id=\"gravy\">
 ";
 
 if(isset($_POST['submit']) || isset($key)) {
+
+  // page was called with key in $PATH_INFO or form was submitted with a key
+
   if(! isset($key))
     $key = trim($_POST['key']);
+
   $rval = $auth->activate($key);
+
   if(isset($rval['error'])) {
-    print "$page\n<p>{$rval['message']}</p>\n";
-    
-    if($rval['error'] == 'Activation key is invalid.') {
-      print "<p>The activation key you entered is not valid. Click <a href=\"activate.php\">here</a> to try again.</p>\n";
+    print "$page\n<p class=\"alert\">{$rval['message']}</p>\n";
+    if($rval['error'] == 'Activation key has expired.') {
+      print "<p class=\"alert\">You can request a new one on <a href=\"register.php\">this page</a>.</p>\n";
+    } else if($rval['error'] == 'Activation key is invalid.') {
+      print "<p class=\"alert\">The activation key you entered (<code>$key</code>) is not valid. Click <a href=\"activate.php\">here</a> to try again.</p>\n";
     } else {
       print '<p><a href="' . ROOTDIR . '/log.php">Proceed to login page.</a></p>
 ';
@@ -87,4 +93,3 @@ below to activate your account.</p>
 <?=FOOT?>
 </body>
 </html>
-
