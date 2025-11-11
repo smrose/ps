@@ -1336,7 +1336,7 @@ function ProjectMembers($projid) {
  *  Return an array of projteam records, keyed on teamid.
  */
 
-function GetProjTeams($projid) {
+function GetProjTeams($projid = null) {
   global $pdo;
 
   $sql = 'SELECT pt.*, t.name, p.tag FROM projteam pt

@@ -1,4 +1,13 @@
 <?php
+/* NAME
+ *
+ *  test.php
+ *
+ * CONCEPT
+ *
+ *  Provide an overview of system data structures: teams, projects, etc.
+ */
+ 
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require 'lib/ps.php';
 DataStoreConnect();
@@ -77,7 +86,14 @@ Initialize();
 
 <h1>Test</h1>
 
-<h2>SCRIPT_NAME: <?=$_SERVER['SCRIPT_NAME']?></h2>
+<h3>
+ROOTDIR <?=ROOTDIR?><br>
+LIBDIR <?=LIBDIR?><br>
+SCRIPT_NAME: <?=$_SERVER['SCRIPT_NAME']?><br>
+DSN <?=DSN?>
+</h3>
+
+
 
 <ul>
  <li><a href="#teams">Teams</a></li>
@@ -101,9 +117,6 @@ Initialize();
   $orgmanagers = GetOrgManagers();
 ?>
 
-<h3>ROOTDIR <?=ROOTDIR?></h3>
-<h3>LIBDIR <?=LIBDIR?></h3>
-
 <h2 id="teams">Teams</h2>
 
 <div class="two">
@@ -122,19 +135,30 @@ Initialize();
 
 <h2 id="projects">Projects</h2>
 
-<div class="four">
-<div class="b">Tag</div>
-<div class="b">Title</div>
-<div class="b">ID</div>
-<div class="b">Active</div>
+<div class="five">
+ <div class="b">Tag</div>
+ <div class="b">Title</div>
+ <div class="b">ID</div>
+ <div class="b">Active</div>
+ <div class="b">Teams</div>
 
 <?php
   foreach($projects as $project) {
+    $projTeams = GetProjTeams($project['id']);
+    $pts = '';
+    foreach($projTeams as $projTeam) {
+      if(strlen($pts)) {
+        $pts .= ", {$projTeam['name']}";
+      } else {
+        $pts = $projTeam['name'];
+      }
+    }
     print "
  <div>{$project['tag']}</div>
  <div>{$project['title']}</div>
  <div>({$project['id']})</div>
- <div>{$project['active']}</div>
+ <div style=\"text-align: center\">{$project['active']}</div>
+ <div>$pts</div>
  ";
   }
 ?>

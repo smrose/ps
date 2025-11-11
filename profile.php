@@ -93,7 +93,7 @@ if(isset($_POST['submit'])) {
   $username = strtolower(trim($_POST['username']));
   if($username != $user['username']) {
     if(IsUsernameTaken($username)) {
-      print "<p>We already have a user with the username <tt>$username</tt>.
+      print "<p class=\"alert\">We already have a user with the username <code>$username</code>.
 You must choose another.</p>\n";
       exit;
     }
@@ -160,7 +160,7 @@ dashes. Choose another.</a>\n";
 
 ?>
 
-<p>You can change your fullname, username, email, and/or password on this page.
+<p class="alert">You can change your fullname, username, email, and/or password on this page.
 Provide your current password to reconfirm your identity.</p>
 
 <form method="POST" class="gf">
