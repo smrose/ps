@@ -134,7 +134,7 @@ objectives and PS splash page and Labs splash page objectives</a>
 <li><a href="....">(not linked) Notion</a></li>
 <li><a href="....">(not linked) LinkedIn</a></li>
 <li><a href="....">(not linked) Github</a></li>
-<li><a href="...."></a>(not linked)</li>
+<li><a href="...."></a>(not linked) Slack</li>
 <li><a href="...."></a>(not linked)</li>
 <li><a href="...."></a>(not linked)/li>
 </ul>
