@@ -63,23 +63,23 @@ $actions = join('', $action);
 
 <header>
 <h1>Pattern Sphere</h1>
-<h2>Information for Volunteers</h2>
+<h2>Information for Volunteers (draft)</h2>
 </header>
 
 <div id="poutine">
 <img src="../images/pattern-sphere-band.png" id="gravy">
 
-<h3>This page is intended to provide resources for developers. It's a draft!</h3>
+
 
 <?php
 if(!$isLogged) {
 
   // this user hasn't logged in
   
-  print "<p>Access to this page is restricted to registered Pattern Sphere
-volunteers. If that decribes you, please <a href=\"../log.php\">log in</a>
-to continue.</p>
-";
+  print "<p>If you are a registered Pattern Sphere volunteer, please <a href=\"../log.php\">log in</a> for registered volunteer resources.</p>
+
+  <p>If you would like to register as a volunteer, please <a href=\"profile.php\">complete the PS volunteer interest form.</p>";
+
 } elseif(!$isAuthorized) {
 
   // this user logged in, but is neither a volunteer nor a superuser
@@ -94,7 +94,7 @@ registration form</a>.</p>
 
 ?>
 <p>If you have any insights or suggestions as to what should be added or 
-clarified, on this page, let us (Roma & Doug) know.</p>
+clarified, on this page, let Doug know.</p>
 
 <p>The purpose of the Pattern Sphere (PS) is to support the use of
 patterns and languages to help address difficult social and
@@ -104,14 +104,13 @@ way.</p>
 
 <p>Each "pattern" is a structured description of successful ideas and
 actions. Patterns are general, not recipes with precise
-instructions. They're intended to be adapted to meet the needs of the
-people using them. This approach is not a cure-all and it's not
-intended to replace other approaches. And the online approach that we
-need hasn't been developed.</p>
+instructions. They must be adapted by the people using them to meet 
+their specific needs. This approach is not a cure-all and it's not
+intended to replace other approaches. </p>
 
 <p>The PS is intended to support people throughout the entire
 life-cycle of social change activities from creating new patterns and
-commenting on existing patterns to using patterns to develop new
+commenting on existing patterns to using patterns and developing new
 projects. As the PS provides more services, people, working
 individually or on teams, will be able to find patterns, select
 patterns to use, annotate patterns (for their own use or to help
@@ -119,6 +118,26 @@ others), create new patterns, brainstorm with patterns, join teams,
 etc. etc.  We also plan to offer alternative ways for people to
 perform each of these tasks — knowing that people have different
 styles and take different approaches.</p>
+
+<h3>Documents (incomplete list)</h3>
+<ul>
+<li><a href="https://docs.google.com/document/d/13LI1mpcgUYXMaP4UQy211gYWd-sznTgt094vUMTbZ0c/edit?tab=t.0">PS 
+Basic Objects and User Functions</a> Document, comments welcome</li>
+<li><a href="https://docs.google.com/document/d/1sy3Y3vVp69YXesU_JSb6F3gc27ffkWt37QX9p7HRA_I/edit?tab=t.0">PS 
+objectives and PS splash page and Labs splash page objectives</a>
+</li>
+</ul>
+
+<h3>Development Platforms</h3>
+<ul>
+<li><a href="https://www.figma.com/design/KiyeFNhGEKeXt1RebDcYa9/Public-Sphere-Project--App-Mockups?t=DU5vbgYgfkgXZKuQ-0#-1">Figma</li>
+<li><a href="....">(not linked) Notion</a></li>
+<li><a href="....">(not linked) LinkedIn</a></li>
+<li><a href="....">(not linked) Github</a></li>
+<li><a href="...."></a>(not linked)</li>
+<li><a href="...."></a>(not linked)</li>
+<li><a href="...."></a>(not linked)/li>
+</ul>
 
 <h3>Priorities (rough draft)</h3>
 
@@ -142,17 +161,17 @@ For one thing encourage people to go to the PS page (and AM too!)
 Encourage people to go to the PS page (and AM too!) 
 <li>something soon, even if it's just for the short term</li>
 </ul>
-<li>Master process outline / site map (Tharani (and Sanjana?))</li>
+<li>Master process outline / site map /li>
 <li>Finish business rules (processes, roles, rules, patterns, pattern </li>
-languages, organizations, users, annotations, workspace, etc.) (Tharani (and Sanjana?))
+languages, organizations, users, annotations, workspace, etc.) 
 <li>Fix (or, even, improve) registration / login process</li>
-<li>Overhaul volunteer page(s) (Roma)</li>
-<li>User Research (Georgia Tech)</li>
+<li>Overhaul volunteer page(s)</li>
+<li>User Research</li>
 <li>Import Liberating Voices and one or more other pattern languages</li>
-<li>Template development, pattern enhancement and rework (Scott)</li>
+<li>Template development, pattern enhancement and rework</li>
 <li>Expert interviews</li>
 <li>Add info about one or Pattern Languages to list</li>
-<li>Work with a community (real or represented) (Lala, Georgia Tech)</li>
+<li>Work with a community (real or represented)</li>
 <ul>
 <li>publish results, help tailor processes to the various communities</li>
 </ul>
