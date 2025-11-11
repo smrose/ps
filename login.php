@@ -79,7 +79,7 @@ if($auth->isEmailTaken($email)) {
       $url = "register.php?resend=1&email=$email";
       print "$page <p class=\"alert\">Error: {$rval['message']} Shall I <a href=\"$url\">resend the activation email</a>?</p>\n";
     } else {
-      print "$page <p class=\"alert\">Error: {$rval['message']} <a href=\"log.php\">Click here</a> to retry or <a href=\"reset\">here</a> to reset it.</p>\n";
+      print "$page <p class=\"alert\">Error: {$rval['message']} <a href=\"log.php\">Click here</a> to retry or <a href=\"reset.php\">here</a> to reset it.</p>\n";
     }
   } else {
   

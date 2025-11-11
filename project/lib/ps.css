@@ -84,6 +84,7 @@ input[type=submit]:disabled {
 }
 .alert {
     font-weight: bold;
+    color: #444;
 }
 .error {
     color: #600;

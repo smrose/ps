@@ -100,7 +100,7 @@ elseif($email) {
 } else {
   $state = 'start';
 }
-
+$headimg = ROOTDIR . '/' . IMAGEDIR . '/pattern-sphere-band.png';
 ?>
 <!doctype html>
 <html lang="en">
@@ -118,7 +118,7 @@ elseif($email) {
 </header>
 
 <div id="poutine">
-<img src="images/pattern-sphere-band.png" id="gravy">
+<img src="<?=$headimg?>" id="gravy">
 
 <?php
 
@@ -142,7 +142,7 @@ if($state == 'reset') {
   
     // Successfully set new password.
 
-    print "<p>Password reset. <a href=\"log.php\">Click here to login</a>.</p>\n";
+    print "<p class=\"alert\">Password reset. <a href=\"log.php\">Click here to login</a>.</p>\n";
   }
 } else if($state == 'request') {
 

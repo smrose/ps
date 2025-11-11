@@ -76,25 +76,34 @@ if(isset($_REQUEST['resend'])) {
 
     // An existing user.
 
-    print "$page
-<p>We already have a user <tt>$email</tt>. If this is your email address and you need to reset your password, <a href=\"reset.php\">click here</a>. To register with a different email address, <a href=\"log.php\">click here</a>.</p>\n";
+    print "$page <p class=\"alert\">We already have a user
+<tt>$email</tt>. If this is your email address and you need to reset
+your password, <a href=\"reset.php\">click here</a>. To register with
+a different email address, <a href=\"log.php\">click here</a>.</p>
+";
 
   } else if(IsUsernameTaken($username)) {
     
-    print "$page
-<p class=\"alert\">We already have a user with the username <tt>$username</tt>. If this is your username and you need to reset your password, <a href=\"reset.php\">click here</a>. To register with a different username, <a href=\"log.php\">click here</a>.</p>\n";
+    print "$page <p class=\"alert\">We already have a user with the
+username <tt>$username</tt>. If this is your username and you need to
+reset your password, <a href=\"reset.php\">click here</a>. To register
+with a different username, <a href=\"log.php\">click here</a>.</p>
+";
 
   } else if(! IsUsernameValid($username)) {
     
-    print "$page
-<p>We require a username to consist of between four and twenty characters consisting of lower-case letters, digits, underscores, and dashes. To register with a different username, <a href=\"log.php\">click here</a>.</p>\n";
+    print "$page <p class=\"alert\">We require a username to consist
+of between four and twenty characters consisting of lower-case
+letters, digits, underscores, and dashes. To register with a different
+username, <a href=\"log.php\">click here</a>.</p>
+";
 
   } else {
 
     // A new user.
 
     if(!strlen($fullname)) {
-      print "$page\n<p>We require that you include your name.</p>\n";
+      print "$page\n<p class=\"alert\">We require that you include your name.</p>\n";
       exit();
     }
   

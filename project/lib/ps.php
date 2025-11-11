@@ -95,6 +95,7 @@ define('MAXSIZE', 200000); # define elsewhere
 define('IMAGEDIR', 'images');
 define('DEFAULTLANG', 'en_GB');
 define('ACLASSES', array('neutral', 'out', 'in'));
+define('BLACKLIST', array('dictionary', 'recaptcha'));
 
 require 'vendor/autoload.php';
 
