@@ -119,15 +119,26 @@ DSN <?=DSN?>
 
 <h2 id="teams">Teams</h2>
 
-<div class="two">
+<div class="three">
 <div class="b">ID</div>
 <div class="b">Name</div>
+<div class="b">Members</div>
 
 <?php
   foreach($teams as $team) {
+    $tms = GetTeamMembers($team['id']);
+    $members = '';
+    foreach($tms as $tm) {
+      if(strlen($members)) {
+        $members .= ", {$tm['username']}";
+      } else {
+        $members = $tm['username'];
+      }
+    }
     print "
 <div>{$team['id']}</div>
 <div>{$team['name']}</div>
+<div>$members</div>
 ";
   }
 ?>
