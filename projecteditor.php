@@ -46,8 +46,6 @@
 #   UNIQUE KEY tag (tag),
 #   CONSTRAINT FOREIGN KEY(destination) REFERENCES planguage(id)
 #  ) COMMENT='project metadata';
-#
-# $Id: projecteditor.php,v 1.11 2023/03/22 20:43:25 rose Exp $
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);

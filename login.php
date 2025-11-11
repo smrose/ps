@@ -6,8 +6,6 @@
  * CONCEPT
  *
  *  Absorb submitted login information.
- *
- * $Id: login.php,v 1.7 2023/03/22 20:43:25 rose Exp $
  */
 
 if(isset($_POST) && isset($_POST['cancel']))

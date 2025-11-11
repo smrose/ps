@@ -17,8 +17,6 @@
  *
  *  There are methods for changing email and password. For changing fullname
  *  and username we use Update(), our own GP SQL function.
- *
- * $Id: profile.php,v 1.7 2023/03/22 20:43:25 rose Exp $
  */
 
 if(isset($_POST) && isset($_POST['cancel'])) {

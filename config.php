@@ -43,7 +43,6 @@
  *  Access to this page requires the 'super' role. Arriving here without
  *  that silently redirects to the top of the project.
  *
- * $Id: config.php,v 1.21 2023/03/22 20:43:25 rose Exp $
  */
 
 if(isset($_POST) && isset($_POST['cancel'])) {

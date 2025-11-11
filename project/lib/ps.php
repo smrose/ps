@@ -74,8 +74,6 @@
 # NOTES
 #
 #  Coming eventually.
-#
-# $Id: ps.php,v 1.1 2023/03/22 17:49:50 rose Exp $
 
 define('DEBUG', true);
 define('AUTOACTIVATE', false);

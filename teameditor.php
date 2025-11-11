@@ -39,8 +39,6 @@
 #   CONSTRAINT FOREIGN KEY (userid) REFERENCES phpauth_users (id),
 #   CONSTRAINT FOREIGN KEY (teamid) REFERENCES team (id)
 #  ) COMMENT='ties a user to a team';
-#
-# $Id: teameditor.php,v 1.4 2023/03/22 20:43:25 rose Exp $
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);

@@ -13,8 +13,6 @@
  *
  *  A user arriving without credentials is here to login to an existing
  *  account.
- *
- * $Id: log.php,v 1.12 2023/03/22 20:43:25 rose Exp $
  */
 
 if(isset($_POST) && isset($_POST['cancel'])) {

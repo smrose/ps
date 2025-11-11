@@ -6,8 +6,6 @@
  * CONCEPT
  *
  *  Top-level index file for the pattern selection projects.
- *
- * $Id: index.php,v 1.26 2023/03/22 20:43:25 rose Exp $
  */
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");

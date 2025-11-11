@@ -16,8 +16,6 @@
  *   2. Process the activation key.
  *
  *  The key may be provided in the PATH_INFO.
- *
- * $Id: activate.php,v 1.6 2023/03/22 18:20:25 rose Exp $
  */
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");

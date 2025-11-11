@@ -25,8 +25,6 @@
  *   4. Submitting that form passes the key forward and calls resetPass().
  *      We present (either an error message or) a confirmation with a
  *      link to the main page. $state == 'reset'.
- *
- * $Id: reset.php,v 1.10 2023/03/22 18:32:46 rose Exp $
  */
 
 preg_match('%^(.*)/[^/]+%', $_SERVER['SCRIPT_NAME'], $matches);

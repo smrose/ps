@@ -17,8 +17,6 @@
 #  pedit    edit or delete a pattern
 #  pcreate  create a pattern
 #  plcreate create a pattern language
-#
-# $Id: patterneditor.php,v 1.20 2023/03/22 20:43:25 rose Exp $
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);

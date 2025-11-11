@@ -33,8 +33,6 @@
  *  That page offers a form in which the user's fullname, email, activation
  *  status, and role - but not UID - can be edited by POSTing the form.
  *  That form also offers a submit button for performing a forced delete.
- *
- * $Id: users.php,v 1.23 2023/03/22 20:43:25 rose Exp $
  */
  
 

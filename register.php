@@ -9,8 +9,6 @@
  *  1. Solicit registration information.
  *  2. Absorb registration information.
  *  3. Request activation email resend.
- *
- * $Id: register.php,v 1.8 2023/03/22 18:29:42 rose Exp $
  */
 
 if(isset($_POST) && isset($_POST['cancel'])) {
