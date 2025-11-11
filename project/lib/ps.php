@@ -1063,7 +1063,10 @@ function GetTeamMembers($id) {
   global $pdo;
 
   try {
-    $sth = $pdo->prepare("SELECT * FROM teammember WHERE teamid = :teamid");
+    $sth = $pdo->prepare("SELECT tm.*, u.username
+ FROM teammember tm
+  JOIN phpauth_users u ON tm.userid = u.id
+ WHERE teamid = :teamid");
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
