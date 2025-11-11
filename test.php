@@ -12,6 +12,15 @@ set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require 'lib/ps.php';
 DataStoreConnect();
 Initialize();
+
+# This view is for superusers only.
+
+$user = $auth->getCurrentUser(true);
+
+if(!$user || $user['role'] != 'super') {
+  header('Location: ./');
+  exit;
+}
 ?>
 <!doctype html>
 <html lang="en">
