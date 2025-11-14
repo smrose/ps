@@ -180,7 +180,7 @@ promptly.</p>
 <form method="POST" action="reset.php" class="gf">
 <div class="fieldlabel">Email address:</div> <div><input type="text" size="35" name="email"></div>
 <div class="gs">
-<input type="submit" name="reset" value="Send password reset email">
+<input type="submit" name="reset" value="Send password reset email" id="pwsub">
 <input type="submit" name="cancel" value="Cancel">
 </div>
 </form>
@@ -189,5 +189,12 @@ promptly.</p>
 ?>
 </div>
 <?=FOOT?>
+
+<script>
+  document.querySelector('#pwsub').addEventListener('click', function () {
+    document.body.style.opacity = .5
+  })
+</script>
+
 </body>
 </html>
