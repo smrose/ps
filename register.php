@@ -169,7 +169,7 @@ key is valid for a limited time (<?=$rqe?>).</p>
 <div class="fieldlabel">Your name:</div> <div><input type="text" size="35" name="fullname"></div>
 <div class="fieldlabel">Your username:</div> <div><input type="text" size="35" name="username" size="20"></div>
 <div class="gs">
-<input type="Submit" name="register" value="Register">
+<input type="Submit" name="register" value="Register" id="registersub">
 <input type="submit" name="cancel" value="Cancel">
 </div>
 </form>
@@ -182,14 +182,22 @@ enter your email in the form below.</p>
 <form method="POST" action="register.php" class="gf">
 <div class="fieldlabel">Email address:</div> <div><input type="text" size="35" name="email"></div>
 <div class="gs">
-<input type="Submit" name="resend" value="Resend activation email">
+<input type="Submit" name="resend" value="Resend activation email" id="resendsub">
 <input type="submit" name="cancel" value="Cancel">
 </div>
 </form>
+</div>
 <?php
 }
 ?>
-</div>
 <?=FOOT?>
+<script>
+  document.querySelector('#registersub').addEventListener('click', function() {
+    document.body.style.opacity = .5
+  });
+  document.querySelector('#resendsub').addEventListener('click', function() {
+    document.body.style.opacity = .5
+  });
+</script>
 </body>
 </html>
