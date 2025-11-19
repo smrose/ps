@@ -124,8 +124,9 @@ styles and take different approaches.</p>
 <li><a href="https://docs.google.com/document/d/13LI1mpcgUYXMaP4UQy211gYWd-sznTgt094vUMTbZ0c/edit?tab=t.0">PS 
 Basic Objects and User Functions</a> Document, comments welcome</li>
 <li><a href="https://docs.google.com/document/d/1sy3Y3vVp69YXesU_JSb6F3gc27ffkWt37QX9p7HRA_I/edit?tab=t.0">PS 
-objectives and PS splash page and Labs splash page objectives</a>
-</li>
+objectives and PS splash page and Labs splash page objectives</a></li>
+<li><a href="https://docs.google.com/document/d/1Ake8y07cauZKmzYk5sk2gprMY0FtXvcX5ebryRkrzfM/edit?tab=t.18qs2edepc5">Onboarding documents</a> 
+(may be outdated?)</li>
 </ul>
 
 <h3>Development Platforms</h3>
@@ -133,10 +134,18 @@ objectives and PS splash page and Labs splash page objectives</a>
 <li><a href="https://www.figma.com/design/KiyeFNhGEKeXt1RebDcYa9/Public-Sphere-Project--App-Mockups?t=DU5vbgYgfkgXZKuQ-0#-1">Figma</li>
 <li><a href="....">(not linked) Notion</a></li>
 <li><a href="....">(not linked) LinkedIn</a></li>
-<li><a href="....">(not linked) Github</a></li>
-<li><a href="...."></a>(not linked) Slack</li>
+<li><a href="https://github.com/smrose/ps">Github</a></li>
+<li><a href="https://publicsphere.slack.com">Slack</a></li>
+<li><a href="https://www.publicsphereproject.org">Public Sphere Project</a></li>
+<li><a href="https://www.publicsphereproject.org/patterns/lv">Liberating Voices Pattern Language</a>, Public Sphere Project</li>
 <li><a href="...."></a>(not linked)</li>
-<li><a href="...."></a>(not linked)/li>
+</ul>
+
+<h3>Other Links</h3>
+<ul>
+<li><a href="https://apl-companion.netlify.app/apl.html">A Pattern Language: Reader's Companion</a></li>
+<li><a href="https://docs.google.com/spreadsheets/d/1WnJ9mwR4N8Ibupqhfh_ySfeO3aSZTuQCU_hMgEhe5yU/edit?gid=0#gid=0">Pattern Language Registry</a>, Pattern 
+languages to look at and/or host. Feel free to add more!</li>
 </ul>
 
 <h3>Priorities (rough draft)</h3>
