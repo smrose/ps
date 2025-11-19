@@ -478,4 +478,20 @@ li.spacer {
     padding: 3px;
     margin: 0;
 }
+#lert {
+    display: block;
+    opacity: 0;
+    top: 50vh;
+    left: 40vw;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: yellow;
+    color: red;
+    padding: 5px;
+    max-width: fit-content;
+    position: fixed;
+    box-shadow: inset 0px 0px 2px grey, 0px 0px 5px grey;
+    font-weight: 800;
+    font-size: 20pt;
+}
 

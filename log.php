@@ -48,8 +48,10 @@ if($isLogged) {
 
 // This user is not authenticated; offer a login form.
 
-if(isset($_SERVER['HTTP_REFERER']) &&
-   preg_match('%//[^/]+(/.+)%', $_SERVER['HTTP_REFERER'], $matches))
+if(isset($_REQUEST['referer'])) {
+  $referer = "<input type=\"hidden\" name=\"referer\" value=\"{$_REQUEST['referer']}\">\n";
+} else if(isset($_SERVER['HTTP_REFERER']) &&
+          preg_match('%//[^/]+(/.+)%', $_SERVER['HTTP_REFERER'], $matches))
   $referer = "<input type=\"hidden\" name=\"referer\" value=\"$matches[1]\">\n";
 else
   $referer = '';
