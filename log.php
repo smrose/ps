@@ -42,18 +42,30 @@ if($isLogged) {
 
   $hash = $_COOKIE['phpauth_session_cookie'];
   $auth->logout($hash);
-  header('Location: ./');
+  if(isset($_SERVER['HTTP_REFERER'])) {
+    $location = $_SERVER['HTTP_REFERER'];
+  } else {
+    $location = './';
+  }
+  header("Location: $location");
   exit;
 }
 
 // This user is not authenticated; offer a login form.
 
 if(isset($_REQUEST['referer'])) {
+
+  /* if the link here included a 'referer' query parameter, stash that
+   * so we can go there after * the user logs in */
+
   $referer = "<input type=\"hidden\" name=\"referer\" value=\"{$_REQUEST['referer']}\">\n";
 } else if(isset($_SERVER['HTTP_REFERER']) &&
-          preg_match('%//[^/]+(/.+)%', $_SERVER['HTTP_REFERER'], $matches))
+          preg_match('%//[^/]+(/.+)%', $_SERVER['HTTP_REFERER'], $matches)) {
+
+  /* if there is no 'referer' query parameter, stash the HTTP_REFERER */
+  
   $referer = "<input type=\"hidden\" name=\"referer\" value=\"$matches[1]\">\n";
-else
+} else
   $referer = '';
   
 $title = 'Pattern Sphere Login';
