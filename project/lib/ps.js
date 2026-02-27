@@ -108,7 +108,7 @@ function init() {
 	 * and set event listeners on all the form elements that might
 	 * cause it to be duly enabled */
     
-	pledsubmit.disabled = true;
+	pledsubmit.disabled = true
 	selplid.addEventListener('change', selplidf)
 	if(pledit) {
 	    pledit.addEventListener('change', selplidf)

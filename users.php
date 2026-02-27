@@ -644,13 +644,13 @@ if(isset($uid)) {
 <p style="font-weight: bold">Select a user to view and edit their details.</p>
 
 <div class="<?=$ufclass?>">
-<div class="gb">UID</div>
-<div class="gb">Email</div>
-<div class="gb">Fullname</div>
-<div class="gb">Username</div>
-<div class="gb">Active</div>
-<div class="gb">Role</div>
-<div class="gb">Volunteer</div>
+ <div class="gb">UID</div>
+ <div class="gb">Email</div>
+ <div class="gb">Fullname</div>
+ <div class="gb">Username</div>
+ <div class="gb">Active</div>
+ <div class="gb">Role</div>
+ <div class="gb">Volunteer</div>
 <?php
 
   if($project['id']) {
