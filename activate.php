@@ -66,7 +66,7 @@ if(isset($_POST['submit']) || isset($key)) {
   if(isset($rval['error'])) {
     print "$page\n<p class=\"alert\">{$rval['message']}</p>\n";
     if($rval['error'] == 'Activation key has expired.') {
-      print "<p class=\"alert\">You can request a new one on <a href=\"register.php\">this page</a>.</p>\n";
+      print "<p class=\"alert\">You can request a new one on <a href=\"" . ROOTDIR . "/register.php\">this page</a>.</p>\n";
     } else if($rval['error'] == 'Activation key is invalid.') {
       print "<p class=\"alert\">The activation key you entered (<code>$key</code>) is not valid. Click <a href=\"activate.php\">here</a> to try again.</p>\n";
     } else {
