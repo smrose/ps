@@ -140,9 +140,9 @@ username, <a href=\"log.php\">click here</a>.</p>
       $rqe = $settings['request_key_expiration']['value'];
       print "$page
 <p class=\"alert\">Registration accepted. You will immedately be receiving an email
-with a link containing the key required to activate your account. Please follow 
-that link promptly, as the activation key has a limited lifetime ($rqe).</p>
-";
+with a link containing the key required to activate your account as well as the key
+in the body. Please activate promptly, as the activation key has a limited lifetime ($rqe).</p>
+" . ACTIVATIONFORM;
     }
   }
 } else {
