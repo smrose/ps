@@ -75,16 +75,9 @@ if(isset($_POST['submit']) || isset($key)) {
     }
   }
 } else {
-  print $page;
-?>
-<p>You should have received an activation key in your email. Enter it
-below to activate your account.</p>
-
-<form method="POST" class="gf">
-<div class="fieldlabel">Enter your activation key:</div> <div><input type="text" size="20" name="key"></div>
-<div class="gs"><input type="submit" name="submit" value="Activate"></div>
-</form>
-<?php
+  print $page .
+   "<p>You should have received an activation key in your email. Enter it
+below to activate your account.</p>\n" . ACTIVATIONFORM;
 }
 ?>
 </div>
