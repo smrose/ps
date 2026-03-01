@@ -95,6 +95,13 @@ define('DEFAULTLANG', 'en_GB');
 define('ACLASSES', array('neutral', 'out', 'in'));
 define('BLACKLIST', array('dictionary', 'recaptcha'));
 
+define('ACTIVATIONFORM', '<form method="POST" class="gf" action="activate.php">
+ <div class="fieldlabel">Enter your activation key:</div>
+ <div><input type="text" size="20" name="key"></div>
+ <div class="gs"><input type="submit" name="submit" value="Activate"></div>
+</form>
+');
+
 require 'vendor/autoload.php';
 
 
