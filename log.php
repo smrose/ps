@@ -53,20 +53,14 @@ if($isLogged) {
 
 // This user is not authenticated; offer a login form.
 
-if(isset($_REQUEST['referer'])) {
-
-  /* if the link here included a 'referer' query parameter, stash that
-   * so we can go there after * the user logs in */
-
-  $referer = "<input type=\"hidden\" name=\"referer\" value=\"{$_REQUEST['referer']}\">\n";
-} else if(isset($_SERVER['HTTP_REFERER']) &&
-          preg_match('%//[^/]+(/.+)%', $_SERVER['HTTP_REFERER'], $matches)) {
-
-  /* if there is no 'referer' query parameter, stash the HTTP_REFERER */
-  
-  $referer = "<input type=\"hidden\" name=\"referer\" value=\"$matches[1]\">\n";
-} else
+$referer = isset($_REQUEST['referer'])
+  ? $_REQUEST['referer']
+  : (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
+if(preg_match('%/activate\.php%', $referer))
   $referer = '';
+
+if(strlen($referer))
+  $referer = "<input type=\"hidden\" name=\"referer\" value=\"$referer\">\n";
   
 $title = 'Pattern Sphere Login';
 ?>
