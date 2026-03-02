@@ -154,10 +154,6 @@ function GetPLanguage($which = null) {
     if(DEBUG) error_log($query);
     try {
       $sth = $pdo->prepare($query);
-    } catch(PDOException $e) {
-      throw new PDOException($e->getMessage(), $e->getCode());
-    }
-    try {
       $rv = $sth->execute($u);
     } catch(PDOException $e) {
       throw new PDOException($e->getMessage(), $e->getCode());
@@ -168,10 +164,6 @@ function GetPLanguage($which = null) {
     $query = "SELECT max(prank) FROM pattern p WHERE plid = {$planguage['id']}";
     try {
       $sth = $pdo->prepare($query);
-    } catch(PDOException $e) {
-      throw new PDOException($e->getMessage(), $e->getCode());
-    }
-    try {
       $rv = $sth->execute();
     } catch(PDOException $e) {
       throw new PDOException($e->getMessage(), $e->getCode());
@@ -187,10 +179,6 @@ function GetPLanguage($which = null) {
     $query = 'SELECT * FROM planguage';
     try {
       $sth = $pdo->prepare($query);
-    } catch(PDOException $e) {
-      throw new PDOException($e->getMessage(), $e->getCode());
-    }
-    try {
       $rv = $sth->execute();
     } catch(PDOException $e) {
       throw new PDOException($e->getMessage(), $e->getCode());
@@ -240,10 +228,6 @@ function GetPattern($which = null) {
   if(DEBUG) error_log($query);
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute($u);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -277,7 +261,7 @@ function InsertPLanguage($params) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
   if(! $sth->execute($params)) Error('System errror; your submission was not accepted.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
 
 } /* end InsertPLanguage() */
 
@@ -583,8 +567,6 @@ function GetAssessment($which) {
     $sth = $pdo->prepare($query);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute($u);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -600,10 +582,6 @@ function GetAssessment($which) {
 
   try {
     $sth = $pdo->prepare('SELECT * FROM passessment WHERE assid = :assid');
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $sth->execute(['assid' => $assessment['id']]);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -649,10 +627,6 @@ function GetPAssessment($which) {
   }
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute($u);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -680,10 +654,6 @@ function GetPAssessments($id) {
 
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute(['id' => $id]);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -1074,10 +1044,6 @@ function GetTeamMembers($id) {
  FROM teammember tm
   JOIN phpauth_users u ON tm.userid = u.id
  WHERE teamid = :teamid");
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $sth->execute(['teamid' => $id]);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -1319,10 +1285,6 @@ function ProjectMembers($projid) {
     
   try {
     $sth = $pdo->prepare($sql);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $sth->execute(['projid' => $projid]);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -1897,10 +1859,6 @@ function GetProjManagers($which = null) {
     $query .= " WHERE $q";
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute($u);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -1946,10 +1904,6 @@ function GetOrgManagers($which = null) {
     $query .= " WHERE $q";
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute($u);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -2097,18 +2051,28 @@ function IsOrgManager($userid = null, $orgid = null) {
 /* IsParticipant()
  *
  *  True for the current user if they may participate in this project,
- *  by virtue of being (1) an organization manager (for the owning
- *  organization), (2) a project manager (for the owning project) or
- *  (3) by being a member of a participating team.
+ *  by virtue of being:
+ *
+ *   a super-user
+ *   an organization manager (for the owning organization)
+ *   a project manager (for the owning project) or
+ *   a member of a participating team
  */
 
 function IsParticipant() {
   global $user, $project;
 
+  // privileged user?
+
+  if($user['role'] == 'super')
+    return true;
   if(IsOrgManager())
     return true;
   if(IsProjectManager())
     return true;
+    
+  // team member?
+
   $pts = GetProjTeams($project['id']);
   foreach($pts as $pt) {
     $tms = GetTeamMembers($pt['teamid']);
@@ -2179,10 +2143,6 @@ function UpdateAppConfig($update) {
 
   try {
     $sth = $pdo->prepare('UPDATE appconfig ac JOIN appitem ai ON ac.appitemid = ai.id SET value = :value WHERE tag = :tag AND lang = :lang');
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute($update);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -2208,10 +2168,6 @@ function GetSessions() {
  
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
-  }
-  try {
     $rv = $sth->execute();
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
