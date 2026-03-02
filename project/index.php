@@ -1031,7 +1031,7 @@ if(!$SuppressMain) {
 ";
     else
       print "<p>Welcome, visitor.\n";
-    print "To enter an assessment, you must be a member of this project. You
+    print "To enter an assessment, you must be a member a team assigned to this project. You
  can view the pattern set <a href=\"?$querystring\">here</a>.</p>
 ";
 
