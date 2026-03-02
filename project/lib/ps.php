@@ -2070,25 +2070,52 @@ function IsProjectManager($userid = null, $projid = null) {
 } /* end IsProjectManager() */
 
 
+/* IsOrgManager()
+ *
+ *  True for the current user if they manage this organization.
+ *
+ *  We get the user.id and organization.id either from the argument
+ *  list or from global $user and $project.
+ */
+
+function IsOrgManager($userid = null, $orgid = null) {
+  global $user, $project;
+  
+  if(is_null($userid))
+    $userid = $user['id'];
+  if(is_null($orgid))
+    $orgid = $project['orgid'];
+  $oms = GetOrgManagers([
+    'userid' => $userid,
+    'orgid' => $orgid
+  ]);
+  return count($oms) ? true : false;
+
+} /* end IsOrgManager() */
+
+
 /* IsParticipant()
  *
  *  True for the current user if they may participate in this project,
- *  either by virtue of being a manager or by being a member of a
- *  participating team.
+ *  by virtue of being (1) an organization manager (for the owning
+ *  organization), (2) a project manager (for the owning project) or
+ *  (3) by being a member of a participating team.
  */
 
 function IsParticipant() {
   global $user, $project;
 
+  if(IsOrgManager())
+    return true;
   if(IsProjectManager())
-    return(true);
+    return true;
   $pts = GetProjTeams($project['id']);
   foreach($pts as $pt) {
     $tms = GetTeamMembers($pt['teamid']);
     if(array_key_exists($user['id'], $tms))
-      return(true);
+      return true;
   }
-  return(false);
+  return false;
   
 } /* end IsParticipant() */
 
