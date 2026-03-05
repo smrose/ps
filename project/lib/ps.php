@@ -70,6 +70,7 @@
 #  GetVolunteers     return selected volunteers
 #  GetVolunteer      return selected volunteer
 #  UpdateVolunteer   update a volunteer record
+#  ProjectRole       return a role constant for user/project
 #
 # NOTES
 #
@@ -87,7 +88,20 @@ if(preg_match('%^.+/project/[^/]+/([^/]+)$%',
               $matches)) {
     define('PROJECT', PROOT . 'index.php/' . $matches[1]);
 }
+
+# Three global roles:
+
 define('ROLE', array('user' => 1, 'super' => 2, 'manager' => 3));
+
+# These roles are (mostly) contextual:
+
+define('VISITOR', 0);    // visitor
+define('PSUSER', 1);     // authenticated non-member
+define('PRMEMBER', 2);   // project team member
+define('PRMANAGER', 3);  // project manager
+define('ORGMANAGER', 4); // organization manager
+define('SUPER', 5);      // super-user
+
 define('FOOT', '<div id="foot"><a href="https://www.publicsphereproject.org/">Public Sphere Project</a></div>');
 define('MAXSIZE', 200000); # define elsewhere
 define('IMAGEDIR', 'images');
@@ -565,8 +579,6 @@ function GetAssessment($which) {
   }
   try {
     $sth = $pdo->prepare($query);
-  } catch(PDOException $e) {
-    throw new PDOException($e->getMessage(), $e->getCode());
     $rv = $sth->execute($u);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
@@ -703,7 +715,7 @@ function GetProject($projid = null) {
     $sth->execute(['tag' => $tag]);
   }
   $project = $sth->fetch(PDO::FETCH_ASSOC);
-  return($project);
+  return $project;
 
 } /* end GetProject() */
 
@@ -2002,7 +2014,7 @@ function DeleteProjManager($id) {
  *
  *  True if this user is a manager of this project.
  *
- *  We get the user.id and project.id either from the argument list or
+ *  We get the user.uid and project.id either from the argument list or
  *  from global $user and $project.
  */
 
@@ -2036,7 +2048,7 @@ function IsOrgManager($userid = null, $orgid = null) {
   global $user, $project;
   
   if(is_null($userid))
-    $userid = $user['id'];
+    $userid = $user['uid'];
   if(is_null($orgid))
     $orgid = $project['orgid'];
   $oms = GetOrgManagers([
@@ -2076,7 +2088,7 @@ function IsParticipant() {
   $pts = GetProjTeams($project['id']);
   foreach($pts as $pt) {
     $tms = GetTeamMembers($pt['teamid']);
-    if(array_key_exists($user['id'], $tms))
+    if(array_key_exists($user['uid'], $tms))
       return true;
   }
   return false;
@@ -2295,3 +2307,58 @@ function UpdateVolunteer($update) {
     return "No changes to volunteer record.";
   
 } // end UpdateVolunteer()
+
+
+/* ProjectRole()
+ *
+ *  Return a constant that characterizes the role that this user has in
+ *  this project.
+ *
+ *  With null arguments, look at global $user and $project for context.
+ */
+
+function ProjectRole($userid = null, $projectid = null) {
+  global $user, $project;
+
+  if(is_null($userid)) {
+
+    // unauthenticated user?
+
+    if(!isset($user))
+      return VISITOR;
+
+    // userid was not specified; use $user['uid']
+    
+    $userid = $user['uid'];
+    $grole = $user['role'];
+  } else {
+
+    // userid was specified; get the user role
+    
+    $tuser = GetUser($userid);
+    $grole = $tuser['role'];
+  }
+  
+  if($grole == ROLE['super'])
+    return SUPER;
+
+  if(is_null($projectid))
+    $projectid = $project['id'];
+
+  if(IsOrgManager($userid, $projectid))
+    return ORGMANAGER;
+
+  if(IsProjectManager($userid, $projectid))
+    return PRMANAGER;
+
+  // team member?
+  
+  $pts = GetProjTeams($project['id']);
+  foreach($pts as $pt) {
+    $tms = GetTeamMembers($pt['teamid']);
+    if(array_key_exists($user['uid'], $tms))
+      return PRMEMBER;
+  }
+  return PSUSER;
+
+} /* end ProjectRole() */
