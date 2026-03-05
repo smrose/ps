@@ -75,6 +75,7 @@ $labelString = implode(' / ', explode(':', $project['labels']));
 /* Redirect if unauthenticated or unauthorized. */
 
 $user = $auth->getCurrentUser(true);
+$Role = ProjectRole();
 
 if(preg_match('/aresults.php$/', $_SERVER['SCRIPT_NAME'])) {
   $Anonymize = true;
@@ -83,8 +84,8 @@ if(preg_match('/aresults.php$/', $_SERVER['SCRIPT_NAME'])) {
 } else {
   $Anonymize = false;
   $tclass = 'polio';
-  if(!$user || ($user['role'] != 'super' && $user['role'] != 'manager')) {
-    header('Location: ./');
+  if($Role < PRMANAGER) {
+    header('Location: ../');
     exit;
   }
   $function = 'Results';
