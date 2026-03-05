@@ -22,6 +22,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 require "lib/ps.php";
+require "lib/project.php";
 
 
 /* obsess()
@@ -253,7 +254,7 @@ decisions on ' . ($counts['in'] + $counts['out']) . ' of the ' .
  */
 
 function assess() {
-  global $user, $project, $masq;
+  global $user, $project, $masq, $Role;
 
   # build an array of labels for the assessments
   #  0 => project.nulllable
@@ -262,8 +263,6 @@ function assess() {
   $labels = array_merge([$project['nulllabel']],
                         explode(':', $project['labels']));
 
-  $participant = IsParticipant();
-  
   // Fetch planguages implicated in this project.
 
   $planguages = GetProjPLanguages($project['id']);
@@ -272,7 +271,7 @@ function assess() {
 
   $patterns = GetProjPatterns($project['id']);
 
-  if($participant) {
+  if($Role >= PRMEMBER) {
   
     // Fetch the existing 'assessment' record, if any.
 
@@ -285,7 +284,7 @@ function assess() {
     $title = 'Pattern Candidates';
   }
 
-  if($participant) {
+  if($Role >= PRMEMBER) {
     $welcome = '<p class="alert">Welcome' .
      (isset($assessment) ? ' back' : '') .
      " <span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span></p>
@@ -302,7 +301,7 @@ function assess() {
 
 $welcome
 ";
-  if($participant) {
+  if($Role >= PRMEMBER) {
     print '<form id="assess" method="POST" action="' . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . '">
 ';
   }
@@ -324,7 +323,7 @@ $welcome
         continue;
 
       $pid = $pattern['id'];
-      if($participant) {
+      if($Role >= PRMEMBER) {
         $passessment = (isset($assessment) &&
                       isset($assessment['passessments']) &&
                       isset($assessment['passessments'][$pid]))
@@ -380,7 +379,7 @@ $welcome
     
   } // end loop on planguages
 
-  if($participant) {
+  if($Role >= PRMEMBER) {
     $acomment = (isset($assessment) && isset($assessment['acomment'])) ? $assessment['acomment'] : '';
     $contact = (isset($assessment) && $assessment['contact'] == 'y')
       ? ' checked' : '';
@@ -512,7 +511,7 @@ function consideration() {
  */
 
 function pat($p = null) {
-  if(! IsParticipant())
+  if(ProjectRole() < PRMEMBER)
     return false;
 
   if($_REQUEST['pattern']) {
@@ -753,11 +752,13 @@ if(! isset($project) || !is_array($project)) {
 
 if($isLogged = $auth->isLogged()) {
   $userinfo = $auth->getCurrentSessionUserInfo();
+  $user = GetUser($userinfo['uid']);
   $timestamp = strtotime($userinfo['expiredate']);
   $expire = "<script>\n let exptime = $timestamp\n</script>\n";
 } else
   $expire = '';
 
+$Role = ProjectRole();
 $SuppressMain = false;
 if(DEBUG) error_log(var_export($_REQUEST, true));
 
@@ -768,6 +769,7 @@ print "<!doctype html>
  <title>{$project['title']}</title>
  <link rel=\"stylesheet\" href=\"" . LIBDIR . "ps.css\">
  <script src=\"" . LIBDIR . "ps.js\"></script>
+ <script src=\"" . LIBDIR . "projedit.js\"></script>
  $expire
 </head>
 
@@ -781,62 +783,61 @@ print "<!doctype html>
 <img src=\"" . ROOTDIR . "/images/pattern-sphere-band.png\" id=\"gravy\">
 ";
 
-if($isLogged) {
+switch($Role) {
 
-  // This user has a login.
-  
-  $user = $auth->getCurrentUser(true);
-  $actual = $user;
-  
-  if($user['role'] == 'super' &&
-     isset($_REQUEST['masq']) && $_REQUEST['masq']) {
+  case SUPER:
+    if(isset($_REQUEST['masq']) && ($masq = $_REQUEST['masq'])) {
+      $actual = $user;
+      $masq = $_REQUEST['masq'];
+      $userinfo = $auth->getUser($masq);
+      $user = GetUser($userinfo['uid']);
+      if(DEBUG)
+        error_log("masquerading as {$user['fullname']}");
+    }
+    break;
 
-    // masquerade as this user
-
-    $masq = $_REQUEST['masq'];
-    $user = $auth->getUser($masq);
-    if(DEBUG) error_log("masquerading as {$user['fullname']}");
-  }
-
-  $action = array(' <li><a href="' . ROOTDIR . '/log.php">Log out</a></li>',
-    ' <li><a href="' . ROOTDIR . '/profile.php">Edit profile</a></li>');
-
-  if(IsProjectManager() || $user['role'] == 'super') {
-
-    $manager= '<div id="manager">
-<div class="banner">Manager actions</div>
+  case ORGMANAGER:
+  case PRMANAGER:
+    $pmanager= '<div id="manager">
+<div class="banner">Project manager actions</div>
  <ul>
-  <li><a href="' . PROOT . "teams.php/{$project['tag']}\">Manage teams</a></li>
-  <li><a href=\"" . PROOT . "projpatterns.php/{$project['tag']}\">Manage patterns</a></li>
+  <li><a href="' . $_SERVER['SCRIPT_NAME'] . "/{$project['tag']}?action=predit&metadata=1\">Edit project</a></li>
+  <li><a href=\"" . $_SERVER['SCRIPT_NAME'] . "/{$project['tag']}?action=predit&teams=1\">Manage project teams</a></li>
+  <li><a href=\"" . PROOT . "projpatterns.php/{$project['tag']}\">Manage project patterns</a></li>
   <li><a href=\"" . PROOT . "results.php/{$project['tag']}\">View results</a></li>
  </ul>
 </div>
 ";
-  }
+    $instructions = $project['manager_text'];
+    break;
 
-  if($user['role'] == 'user') {
+  case PRMEMBER:
+    $pmanager = '';
+    break;
+
+  case PSUSER:
+    $pmanager = '';
     $instructions = $project['user_text'];
-    $manager = '';
-  } else {
-    $instructions =
-      $project['user_text'] .
-      $project['manager_text'];
-  }
-  
-} else {
+    break;
 
-  // is not authenticated
-  
-  $action = [
+  case VISITOR:
+    $pmanager = '';
+    $action = [
              '<li><a href="' . ROOTDIR . '/register.php">Register</a></li>',
              '<li><a href="' . ROOTDIR . '/log.php">Log in</a></li>',
              '<li><a href="' . ROOTDIR . '/reset.php">Reset password</a></li>'
             ];
-  $manager = '';
-  $instructions = "{$project['visitor_text']}
-<p><a href=\"" . PROOT . "/aresults.php/{$project['tag']}\">View (anonymized) results</a>.</p>
-";
+    $instructions = $project['visitor_text'];
+    break;
 }
+if($Role > VISITOR)
+  $action = [
+    ' <li><a href="' . ROOTDIR . '/log.php">Log out</a></li>',
+    ' <li><a href="' . ROOTDIR . '/profile.php">Edit profile</a></li>'
+  ];
+
+$instructions .= "<p><a href=\"" . PROOT . "/aresults.php/{$project['tag']}\">View (anonymized) results</a>.</p>
+";
 
 if(isset($_REQUEST['submit']) && $_REQUEST['submit'] == 'Cancel') {
   true;
@@ -948,6 +949,23 @@ if(isset($_REQUEST['submit']) && $_REQUEST['submit'] == 'Cancel') {
 
   inwork($_REQUEST['inwork']);
   $SuppressMain = true;
+  
+} elseif(isset($_REQUEST['action']) && $_REQUEST['action'] == 'predit') {
+
+  /* editing the project */
+
+  if(isset($_REQUEST['submit'])) {
+    if($_REQUEST['submit'] == 'Absorb edits')
+      AbsorbEdit($project['id']);
+    elseif($_REQUEST['submit'] == 'Absorb project teams')
+      AbsorbTeams($project['id']);
+  } else {
+    if(isset($_REQUEST['metadata']))
+      prform($project['id']);
+    else
+      ProjTeams($project['id']);
+    $SuppressMain = true;
+  }
 }
 
 $actions = join('', $action);
@@ -962,8 +980,18 @@ if(!$SuppressMain) {
 <?=$actions?>
 </ul>
 </div>
-<?=$manager?>
+<?=$pmanager?>
 </div>
+<?php
+if(DEBUG && count($_POST)) {
+  print "<div class=\"ass\" id=\"ass\">Show POST parameters</div>
+<div id=\"posterior\">\n";
+  foreach($_POST as $k => $v) {
+    print " <div>$k</div>\n<div>$v</div>\n";
+  }
+  print "</div>\n";
+}
+?>
 
 <h2>Welcome to the <span class="apptitle"><?=$project['title']?></span> project.</h2>
 
@@ -971,8 +999,6 @@ if(!$SuppressMain) {
 <p><?=$instructions?></p>
 </div>
 <?php
-  $participant = isset($user) ? IsParticipant() : false;
-    
   $querystring = 'assess=1';
   $patquery = 'pattern=1';
   if(isset($masq)) {
@@ -988,7 +1014,7 @@ if(!$SuppressMain) {
   else
     $edit = false;
 
-  if($participant) {
+  if($Role >= PRMEMBER) {
     print '<p>Welcome ' .
       ($edit ? 'back ' : '') .
       "<span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>. <a href=\"?$querystring\"></p>
@@ -1001,7 +1027,7 @@ if(!$SuppressMain) {
 
 ";
   }
-  if($participant || (isset($user) && $user['role'] == 'super')) {
+  if($Role >= PRMEMBER) {
     print " <li><a href=\"?consideration=1\">View patterns under consideration</a>.</li>
 </ul>
 ";
@@ -1025,8 +1051,8 @@ if(!$SuppressMain) {
   } else
     print "</ul>\n";
 
-  if(! $participant)
-    if(isset($user))
+  if($Role < PRMEMBER)
+    if($Role == PSUSER)
       print "<p>Welcome <span class=\"username\" title=\"{$user['email']}\">{$user['fullname']}</span>.
 ";
     else
@@ -1069,6 +1095,15 @@ if(!$SuppressMain) {
 
 ?>
 </div>
+<script>
+  function post(event) {
+    document.querySelector('#ass').style.display = 'none'
+    document.querySelector('#posterior').style.display = 'grid'
+  }
+  if(ass = document.querySelector('#ass'))
+    ass.addEventListener('click', post)
+  init()
+</script>
 <?=FOOT?>
 </body>
 </html>
