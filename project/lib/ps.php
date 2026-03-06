@@ -28,6 +28,7 @@
 #  GetProjects       load 'project' records
 #  UpdateProject     update 'project' record
 #  InsertProject     insert a 'project' record
+#  ManagedOrgs       organizations this userid manages
 #  GetOrganization   load 'organization' record
 #  GetOrganizations  load 'organization' records
 #  UpdateOrganization update 'organization' record
@@ -817,6 +818,29 @@ function InsertProject($params) {
   return($pdo->lastInsertId());
 
 } /* end InsertProject() */
+
+
+/* ManagedOrgss()
+ *
+ *  Returns an array containing the organization.id values for organizations
+ *  for which the argument user is a manager.
+ */
+
+function ManagedOrgs($userid) {
+  global $pdo;
+  
+  try {
+    $sth = $pdo->prepare("SELECT o.id AS id, name FROM orgmanager om
+  JOIN organization o ON om.orgid = o.id
+ WHERE userid = :userid");
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  if(!$sth->execute(['userid' => $userid]))
+    Error('System error: failed to determine organizations');
+  return $sth->fetchAll();
+
+} /* end ManagedOrgs() */
 
 
 /* GetOrganization()
