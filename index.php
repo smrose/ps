@@ -61,7 +61,7 @@ print $intro;
 print "<h2>Projects</h2>
 ";
 
-$super = $manager = '';
+$super = $omanager = $tmanager = '';
 
 if($isLogged) {
 
@@ -74,6 +74,9 @@ if($isLogged) {
     ' <li><a href="profile.php">Edit profile</a></li>');
   
   if($user['role'] == 'super') {
+
+    # this user is a super; offer the super menu
+    
     $super = '<div id="super">
 <div class="banner">Super actions</div>
 <ul>
@@ -92,13 +95,26 @@ if($isLogged) {
 
       // this user manages one or more teams
 
-      $manager = '<div id="mange">
-<div class="banner">Manager actions</div>
+      $tmanager = '<div id="mange">
+<div class="banner">Team management</div>
 <ul>
  <li><a href="teameditor.php">Manage teams</a></li>
 </ul>
 </div>
 ';
+    }
+    $orgs = ManagedOrgs($user['id']);
+    if(count($orgs)) {
+
+	// this user manages one or more organizations
+
+	$omanager = '<div id="omange">
+  <div class="banner">Organization management</div>
+  <ul>
+   <li><a href="orgeditor.php">Manage organizations</a></li>
+  </ul>
+  </div>
+  ';
     }
   }
   
@@ -125,7 +141,8 @@ $actions = join('', $action);
 <?=$actions?>
 </ul>
 </div>
-<?=$manager?>
+<?=$omanager?>
+<?=$tmanager?>
 <?=$super?>
 </div>
 
