@@ -32,9 +32,9 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-if(isset($_POST) && isset($_POST['cancel'])) {
+if(isset($_POST) && isset($_POST['cancel']))
   header('Location: ./');
-}
+
 set_include_path(get_include_path() . PATH_SEPARATOR . 'project');
 require "lib/ps.php";
 
@@ -44,8 +44,15 @@ Initialize();
 /* Redirect if unauthenticated or unauthorized. */
 
 $user = $auth->getCurrentUser(true);
+if($user['role'] == 'super')
+  $orgs = GetOrganizations();
+else
+    $orgs = ManagedOrgs($user['id']);
 
-if(!$user || $user['role'] != 'super') {
+if(!$user || ($user['role'] != 'super' && !count($orgs))) {
+
+  /* not logged in, or neither are a super nor org manager */
+
   header('Location: ./');
   exit;
 }
@@ -137,7 +144,10 @@ $orgid
  */
  
 function AbsorbCreate() {
-  global $fields;
+  global $fields, $user;
+
+  if($user['role'] != 'super')
+    Error('Unauthorized');
   
   $row = [];
   foreach($fields as $field) {
@@ -335,8 +345,7 @@ if(isset($_REQUEST['action'])) {
 if($rv) {
 
   /* Build a popup menu of organizations, if any. */
-  
-  $orgs = GetOrganizations();
+
   if(count($orgs)) {
     $options = "<select name=\"orgid\">
 <option value=\"-1\" selected>Choose organization</option>
@@ -358,17 +367,18 @@ $options
 ";
   } else
     $form = "<p class=\"alert\" style=\"margin-left: 1em\">No organizations exist.</p>\n";
-?>
-<h3>Actions:</h3>
+
+  print '<h3>Actions:</h3>
 <ul>
- <li><a href="?action=orgcreate">Create an organization</a></li>
- <li class="spacer"></li>
+
+' . (($user['role'] == 'super') ? ' <li><a href="?action=orgcreate">Create an organization</a></li>
+<li class="spacer"></li>' : '') . "
  <li><b>Edit an organization</b>
- <?=$form?>
+$form
  </li>
- <li><a href="./">Return</a></li>
+ <li><a href=\"./\">Return</a></li>
 </ul>
-<?php
+";
 }
 ?>
 <script>
