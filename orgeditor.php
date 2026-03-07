@@ -81,6 +81,8 @@ $fields = [
 function orgform($orgid = null) {
   global $fields, $org;
 
+  $pnames = '';
+  
   if(isset($orgid)) {
     $org = GetOrganization($orgid);
 
@@ -88,6 +90,22 @@ function orgform($orgid = null) {
     
     $action = 'orgedit';
     $slabel = 'Absorb edits';
+    
+    # For an organization without projects, offer a delete option.
+
+    $projects = GetProjects(['orgid' => $orgid]);
+
+    if(count($projects)) {
+      foreach($projects as $project) {
+        if(strlen($pnames))
+          $pnames .= ', ';
+        $pnames .= "<i>{$project['title']}</i>";
+      }
+      $pnames = "<p>This organization has these projects: $pnames</p>\n";
+    } else
+      $pnames = "<p>This organization has no projects.</p>\n";
+    $disabled = count($projects) ? 'disabled' : '';
+    $delete = "<input type=\"submit\" $disabled name=\"submit\" value=\"Delete\">";
     $title = "Editing Organization <span style=\"font-style: oblique\">{$org['name']}</span>";
     $orgid = "<input type=\"hidden\" name=\"orgid\" value=\"{$org['id']}\">
 <input type=\"hidden\" name=\"action\" value=\"edit\">
@@ -100,9 +118,10 @@ function orgform($orgid = null) {
     $title = 'Creating Organization';
     $action = 'orgcreate';
     $slabel = 'Create Organization';
+    $delete = '';
   }
   print "<h2>$title</h2>
-
+$pnames
 <form method=\"post\" action=\"{$_SERVER['SCRIPT_NAME']}\" class=\"gf\"enctype=\"multipart/form-data\" >
 $orgid
 <input type=\"hidden\" name=\"action\" value=\"$action\">
@@ -129,6 +148,7 @@ $orgid
 
   print "<div class=\"gs\">
  <input type=\"submit\" name=\"submit\" value=\"$slabel\">
+ $delete
  <input type=\"submit\" name=\"submit\" value=\"Cancel\">
 </div>
 </form>
@@ -285,9 +305,9 @@ function AbsorbManagers($id) {
 } /* end AbsorbManagers() */
 
 
-if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
+if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel')
   header("Location: {$_SERVER['SCRIPT_NAME']}\n");
-}
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -310,6 +330,14 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
 
 <?php
 
+if(DEBUG && count($_POST)) {
+  print "<div class=\"ass\" id=\"ass\">Show POST parameters</div>
+<div id=\"posterior\">\n";
+  foreach($_POST as $k => $v) {
+    print " <div>$k</div>\n<div>$v</div>\n";
+  }
+  print "</div>\n";
+}
 if($_SERVER['REQUEST_METHOD'] == 'POST' && DEBUG)
   error_log("POST: " . var_export($_POST, true));
 if($_SERVER['REQUEST_METHOD'] == 'GET' && DEBUG)
@@ -329,17 +357,20 @@ if(isset($_REQUEST['action'])) {
     $orgid = $_REQUEST['orgid'];
     if($orgid < 0)
       Error('Select an organization to edit');
-    if(isset($_POST['submit']) && $_POST['submit'] == 'Absorb edits') {
-      $rv = AbsorbEdit();
-    } elseif(isset($_POST['submit']) && $_POST['submit'] == 'Organization managers') {
-      $rv = OrgManagers($orgid);
-    } elseif(isset($_POST['submit']) && $_POST['submit'] == 'Absorb managers') {
-      $rv = AbsorbManagers($orgid);
-    } else {
+    if(isset($_POST['submit'])) {
+      $submit = $_POST['submit'];
+      if($submit == 'Absorb edits')
+	$rv = AbsorbEdit();
+      elseif($submit == 'Organization managers')
+	$rv = OrgManagers($orgid);
+      elseif($submit == 'Delete')
+	$rv = DeleteOrganization($orgid);
+      elseif($submit == 'Absorb managers')
+	$rv = AbsorbManagers($orgid);
+    } else
       $rv = orgform($orgid);
-    }
   } else {
-     Error('Unknown action');
+    Error('Unknown action');
   }
 }
 if($rv) {
@@ -382,7 +413,13 @@ $form
 }
 ?>
 <script>
-init();
+  init()
+  function post(event) {
+    document.querySelector('#ass').style.display = 'none'
+    document.querySelector('#posterior').style.display = 'grid'
+  }
+  if(ass = document.querySelector('#ass'))
+    ass.addEventListener('click', post)
 </script>
 </div>
 <?=FOOT?>
