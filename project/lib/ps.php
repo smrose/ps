@@ -10,6 +10,7 @@
 # FUNCTIONS
 #
 #  DataStoreConnect  open a database connection
+#  Which             WHERE clause assistant
 #  GetPLanguage      get some or all 'plangage' records
 #  GetPattern        get some or all 'pattern' records
 #  InsertPLanguage   create a 'planguage' record
@@ -32,11 +33,14 @@
 #  GetOrganization   load 'organization' record
 #  GetOrganizations  load 'organization' records
 #  UpdateOrganization update 'organization' record
-#  InsertOrganization insert a 'organization' record
+#  InsertOrganization insert 'organization' record
+#  DeleteOrganization delete 'organization' record
 #  GetTeam           load 'team' record
 #  GetTeams          load 'team' records
 #  UpdateTeam        update 'team' record
 #  InsertTeam        insert a 'team' record
+#  DeleteTeam        delete a 'team' record
+#  IsTeamManager     true for a manager of this team
 #  GetTeamMembers    fetch teammember records
 #  InsertTeamMember  insert a teammember record
 #  UpdateTeamMember  update a teammember record
@@ -51,6 +55,7 @@
 #  ProjectMembers    users who are participating in a project
 #  GetProjTeams      fetch 'projteam' records
 #  InsertProjTeam    insert a 'projteam' record
+#  DeleteProjTeam    delete a 'projteam' record
 #  Error             fatal error
 #  InsertAssessment  insert an assessment record
 #  InsertPAssessment insert a passessment record
@@ -63,10 +68,18 @@
 #  InsertProjPattern insert an projpattern record
 #  DeleteProjPattern delete an projpattern record
 #  UpdateProjPattern update an projpattern record
-#  IsProjManager     true if the current user is a project manager
+#  GetProjManagers   fetch 'projmanager' records
+#  GetOrgManagers
+#  InsertOrgManager
+#  InsertProjManager
+#  DeleteOrgManager
+#  DeleteProjManager
+#  IsProjectManager  true if the current user is a project manager
+#  IsOrgManager      true if the current user is a organization manager
 #  IsParticipant     true if the current user is on a participating team
 #  GetAppConfig      read application configuration
 #  UpdateAppConfig   update application configuration
+#  GetSessions
 #  InsertVolunteer   insert a volunteer record
 #  GetVolunteers     return selected volunteers
 #  GetVolunteer      return selected volunteer
@@ -141,6 +154,36 @@ function DataStoreConnect() {
 } /* end DataStoreConnect() */
 
 
+/* Which()
+ *
+ *  SQL query build helper.
+ */
+
+function Which($which) {
+  $q = '';
+  $u = [];
+  if(isset($which) && is_array($which) && count($which)) {
+    foreach($which as $column => $value) {
+      if(strlen($q))
+        $q .= ' AND ';
+      if(is_array($value)) {
+        foreach($value as $v) {
+          $u[] = $v;
+	  $x .= strlen($x) ? ',?' : '?';
+	}
+        $q .= "$column IN ($x)";
+      } else {
+	$q .= "$column = ?";
+	$u[] = $value;
+      }
+    }
+    $q = "WHERE $q";
+  }
+  return [$q, $u];
+  
+} /* end Which() */
+
+
 /* GetPLanguage()
  *
  *  Fetch one or all planguage records.
@@ -152,20 +195,11 @@ function GetPLanguage($which = null) {
   if(!isset($pdo))
     DataStoreConnect();
 
+  $q = '';
+  $u = [];
   if(isset($which)) {
-
-    # fetch one language
-    
-    $q = '';
-    $u = [];
-    foreach($which as $column => $value) {
-      if(strlen($q)) {
-        $q .= ' AND ';
-      }
-      $q .= " $column = ?";
-      array_push($u, $value);
-    }
-    $query = "SELECT * FROM planguage pl WHERE $q";
+    [$q, $u] = Which($which);
+    $query = "SELECT * FROM planguage pl $q";
     if(DEBUG) error_log($query);
     try {
       $sth = $pdo->prepare($query);
@@ -222,21 +256,10 @@ function GetPattern($which = null) {
   if(DEBUG && isset($which))
     error_log('GetPattern($which): ' . var_export($which, true));
 
-  if(isset($which)) {
-    $q = '';
-    $u = [];
-    foreach($which as $column => $value) {
-      if(strlen($q)) {
-	$q .= ' AND ';
-      }
-      $q .= " $column = ?";
-      $u[] = $value;
-    }
-    $q = "WHERE $q";
-  } else {
-    $q = '';
-    $u = [];
-  }
+  $q = '';
+  $u = [];
+  if(isset($which))
+    [$q, $u] = Which($which);
     
   $query = "SELECT p.*, pl.title AS pltitle
  FROM pattern p JOIN planguage pl ON p.plid = pl.id $q";
@@ -298,7 +321,7 @@ function InsertPattern($params) {
   }
   if(! $sth->execute($params))
     Error('System errror; your submission was not accepted.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
 
 } /* end InsertPattern() */
 
@@ -341,6 +364,11 @@ function DeletePattern($pid) {
 /* DeletePLanguage()
  *
  *  Delete a planguage record and all associated patterns.
+ *
+ *  This should be managed with an ON DELETE CASCADE clause on the foreign key
+ *  constraint. Alternatively, forbid deletion of a pattern language that has
+ *  member patterns. But these concerns are mooted by a more flexible definition
+ *  of a pattern language, forthcoming.
  */
 
 function DeletePLanguage($plid) {
@@ -370,23 +398,9 @@ function UpdatePLanguage($update) {
 
   $id = $update['id'];
   $planguage = GetPLanguage(['id' => $id]);
-  if(! isset($planguage)) {
+  if(! isset($planguage))
     Error('Patttern language not found');
-  }
-  $u = '';
-  
-  foreach($update as $column => $value) {
-    if($column == 'id')
-      continue;
-    if($planguage[$column] == $update[$column]) {
-      unset($update[$column]);
-    } else {
-      if(strlen($u)) {
-        $u .= ',';
-      }
-      $u .= "$column = :$column";
-    }
-  }
+
   if(strlen($u)) {
 
     # we found fields that changed
@@ -455,9 +469,9 @@ function UpdatePattern($update) {
     }
     if(!$sth->execute($update))
       Error('System error; pattern update failed.');
-    return(true);
+    return true;
   } else
-    return(false);
+    return false;
 
 } /* end UpdatePattern() */
 
@@ -479,7 +493,7 @@ function GetProjPLanguages($projid) {
 	       WHERE projid = :projid)');
   $sth->execute(['projid' => $projid]);
   $planguages = $sth->fetchall(PDO::FETCH_ASSOC);
-  return($planguages);
+  return $planguages;
   
 } /* end GetProjPLanguages() */
 
@@ -521,9 +535,9 @@ function GetProjPatterns($projid, $bypid = false) {
     foreach($projpatterns as $projpattern) {
       $projpatterns_by_pid[$projpattern['id']] = $projpattern;
     }
-    return($projpatterns_by_pid);
+    return $projpatterns_by_pid;
   }
-  return($projpatterns);
+  return $projpatterns;
   
 } /* end GetProjPatterns() */
 
@@ -544,7 +558,7 @@ function GetProjPattern($id) {
   JOIN planguage pl ON plid = pl.id
  WHERE ap.id = :id');
   $sth->execute(['id' => $id]);
-  return($sth->fetch(PDO::FETCH_ASSOC));
+  return $sth->fetch(PDO::FETCH_ASSOC);
   
 } /* end GetProjPattern() */
 
@@ -567,17 +581,8 @@ function GetAssessment($which) {
   global $pdo;
 
   $query = 'SELECT * FROM assessment';
-  if(isset($which)) {
-    $q = '';
-    $u = [];
-    foreach($which as $column => $value) {
-      if(strlen($q))
-        $q .= ' AND';
-      $q .= " $column = :$column";
-      $u[$column] = $value;
-    }
-    $query .= " WHERE $q";
-  }
+  [$q, $u] = Which($which);
+  $query .= " $q";
   try {
     $sth = $pdo->prepare($query);
     $rv = $sth->execute($u);
@@ -587,9 +592,8 @@ function GetAssessment($which) {
   if(!$rv)
     Error('System error: could not fetch assessment record');
   $assessment = $sth->fetch(PDO::FETCH_ASSOC);
-  if(!$assessment) {
-    return(null);
-  }
+  if(!$assessment)
+    return null;
   
   // now, any associated 'passessment' records
 
@@ -607,7 +611,7 @@ function GetAssessment($which) {
   } else
     $assessment['passessments'] = [];
     
-  return($assessment);
+  return $assessment;
   
 } /* end GetAssessment() */
 
@@ -623,17 +627,8 @@ function GetPAssessment($which) {
   global $pdo;
 
   $query = 'SELECT * FROM passessment';
-  if(isset($which)) {
-    $q = '';
-    $u = [];
-    foreach($which as $column => $value) {
-      if(strlen($q))
-        $q .= ' AND';
-      $q .= " $column = :$column";
-      $u[$column] = $value;
-    }
-    $query .= " WHERE $q";
-  }
+  [$q, $u] = Which($which);
+  $query .= " $q";
   if(false) {
     error_log("GetPAssessment($query)");
     error_log(var_export($u, true));
@@ -648,9 +643,9 @@ function GetPAssessment($which) {
     Error('System error: could not fetch passessment record');
   $passessment = $sth->fetch(PDO::FETCH_ASSOC);
   if(!$passessment) {
-    return(null);
+    return null;
   }
-  return($passessment);
+  return $passessment;
   
 } /* end GetPAssessment() */
 
@@ -675,7 +670,7 @@ function GetPAssessments($id) {
     Error('System error: could not fetch passessment records');
   $passessments = $sth->fetchall(PDO::FETCH_ASSOC);
 
-  return($passessments);
+  return $passessments;
   
 } /* end GetPAssessments() */
 
@@ -726,16 +721,23 @@ function GetProject($projid = null) {
  *  Load key fields from the 'project' table, indexed by projid.
  */
 
-function GetProjects() {
+function GetProjects($which = null) {
   global $pdo;
 
-  $sth = $pdo->prepare('SELECT id, title, tag, active FROM project ORDER BY id');
-  $sth->execute();
+  $q = '';
+  $u = [];
+  if(isset($which))
+    [$q, $u] = Which($which);
+  $sth = $pdo->prepare("SELECT p.id, title, tag, active
+ FROM project p
+  JOIN organization o ON p.orgid = o.id $q
+ ORDER BY p.id");
+  $sth->execute($u);
   $projs = [];
   while($proj = $sth->fetch(PDO::FETCH_ASSOC)) {
     $projs[$proj['id']] = $proj;
   }
-  return($projs);
+  return $projs;
 
 } /* end GetProjects() */
 
@@ -781,9 +783,9 @@ function UpdateProject($update) {
     }
     if(!$sth->execute($update))
       Error("System error; update failed");
-    return(true);
+    return true;
   } else
-    return(false);
+    return false;
 
 } /* end UpdateProject() */
 
@@ -815,7 +817,7 @@ function InsertProject($params) {
   }
   if(! $sth->execute($params))
     Error('System errror; project insert failed.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
 
 } /* end InsertProject() */
 
@@ -855,7 +857,7 @@ function GetOrganization($orgid) {
   $sth = $pdo->prepare('SELECT * FROM organization WHERE id = :id');
   $sth->execute(['id' => $orgid]);
   $org = $sth->fetch(PDO::FETCH_ASSOC);
-  return($org);
+  return $org;
 
 } /* end GetOrganization() */
 
@@ -874,7 +876,7 @@ function GetOrganizations() {
   while($org = $sth->fetch(PDO::FETCH_ASSOC)) {
     $orgs[$org['id']] = $org;
   }
-  return($orgs);
+  return $orgs;
 
 } /* end GetOrganizations() */
 
@@ -916,9 +918,9 @@ function UpdateOrganization($update) {
     }
     if(!$sth->execute($update))
       Error("System error; update failed");
-    return(true);
+    return true;
   } else
-    return(false);
+    return false;
 
 } /* end UpdateOrganization() */
 
@@ -950,9 +952,40 @@ function InsertOrganization($params) {
   }
   if(! $sth->execute($params))
     Error('System errror; organization insert failed.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
 
 } /* end InsertOrganization() */
+
+
+/* DeleteOrganization()
+ *
+ *  Delete this organization.
+ */
+
+function DeleteOrganization($orgid) {
+  global $user, $pdo;
+
+  // don't delete an organization that has projects
+  
+  if(count(GetProjects(['orgid' => $orgid])))
+    Error('Delete projects from organization before deleting organization');
+
+  // check authorization
+
+  if(!($user['role'] == 'super' || IsOrgManager(null, $orgid)))
+    Error('System error: unauthorized');
+
+  $sql = 'DELETE FROM organization WHERE id = :id';
+  try {
+   $sth = $pdo->prepare($sql);
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  if(!$sth->execute(['id' => $orgid]))
+    Error("System error; organzation deletion failed");
+  return true;
+
+} /* end DeleteOrganization() */
 
 
 /* GetTeam()
@@ -966,7 +999,7 @@ function GetTeam($id) {
   $sth = $pdo->prepare('SELECT * FROM team WHERE id = :id');
   $sth->execute(['id' => $id]);
   $team = $sth->fetch(PDO::FETCH_ASSOC);
-  return($team);
+  return $team;
 
 } /* end GetTeam() */
 
@@ -985,7 +1018,7 @@ function GetTeams() {
   while($team = $sth->fetch(PDO::FETCH_ASSOC)) {
     $teams[$team['id']] = $team;
   }
-  return($teams);
+  return $teams;
 
 } /* end GetTeams() */
 
@@ -1027,9 +1060,9 @@ function UpdateTeam($update) {
     }
     if(!$sth->execute($update))
       Error("System error; update failed");
-    return(true);
+    return true;
   } else
-    return(false);
+    return false;
 
 } /* end UpdateTeam() */
 
@@ -1061,9 +1094,61 @@ function InsertTeam($params) {
   }
   if(! $sth->execute($params))
     Error('System errror; team insert failed.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
 
 } /* end InsertTeam() */
+
+
+/* DeleteTeam()
+ *
+ *  Delete the argument team if empty and authorized.
+ */
+
+function DeleteTeam($id) {
+  global $user, $pdo;
+
+  // don't delete a team with members
+
+  if(count(GetTeamMembers($id)))
+    Error('Delete members from team before deleting team');
+
+  // check authorization
+
+  if(!($user['role'] == 'super' || IsTeamManager($user['id'], $id)))
+    Error('System error: unauthorized');
+
+  // delete it
+
+  try {
+    $sth = $pdo->prepare('DELETE FROM team WHERE id = :id');
+    $sth->execute([':id' => $id]);
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  return true;
+
+} /* end DeleteTeam() */
+
+
+/* IsTeamManager()
+ *
+ *  True is the argument user is a manager of the argument team.
+ */
+
+function IsTeamManager($userid, $teamid) {
+  global $pdo;
+
+  try {
+    $sth = $pdo->prepare("SELECT role = 'manager'
+ FROM teammember t
+ WHERE userid = :userid AND teamid = :teamid");
+    $sth->execute(['userid' => $userid, 'teamid' => $teamid]);
+  } catch(PDOException $e) {
+    throw new PDOException($e->getMessage(), $e->getCode());
+  }
+  return $sth->fetch(PDO::FETCH_NUM);
+  
+} /* end IsTeamManager() */
 
 
 /* GetTeamMembers()
@@ -1089,7 +1174,7 @@ function GetTeamMembers($id) {
   while($t = $sth->fetch(PDO::FETCH_ASSOC))
     $teammembers[$t['userid']] = $t;
 
-  return($teammembers);
+  return $teammembers;
 
 } /* end GetTeamMembers() */
 
@@ -1110,7 +1195,7 @@ function InsertTeamMember($teamid, $uid, $role) {
   }
   if(!$sth->execute(['teamid' => $teamid, 'userid' => $uid, 'role' => $role]))
     Error('System error: failed to insert team member');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
 
 } /* end InsertTeamMember() */
 
@@ -1124,7 +1209,8 @@ function UpdateTeamMember($teamid, $uid, $role) {
   global $pdo;
 
   try {
-    $sth = $pdo->prepare("UPDATE teammember SET role = :role WHERE userid = :userid AND teamid = :teamid");
+    $sth = $pdo->prepare("UPDATE teammember SET role = :role
+ WHERE userid = :userid AND teamid = :teamid");
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
@@ -1142,11 +1228,7 @@ function UpdateTeamMember($teamid, $uid, $role) {
 function DeleteTeamMember($which) {
   global $pdo;
 
-  $q = '';
-  foreach($which as $c => $v) {
-    if(strlen($q)) $q .= ' AND ';
-    $q .= "$c = :$c";
-  }
+  [$q, $u] = Which[$which];
   try {
     $sth = $pdo->prepare("DELETE FROM teammember WHERE $q");
   } catch(PDOException $e) {
@@ -1178,7 +1260,7 @@ function ManagedTeams($userid) {
   $teams = [];
   while($id = $sth->fetchColumn())
     $teams[] = $id;
-  return($teams);
+  return $teams;
 
 } /* end ManagedTeams() */
 
@@ -1205,7 +1287,7 @@ function UserTeams($userid) {
   $teams = [];
   while($t = $sth->fetch(PDO::FETCH_ASSOC))
     $teams[$t['teamid']] = $t;
-  return($teams);
+  return $teams;
 
 } /* end UserTeams() */
 
@@ -1237,7 +1319,7 @@ function IsUsernameTaken($username) {
   $query_prepared = $pdo->prepare($query);
   $query_prepared->execute(['username' => $username]);
   $row = $query_prepared->fetch();
-  return($row[0] ? true : false);
+  return $row[0] ? true : false;
   
 } /* end IsUsernameTaken() */
 
@@ -1248,7 +1330,7 @@ function IsUsernameTaken($username) {
  */
 
 function IsUsernameValid($username) {
-  return(preg_match('/^[a-z0-9_-]{4,20}$/', $username));
+  return preg_match('/^[a-z0-9_-]{4,20}$/', $username);
 
 } /* end IsUsernameValid() */
 
@@ -1332,7 +1414,7 @@ function ProjectMembers($projid) {
     else
       $users[$user['userid']] = $user;
   }
-  return($users);
+  return $users;
   
 } /* end ProjectMembers() */
 
@@ -1362,7 +1444,7 @@ function GetProjTeams($projid = null) {
   while($projteam = $sth->fetch(PDO::FETCH_ASSOC)) {
     $projteams[$projteam['teamid']] = $projteam;
   }
-  return($projteams);
+  return $projteams;
 
 } /* end GetProjTeams() */
 
@@ -1382,7 +1464,7 @@ function InsertProjTeam($prid, $tid) {
   }
   if(! $sth->execute(['projid' => $prid, 'teamid' => $tid]))
     Error('System error: your submission was not accepted.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
   
 } /* end InsertProjTeam() */
 
@@ -1395,67 +1477,18 @@ function InsertProjTeam($prid, $tid) {
 function DeleteProjTeam($which) {
   global $pdo;
 
-  $d = '';
-  foreach($which as $k => $v) {
-    if(strlen($d))
-      $d .= ' AND ';
-    $d .= "$k = :$k";
-  }
-  $sql = "DELETE FROM projteam WHERE $d";
+  [$q, $u] = Which($which);
+
+  $sql = "DELETE FROM projteam $q";
   try {
     $sth = $pdo->prepare($sql);
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
-  if(!$sth->execute($which))
+  if(!$sth->execute($u))
     Error('System error; projteam delete failed');
   
 } /* end DeleteProjTeam() */
-
-
-/* GetProjUsers()
- *
- *  Return an array of projuser records, keyed on userid.
- */
-
-function GetProjUsers($projid) {
-  global $pdo;
-
-  $sql = 'SELECT * FROM projuser au';
-  
-  if(isset($projid)) {
-  
-    /* operating in the context of a particular project */
-
-    $sql .= " WHERE projid = $projid";
-  }
-  error_log($sql);  
-  $sth = $pdo->prepare($sql);
-  $sth->execute();
-  $projusers = [];
-  while($projuser = $sth->fetch(PDO::FETCH_ASSOC)) {
-    $projusers[$projuser['userid']][] = $projuser;
-  }
-  return($projusers);
-
-} /* end GetProjUsers() */
-
-
-/* GetProjUser()
- *
- *  Return an projuser record if one exists for this userid and projid.
- */
-
-function GetProjUser($projid, $userid) {
-  global $pdo;
-
-  $sql = 'SELECT * FROM projuser au WHERE userid = :userid AND projid = :projid';
-  $sth = $pdo->prepare($sql);
-  $sth->execute(['projid' => $projid, 'userid' => $userid]);
-  $projuser = $sth->fetch(PDO::FETCH_ASSOC);
-  return($projuser);
-
-} /* end GetProjUser() */
 
 
 /* Error
@@ -1501,7 +1534,7 @@ function InsertAssessment($insert) {
   }
   if(!$rv)
     Error('System error; your submission was not accepted');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
   
 } /* end InsertAssessment() */
 
@@ -1534,7 +1567,7 @@ function InsertPAssessment($insert) {
   }
   if(!$rv)
     Error('System error; you submission was not accepted');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
   
 } /* end InsertPAssessment() */
 
@@ -1695,7 +1728,7 @@ function GetConfig() {
     if(isset($mbs[$setting]))
       $nsettings[$setting]['descript'] = $mbs[$setting]['descript'];
   }
-  return($nsettings);
+  return $nsettings;
   
 } /* end GetConfig() */
 
@@ -1706,7 +1739,7 @@ function GetConfig() {
  */
 
 function inlove($a, $b) {
-  return($b['score'] <=> $a['score']);
+  return $b['score'] <=> $a['score'];
   
 } /* end inlove() */
 
@@ -1798,7 +1831,7 @@ function Stats() {
   } // end loop on patterns
 
   usort($patterns, 'inlove');
-  return(['byuid' => $byuid, 'bypid' => $patterns]);
+  return ['byuid' => $byuid, 'bypid' => $patterns];
   
 } /* end Stats() */
 
@@ -1819,7 +1852,7 @@ function InsertProjPattern($ap) {
   }
   if(! $sth->execute($ap))
     Error('System errror; projpattern was not inserted.');
-  return($pdo->lastInsertId());
+  return $pdo->lastInsertId();
   
 } /* end InsertProjPattern() */
 
@@ -1877,22 +1910,16 @@ function GetProjManagers($which = null) {
 
   $q = '';
   $u = [];
-  if(isset($which)) {
-    foreach($which as $column => $value) {
-      if(strlen($q)) {
-        $q .= ' AND ';
-      }
-      $q .= " $column = ?";
-      array_push($u, $value);
-    }
-  }
+  if(isset($which))
+    [$q, $u] = Which($which);
+
   $query = 'SELECT pm.*, p.tag, u.email, u.fullname, u.username
  FROM projmanager pm
   JOIN project p ON pm.projid = p.id
   JOIN phpauth_users u ON pm.userid = u.id';
   
   if(strlen($q))
-    $query .= " WHERE $q";
+    $query .= " $q";
   try {
     $sth = $pdo->prepare($query);
     $rv = $sth->execute($u);
@@ -1900,7 +1927,7 @@ function GetProjManagers($which = null) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
   $projmanagers = $sth->fetchall(PDO::FETCH_ASSOC);
-  return($projmanagers);
+  return $projmanagers;
 
 } /* end GetProjManagers() */
 
@@ -1922,22 +1949,17 @@ function GetOrgManagers($which = null) {
 
   $q = '';
   $u = [];
-  if(isset($which)) {
-    foreach($which as $column => $value) {
-      if(strlen($q)) {
-        $q .= ' AND ';
-      }
-      $q .= " $column = ?";
-      array_push($u, $value);
-    }
-  }
+
+  if(isset($which))
+    [$q, $u] = Which($which);
+
   $query = 'SELECT om.*, o.name, u.email, u.fullname, u.username
  FROM orgmanager om
   JOIN organization o ON om.orgid = o.id
   JOIN phpauth_users u ON om.userid = u.id';
   
   if(strlen($q))
-    $query .= " WHERE $q";
+    $query .= " $q";
   try {
     $sth = $pdo->prepare($query);
     $rv = $sth->execute($u);
@@ -2022,7 +2044,6 @@ function DeleteProjManager($id) {
   global $pdo;
 
   $sql = 'DELETE FROM projmanager WHERE id = :id';
-  $filter = ['id' => $id];
   try {
    $sth = $pdo->prepare($sql);
   } catch(PDOException $e) {
@@ -2363,7 +2384,7 @@ function ProjectRole($userid = null, $projectid = null) {
     $grole = $tuser['role'];
   }
   
-  if($grole == ROLE['super'])
+  if($grole == 'super')
     return SUPER;
 
   if(is_null($projectid))
