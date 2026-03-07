@@ -89,8 +89,10 @@ function teamform($id = null) {
   global $fields;
 
   if(isset($id)) {
-    $team = GetTeam($id);
-
+    if(!($team = GetTeam($id)))
+      Error('System error: no such team');
+    $disabled = count(GetTeamMembers($id)) ? 'disabled' : '';
+    $delete = "<input type=\"submit\" $disabled name=\"submit\" value=\"Delete\">";
     # edit existing
     
     $action = 'edit';
@@ -106,6 +108,7 @@ function teamform($id = null) {
     $title = 'Creating Team';
     $action = 'create';
     $slabel = 'Create Team';
+    $delete = '';
   }
   print "<h2>$title</h2>
 
@@ -135,6 +138,7 @@ $id
 
   print "<div class=\"gs\">
  <input type=\"submit\" name=\"submit\" value=\"$slabel\">
+ $delete
  <input type=\"submit\" name=\"submit\" value=\"Cancel\">
 </div>
 </form>
@@ -353,6 +357,14 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Cancel') {
 
 <?php
 
+if(DEBUG && count($_POST)) {
+  print "<div class=\"ass\" id=\"ass\">Show POST parameters</div>
+<div id=\"posterior\">\n";
+  foreach($_POST as $k => $v) {
+    print " <div>$k</div>\n<div>$v</div>\n";
+  }
+  print "</div>\n";
+}
 if($_SERVER['REQUEST_METHOD'] == 'POST' && DEBUG)
   error_log("POST: " . var_export($_POST, true));
 if($_SERVER['REQUEST_METHOD'] == 'GET' && DEBUG)
@@ -369,23 +381,24 @@ if(isset($_REQUEST['action'])) {
       $rv = teamform();
     }
   } else if($action == 'edit') {
-    $id = $_REQUEST['id'];
-    if($id < 0)
+
+    if(($id = $_REQUEST['id']) < 0)
       Error('Select a team to edit');
       
     if(isset($_POST['submit'])) {
-      if($_POST['submit'] == 'Absorb edits') {
+      $submit = $_POST['submit'];
+      if($submit == 'Absorb edits')
         $rv = AbsorbEdit();
-      } elseif($_POST['submit'] == 'Edit team membership') {
+      elseif($submit == 'Edit team membership')
         $rv = Members($id);
-      } elseif($_POST['submit'] == 'Absorb Membership') {
+      elseif($submit == 'Delete')
+        $rv = DeleteTeam($id);
+      elseif($submit == 'Absorb Membership')
         $rv = AbsorbMember($id);
-      } else {
+      else
         $rv = teamform($id);
-      }
-    } else {
+    } else
       Error('Unknown action');
-    }
   }
 }
 if($rv) {
@@ -428,7 +441,13 @@ if($rv) {
 }
 ?>
 <script>
-init();
+  init()
+  function post(event) {
+    document.querySelector('#ass').style.display = 'none'
+    document.querySelector('#posterior').style.display = 'grid'
+  }
+  if(ass = document.querySelector('#ass'))
+    ass.addEventListener('click', post)
 </script>
 </div>
 <?=FOOT?>
