@@ -432,6 +432,11 @@ function consideration() {
       'label' => 'Brief Description'
     ],
     [
+      'column' => 'authors',
+      'destination' => false,
+      'label' => 'Authors'
+    ],
+    [
       'column' => 'problem',
       'destination' => false,
       'label' => 'Problem'

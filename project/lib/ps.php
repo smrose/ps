@@ -270,7 +270,38 @@ function GetPattern($which = null) {
   } catch(PDOException $e) {
     throw new PDOException($e->getMessage(), $e->getCode());
   }
+
   $patterns = $sth->fetchall(PDO::FETCH_ASSOC);
+
+  // authors
+
+  if(count($patterns)) {
+    $query = 'SELECT name, affiliation
+   FROM pattern_author pa
+    JOIN author a ON pa.author_id = a.id
+   WHERE pa.pattern_id = ?';
+    $sth = $pdo->prepare($query);
+    if(DEBUG) error_log($query);
+    foreach($patterns as $i => $pattern) {
+      try {
+	$rv = $sth->execute([$pattern['id']]);
+      } catch(PDOException $e) {
+	throw new PDOException($e->getMessage(), (int) $e->getCode());
+      }
+      $authors = $sth->fetchall(PDO::FETCH_ASSOC);
+      if(count($authors)) {
+        $a = '';
+        foreach($authors as $author) {
+	  $a .= strlen($a) ? ', ' : '';
+	  $a .= $author['name'];
+	  if(!is_null($author['affiliation']))
+	    $a .= " ({$author['affiliation']})";
+	}
+        $patterns[$i]['authors'] = $a;
+      } else
+        $pattern[$i]['authors'] = '(none)';
+    }
+  }
   return $patterns ? $patterns : null;
   
 } /* end GetPattern() */
